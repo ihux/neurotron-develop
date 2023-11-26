@@ -1,13 +1,13 @@
-# makefile to manage carabao toolbox
+# makefile to manage neurotron toolbox
 
 all:
 	make install
-	make carabao
+	make neurotron
 
 help:
 	@echo '  make venv      # make virtual environment'
 	@echo '  make install   # install packages for playground'
-	@echo '  make carabao   # build carabao wheel and install'
+	@echo '  make neurotron # build neurotron wheel and install'
 	@echo '  make clean     # cleanup folder'
 	@echo '  make scrap     # cleanup folder and scrap virtual environment'
 	@echo ''
@@ -22,29 +22,59 @@ venv:
 
 install:
 	python3 -m pip install --upgrade pip
-	pip install --upgrade wheel
-	pip install --upgrade setuptools
-	pip install --upgrade twine
-	pip install --upgrade ypstruct==0.0.2
+	#pip install --upgrade wheel
+	#pip install --upgrade setuptools
+	#pip install --upgrade twine
+	pip install ypstruct==0.0.2
 	pip install pytest==4.4.1
 	pip install pytest-runner==4.4
-	python3 -m pip install --upgrade build
-	pip install --upgrade numpy
-	pip install matplotlib
-	pip install --upgrade torch
-	pip install jupyterlab
-	pip install xeus-python
-	pip install gitpython
+	pip install build==1.0.3
+	pip install numpy==1.26.2
+	pip install matplotlib==3.8.2
+	pip install jupyterlab==4.0.9
+	pip install xeus-python==0.15.8
+	pip install gitpython==3.1.40
+	pip install poetry==1.7.1
 
-carabao: dist/carabao-0.0.1-py3-none-any.whl
+neurotron: dist/neurotron-0.0.1-py3-none-any.whl
 
-dist/carabao-0.0.1-py3-none-any.whl: carabao/src/carabao/*.py
-	python carabao/src/carabao/neurotron.py
-	cd carabao &&	make carabao
+dist/neurotron-0.0.1-py3-none-any.whl: neurotron/neurotron/*.py
+	python neurotron/neurotron/neurotron.py
+	cd neurotron &&	make neurotron
 
 clean:
-	cd carabao &&	make clean
+	cd neurotron &&	make clean
 
 scrap:
 	make clean
 	rm -rf venv/
+
+# To initiate the neurotron folder:
+#
+#   $ poetry new neurotron
+#   $ cd neurotron
+#   $ poetry add pendulum     # add dependency
+#   $ poetry add numpy        # add dependency
+#   $ poetry add matplotlib   # add matplotlib
+#   $ poetry install          # install dependencies
+#   $ poetry lock             # lock dependencies
+#   $ poetry add pytest requests-mock --group test
+#
+# To test modules:
+#
+#   $ python main.py
+#   $ poetry run pytest -v
+#
+# To build and install:
+#
+#   $ python3 -m build
+#   $ pip install --force-reinstall dist/*.whl
+#
+# To test in python interpreter:
+#
+#   $ python
+#   >>> from neurotron.validator import PhoneNumberValidator as V
+#   >>> V
+#   <class 'neurotron.validator.PhoneNumberValidator'>
+#
+# see: https://www.freecodecamp.org/news/how-to-build-and-publish-python-packages-with-poetry/
