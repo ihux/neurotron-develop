@@ -1,10 +1,12 @@
-# Carabao Utilities
+# Neurotron Development
 
-![Carabao Banner](doc/image/carabao.jpg)
+![Neurotron Banner](doc/image/neurotron.jpg)
 
-## Carabao
+## Neurotron
 
-_A carabao is a swamp-type domestic water buffalo. For a Philippine farmer a carabao is a source of draft animal power which is endlessly helpful for mastering the challenges of his daily life. A Carabao is a Python-type 'domestic' class object. For a system-, process-, control-engineer or AI researcher a Carabao is a source of conceptual power which is endlessly helpful for mastering the rapid prototyping challenges of his daily life._
+_A neural computing unit mimicing an abstraction of a biological pyramidal
+neuron or a biological microcircuit arround a pyramidal neuron._
+
 
 ## Markdown Language for Documentation
 
