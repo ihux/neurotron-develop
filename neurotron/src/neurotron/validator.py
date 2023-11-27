@@ -23,3 +23,7 @@ class PhoneNumberValidator:
             params["country_code"] = country_code
         response = requests.get(self.api_url + phone_number, params=params)
         return response
+
+class Validator:
+    def validate(self,module=None):
+       return False if module is None else True
