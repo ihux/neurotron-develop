@@ -3,13 +3,13 @@ module carabao.cluster.setup
     class Collab  # setup collaboration terminal
 """
 
-from neurotron.matrix import Matrix,Field,ones
+from neurotron.matrix import Attribute, Matrix, Field,ones
 
 #===============================================================================
 # class Collab
 #===============================================================================
 
-class Collab:  # to manage collaboration topology
+class Collab(Attribute):  # to manage collaboration topology
     """
     >>> shape = (3,4,2,5)
     >>> Collab(*shape)
@@ -40,6 +40,8 @@ class Collab:  # to manage collaboration topology
     def __init__(self,m,n,dummy1=0,dummy2=0):
         self.shape = (m,n)
         self.init()
+        self.theta = 0
+        self.eta = 0.5
 
     def __str__(self):
         return 'Collab(%g,%g)' % self.shape
@@ -66,11 +68,12 @@ class Collab:  # to manage collaboration topology
                 self.K[i,j] = self._Kij(i,j)
                 self.P[i,j] = ones(1,m-1)
                 self.W[i,j] = ones(1,m-1)
+        self.P.map = self.P.vmap
 
     def map(self):
-        self.K.imap('K: ')
-        self.P.vmap('P: ')
-        self.W.imap('W: ')
+        self.K.map('K: ')
+        self.P.map('P: ')
+        self.W.map('W: ')
 
 #===============================================================================
 # doc test

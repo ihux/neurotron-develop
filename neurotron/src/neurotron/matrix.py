@@ -32,6 +32,7 @@ Field methods:
 
 Utility functions:
 - eye                   # unit matrix
+- isnumber              # is arg a number?
 - zeros                 # zero matrix
 - one                   # one matrix
 - rand                  # random matrix
@@ -348,7 +349,7 @@ class Field:
     """
     class Field: implements a matrix of matrices (4-tensor)
     >>> T = Field(3,4,2,5)
-    >>> T.imap()
+    >>> T.map()
     +-000/0-+-003/3-+-006/6-+-009/9-+
     | 00000 | 00000 | 00000 | 00000 |
     | 00000 | 00000 | 00000 | 00000 |
@@ -361,7 +362,7 @@ class Field:
     +-------+-------+-------+-------+
     >>> K = Matrix(2,5)
     >>> T = Field([[K,K,K,K],[K,K,K,K],[K,K,K,K]])
-    >>> T.imap()
+    >>> T.map()
     +-000/0-+-003/3-+-006/6-+-009/9-+
     | 00000 | 00000 | 00000 | 00000 |
     | 00000 | 00000 | 00000 | 00000 |
@@ -390,6 +391,7 @@ class Field:
             lst = [[Matrix(d,s) for j in range(n)] for i in range(m)]
             self.data = np.array(lst)
         self.shape = (m,n,d,s)
+        self.map = self.imap
 
     def __getitem__(self,idx):
         """
@@ -430,6 +432,7 @@ class Field:
         else:
             i,j = idx
         assert isa(i,int) and isa(j,int)
+        if isnumber(M): M = Matrix([M])
         assert isa(M,Matrix)
         if self.data[i,j].shape != M.shape:
             raise Exception('Field.__setitem__(): size mismatch')
@@ -683,6 +686,20 @@ def eye(n):
     for k in range(n):
         I[k,k] = 1
     return I
+
+def isnumber(arg):
+    """
+    >>> isnumber(5) and isnumber(3.14)
+    True
+    >>> isnumber(True) and isnumber(False)
+    True
+    >>> isnumber('abc') or isnumber([])
+    False
+    """
+    if isa(arg,int) or isa(arg,float): return True
+    if isa(arg,np.int64) or isa(arg,np.float64): return True
+    if isa(arg,bool): return True
+    return False
 
 def zeros(m,n=None):
     """
@@ -1150,7 +1167,7 @@ def _case4a():
     >>> P[0,1] = rand((1,3))
     >>> P[1,0] = rand((1,3))
     >>> P[1,1] = rand((1,3))
-    >>> P.vmap()
+    >>> P.map = P.vmap; P.map()
     +-000/0-+-002/2-+
     |  CKF  |  CdH  |
     +-001/1-+-003/3-+
@@ -1225,6 +1242,30 @@ def _case5d():  # indexing with slices, row & column ranges
     [11 10; 14 15]
     >>> A[1:3,1:4:2]
     [11 8; 7 12]
+    """
+
+def _case6a():
+    """
+    >>> Matrix(True)
+    [1]
+    >>> Matrix(False)
+    [0]
+    >>> Matrix(2)
+    [2]
+    >>> Matrix(1.5)
+    [1.5]
+    """
+
+def _case6b():
+    """
+    >>> F = Field(1,3,1,1); F.map()
+    +-000/0-+-001/1-+-002/2-+
+    |   0   |   0   |   0   |
+    +-------+-------+-------+
+    >>> F[0] = 1; F.map()
+    +-000/0-+-001/1-+-002/2-+
+    |   1   |   0   |   0   |
+    +-------+-------+-------+
     """
 
 #===============================================================================
