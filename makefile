@@ -36,11 +36,10 @@ install:
 	pip install gitpython==3.1.40
 	pip install poetry==1.7.1
 
-neurotron: neurotron/dist/*.whl
-	cd neurotron &&	make neurotron
+neurotron: wheel
 
-update: neurotron/dist/*.whl
-	cd neurotron &&	make update
+wheel: neurotron/dist/*.whl
+	cd neurotron &&	make neurotron
 
 clean:
 	cd neurotron &&	make clean

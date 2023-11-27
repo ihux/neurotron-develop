@@ -6,8 +6,7 @@ all:
 
 help:
 	@echo '  make           # build neurotron wheel and install after cleaning'
-	@echo '  make neurotron # build neurotron wheel and install'
-	@echo '  make update    # update neurotron package after test'
+	@echo '  make neurotron # test & build neurotron wheel and install'
 	@echo '  make clean     # cleanup folder'
 	@echo '  make test      # perform all pytests'
 	@echo '  make doctest   # perform only doctests'
@@ -20,15 +19,11 @@ help:
 	@echo '    jupyter lab                 # start jupyter lab'
 
 neurotron: dist/*.whl
-	#poetry run pytest -v   # fails if neurotron is uninstalled
+	poetry run pytest -v   # fails if neurotron is uninstalled => use make
 	poetry build
 	poetry install
 	@#python3 -m build
 	@#pip install --force-reinstall dist/*.whl
-
-update: dist/*.whl
-	poetry run pytest -v
-	make neurotron
 
 build: dist/*.whl
 	poetry build
