@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "neurotron"
+version = "0.1.0"
+description = ""
+authors = ["iHux <hugo.pristauz@gmail.com>"]
+readme = "README.md"
+packages = [{include = "neurotron", from = "src"}]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+pendulum = "^2.1.2"
+numpy="^1.26.2"
+matplotlib="3.8.2"
+
+[tool.poetry.group.test.dependencies]
+pytest = "^7.4.3"
+#requests-mock = "^1.11.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
