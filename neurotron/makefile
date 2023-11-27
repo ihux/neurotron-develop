@@ -23,7 +23,7 @@ neurotron: dist/*.whl
 
 test:
 	poetry run pytest -v
-	python tests/test_doctest.py  && ec -g 'doctests: PASSED'
+	python tests/test_doctest.py
 
 clean:
 	rm -rf dist
