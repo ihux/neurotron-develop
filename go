@@ -1,6 +1,9 @@
 #!/bin/bash
 # .go: setup some aliases to be ready to go
 
+chmod +x local/bin/ec
+chmod +x local/bin/po
+
 export BARC=$HOME/.bash_profile
 export REPO=`pwd`
 source local/bin/alias.sh

@@ -10,6 +10,7 @@
   echo  '  jl            # launch jupyter lab'
   echo  '  de            # deactivate virtual environment'
   echo  '  ve            # activate virtual environment'
+  echo  '  po            # poetry test/build/install'
   echo  ''
   ec -g 'help on standard tools'
   echo  '  make          # GNU make utility'

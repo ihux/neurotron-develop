@@ -1,0 +1,66 @@
+#!/bin/bash
+# pin: python (build and) install
+
+  NAME=neurotron
+  GITROOT=`gitroot`
+  PACKAGE=$GITROOT/$NAME
+  BIN=$GITROOT/local/bin
+
+  if [ "$*" == "-?" ]; then
+    echo 'usage: po         # poetry test/build/install'
+    echo '       po -b      # package build'
+    echo '       po -i      # package install'
+    echo '       po -n      # package build/install, no testing'
+    echo '       po -t      # package test'
+    echo '       po -tv     # verbose package test'
+    echo '       po -u      # package uninstall'
+    exit 1;
+  fi
+
+#===============================================================================
+# let's go ...
+#===============================================================================
+
+   if [ "$1" == "-b" ]; then   # package build
+     cd $PACKAGE
+     poetry build || exit 1
+     exit 0
+   fi
+
+   if [ "$1" == "-i" ]; then   # package test
+     cd $PACKAGE
+     poetry install || exit 1
+     exit 0
+   fi
+
+   if [ "$1" == "-n" ]; then   # package build / no testing
+     bash $BIN/po -b || exit 1
+     bash $BIN/po -i || exit 1
+     exit 0
+   fi
+
+   if [ "$1" == "-t" ]; then   # package test
+     cd $PACKAGE
+     poetry run pytest || exit 1
+     exit 0
+   fi
+
+   if [ "$1" == "-tv" ]; then   # verbose package test
+     cd $PACKAGE
+     poetry run pytest -v || exit 1
+     exit 0
+   fi
+
+   if [ "$1" == "-u" ]; then   # package test
+     cd $PACKAGE
+     pip uninstall $NAME || exit 1
+     exit 0
+   fi
+
+##===============================================================================
+# default
+#===============================================================================
+
+   bash $BIN/po -tv
+   bash $BIN/po -b
+   bash $BIN/po -i
