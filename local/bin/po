@@ -54,6 +54,7 @@
    if [ "$1" == "-u" ]; then   # package test
      cd $PACKAGE
      pip uninstall $NAME || exit 1
+     bash $BIN/ec -g "=> to reinstall $NAME use: po -n"
      exit 0
    fi
 

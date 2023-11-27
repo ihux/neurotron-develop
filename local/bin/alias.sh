@@ -7,6 +7,6 @@
     alias po="bash `pwd`/local/bin/po"                            # deactivate virtual env.
     alias jl="bash `pwd`/local/bin/jl.sh"
     alias id="python -m idlelib.idle"
-    alias ?="`pwd`/local/bin/hlp"
+    alias ?="bash `pwd`/local/bin/hlp"
 
 # eof
