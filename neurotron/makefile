@@ -1,9 +1,11 @@
 # makefile to manage neurotron toolbox
 
 all:
-	make neurotron
+	poetry build
+	poetry install
 
 help:
+	@echo '  make           # build neurotron wheel and install after cleaning'
 	@echo '  make neurotron # build neurotron wheel and install'
 	@echo '  make update    # update neurotron package after test'
 	@echo '  make clean     # cleanup folder'
@@ -31,7 +33,7 @@ update: dist/*.whl
 build: dist/*.whl
 	poetry build
 
-install:
+install: dist/*.whl
 	poetry install
 
 uninstall:

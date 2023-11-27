@@ -2,7 +2,7 @@
 
 all:
 	make install
-	make neurotron
+	cd neurotron && make
 
 help:
 	@echo '  make venv      # make virtual environment'
@@ -36,11 +36,11 @@ install:
 	pip install gitpython==3.1.40
 	pip install poetry==1.7.1
 
-neurotron: dist/neurotron-0.0.1-py3-none-any.whl
-
-dist/neurotron-0.0.1-py3-none-any.whl: neurotron/neurotron/*.py
-	python neurotron/neurotron/neurotron.py
+neurotron: neurotron/dist/*.whl
 	cd neurotron &&	make neurotron
+
+update: neurotron/dist/*.whl
+	cd neurotron &&	make update
 
 clean:
 	cd neurotron &&	make clean
