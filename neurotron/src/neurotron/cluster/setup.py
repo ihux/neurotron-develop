@@ -76,6 +76,38 @@ class Collab(Attribute):  # to manage collaboration topology
         self.W.map('W: ')
 
 #===============================================================================
+# class Excite
+#===============================================================================
+
+class Excite(Attribute):
+    """
+    >>> shape = (1,3,2,5)
+    >>> Excite(*shape)
+    Excite(1,3)
+    """
+    Collab(3,4)
+    def __init__(self,m,n,dummy1=0,dummy2=0):
+        self.shape = (m,n)
+        #self.init()
+        self.theta = 1
+        self.eta = 0.5
+
+    def setup(self,token):
+        """
+        >>> token = {'Mary':[1,0,0,0,1], 'John':[0,1,0,0,1], 'likes':[0,0,1,0,1]}
+        >>> excite = Excite(1,3); print(excite)
+        Excite(1,3)
+        """
+        assert isa(token,dict)
+        N = len(token[0])
+
+    def __str__(self):
+        return 'Excite(%g,%g)' % self.shape
+
+    def __repr__(self):
+        return self.__str__()
+
+#===============================================================================
 # doc test
 #===============================================================================
 
