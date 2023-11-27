@@ -11,6 +11,9 @@ def validator():
     return Validator()
 
 class Validator:
+    def call(self,func) -> bool:
+        return func()
+
     def validate(self,mode) -> bool:
         if mode == 'good':
             return True
@@ -36,13 +39,22 @@ def test_good(validator):
 def test_bad(validator):
     assert not validator.validate('bad')
 
-def test_zerodiv(validator):
+def test_zerodiv1(validator):
     with pytest.raises(ZeroDivisionError):
         validator.validate('zerodiv')
 
-def test_exception(validator):
+def test_zerodiv2(validator):
+    with pytest.raises(ZeroDivisionError):
+        validator.call(lambda: 5/0)
+
+def test_exception1(validator):
     with pytest.raises(Exception):
         validator.validate('exception')
+
+def test_exception2(validator):
+    def f(): raise Exception(''); return 0
+    with pytest.raises(Exception):
+        validator.call(f)
 
 def test_typeerror(validator):
     with pytest.raises(TypeError):

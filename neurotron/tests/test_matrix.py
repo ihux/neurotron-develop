@@ -12,23 +12,15 @@ import neurotron.matrix
 def validator():
     return Validator()
 
-def doctests(module):
-    return doctest.testmod(module, verbose=False).failed == 0
-
 class Validator:
+    def call(self,func) -> bool:
+        return func()
+
     def validate(self,mode) -> bool:
         if mode == 'good':
             return True
-        elif mode == 'bad':
-            return False
-        elif mode == 'zerodiv':
-            a = 5/0
         elif mode == 'exception':
             raise Exception('some exception')
-        elif mode == 'typeerror':
-            raise TypeError('bad type')
-        elif mode == 'valueerror':
-            raise ValueError('bad value')
         return False
 
 #===============================================================================
@@ -36,30 +28,13 @@ class Validator:
 #===============================================================================
 
 def test_doctest(validator):
-   assert doctests(neurotron.matrix)
+   result = doctest.testmod(neurotron.matrix, verbose=False)
+   assert result.failed == 0
 
 #===============================================================================
 # using Validator
 #===============================================================================
 
-def test_good(validator):
-    assert validator.validate('good')
-
-def test_bad(validator):
-    assert not validator.validate('bad')
-
 def test_zerodiv(validator):
     with pytest.raises(ZeroDivisionError):
-        validator.validate('zerodiv')
-
-def test_exception(validator):
-    with pytest.raises(Exception):
-        validator.validate('exception')
-
-def test_typeerror(validator):
-    with pytest.raises(TypeError):
-        validator.validate('typeerror')
-
-def test_valueerror(validator):
-    with pytest.raises(ValueError):
-        validator.validate('valueerror')
+        validator.call(lambda: 5/0)
