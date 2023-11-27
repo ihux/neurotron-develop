@@ -57,8 +57,33 @@ def test_empty_phone_number(pn_validator):
         pn_validator.validate("")
 
 #===============================================================================
+# fixture
+#===============================================================================
+
+@pytest.fixture
+def validator():
+    return Validator()
+
+class Validator:
+    def validate(self,mode) -> bool:
+        if mode == 'good':
+            return True
+        elif mode == 'bad':
+            return False
+        elif mode == 'zerodiv':
+            a = 5/0
+        return False
+
+#===============================================================================
 # using Validator
 #===============================================================================
 
-#@pytest.fixture
-#def validator:
+def test_good(validator):
+    assert validator.validate('good')
+
+def test_bad(validator):
+    assert not validator.validate('bad')
+
+def test_zerodiv(validator):
+    with pytest.raises(ZeroDivisionError):
+        validator.validate('zerodiv')
