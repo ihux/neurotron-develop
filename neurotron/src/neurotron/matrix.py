@@ -173,6 +173,10 @@ class Matrix(np.ndarray):
         else:
             return i + j*m
 
+    def range(self):
+        m,n = self.shape
+        return range(m*n)
+        
     def _isa(self,obj,typ=None):
         if typ is None:
             print(type(obj),type(obj).__name__)
