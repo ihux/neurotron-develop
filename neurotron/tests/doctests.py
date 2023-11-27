@@ -7,7 +7,7 @@ import neurotron.cluster.setup
 from neurotron.ansi import Ansi
 
 err = 0
-#doctest.testmod(neurotron.neurotron, verbose=True)
+err += doctest.testmod(neurotron.neurotron, verbose=False).failed
 err += doctest.testmod(neurotron.cluster.setup, verbose=False).failed
 err += doctest.testmod(neurotron.matrix, verbose=False).failed
 

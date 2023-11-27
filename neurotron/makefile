@@ -4,27 +4,49 @@ all:
 	make neurotron
 
 help:
-	@echo '  make neurotron   # build neurotron wheel and install'
-
+	@echo '  make neurotron # build neurotron wheel and install'
+	@echo '  make update    # update neurotron package after test'
 	@echo '  make clean     # cleanup folder'
-	@echo '  make test      # perform all tests'
+	@echo '  make test      # perform all pytests'
+	@echo '  make doctest   # perform only doctests'
+	@echo '  make build     # build neurotron package (regardless test results)'
+	@echo '  make install   # install neurotron package (regardless test results)'
+	@echo '  make uninstall # uninstall neurotron package'
 	@echo ''
 	@echo '  helpful commands:'
 	@echo '    python                      # run python interpreter'
 	@echo '    jupyter lab                 # start jupyter lab'
 
 neurotron: dist/*.whl
-	poetry run pytest -v
-	python tests/test_doctest.py
+	#poetry run pytest -v   # fails if neurotron is uninstalled
 	poetry build
 	poetry install
 	@#python3 -m build
 	@#pip install --force-reinstall dist/*.whl
 
+update: dist/*.whl
+	poetry run pytest -v
+	make neurotron
+
+build: dist/*.whl
+	poetry build
+
+install:
+	poetry install
+
+uninstall:
+	pip uninstall neurotron
+
 test:
 	poetry run pytest -v
-	python tests/test_doctest.py
+
+doctest:
+	python tests/doctests.py
 
 clean:
 	rm -rf dist
 	rm -rf neurotron.egg-info
+	rm -rf src/neurotron/__pycache__
+	rm -rf src/neurotron/cluster/__pycache__
+	rm -rf tests/__pycache__
+	rm -rf .pytest_cache

@@ -2,7 +2,13 @@
 
 import doctest
 import pytest
+
+#if __name__ == 'tests.test_matrix':
+#    print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
+#    import matrix
+#else:
 import neurotron.matrix
+
 
 #===============================================================================
 # fixture
