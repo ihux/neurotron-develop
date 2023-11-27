@@ -52,6 +52,7 @@ scrap:
 # To initiate the neurotron folder:
 #
 #   $ poetry new neurotron
+#   $ # or: poetry new --src neurotron
 #   $ cd neurotron
 #   $ poetry add pendulum     # add dependency
 #   $ poetry add numpy        # add dependency
