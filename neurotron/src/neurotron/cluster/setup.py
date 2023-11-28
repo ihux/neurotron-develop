@@ -90,7 +90,6 @@ class Excite(Attribute):
     Collab(3,4)
     def __init__(self,m,n,dummy1=0,dummy2=0):
         self.shape = (m,n)
-        #self.init()
         self.theta = 1
         self.eta = 0.5
 
