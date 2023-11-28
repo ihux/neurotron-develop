@@ -38,7 +38,7 @@ class Terminal(Attribute):
        +-------+-------+-------+-------+-------+-------+-------+
     >>> c = Matrix(1,3*7); c[0] = c[1] = c[2] = 1
     >>> collab(c)
-    [1 1 1 1 1 1 1; 1 1 1 1 1 1 1; 1 1 1 1 1 1 1]
+    [1 0 0 0 0 0 0; 1 0 0 0 0 0 0; 1 0 0 0 0 0 0]
     """
     def __init__(self,K,P=None,eta=0.5,theta=None):
         if isa(K,Collab) or isa(K,Excite):
