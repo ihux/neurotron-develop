@@ -85,46 +85,46 @@ class Excite(Attribute):
     """
     >>> shape = (1,3,2,5)
     >>> Excite(*shape)
-    Excite(1,3)
+    Excite(1,3,2,5)
     """
-    Collab(3,4)
-    def __init__(self,m,n,dummy1=0,dummy2=0):
-        self.shape = (m,n)
+    def __init__(self,m,n,d,s,token=None):
+        self.shape = (m,n,d,s)
         self.theta = 1
         self.eta = 0.5
+        if isa(token,dict): self.setup(token)
 
     def setup(self,token):
         """
         >>> token = {'Mary':[1,0,0,0,1], 'John':[0,1,0,0,1], 'likes':[0,0,1,0,1]}
-        >>> excite = Excite(1,5); print(excite)
-        Excite(1,5)
-        >>> excite.setup(token)
-        >>> excite.K.map()
-        +-000/0-+-001/1-+-002/2-+-003/3-+-004/4-+
-        | 01234 | 01234 | 01234 | 00000 | 01234 |
-        | 00000 | 00000 | 00000 | 00000 | 01234 |
-        | 00000 | 00000 | 00000 | 00000 | 01234 |
-        +-------+-------+-------+-------+-------+
-        >>> excite.W.map()
-        +-000/0-+-001/1-+-002/2-+-003/3-+-004/4-+
-        | 10001 | 01001 | 00101 | 00000 | 10001 |
-        | 00000 | 00000 | 00000 | 00000 | 01001 |
-        | 00000 | 00000 | 00000 | 00000 | 00101 |
-        +-------+-------+-------+-------+-------+
+        >>> excite = Excite(1,5,1,5,token); print(excite)
+        Excite(1,5,3,5)
+        >>> excite.map()
+        K: +-000/0-+-001/1-+-002/2-+-003/3-+-004/4-+
+           | 01234 | 01234 | 01234 | 00000 | 01234 |
+           | 00000 | 00000 | 00000 | 00000 | 01234 |
+           | 00000 | 00000 | 00000 | 00000 | 01234 |
+           +-------+-------+-------+-------+-------+
+        W: +-000/0-+-001/1-+-002/2-+-003/3-+-004/4-+
+           | 10001 | 01001 | 00101 | 00000 | 10001 |
+           | 00000 | 00000 | 00000 | 00000 | 01001 |
+           | 00000 | 00000 | 00000 | 00000 | 00101 |
+           +-------+-------+-------+-------+-------+
         >>> (excite.P,excite.theta)
         (None, 2)
         """
         assert isa(token,dict)
-        values = [token[key] for key in token]
         self.theta = max([sum(token[key]) for key in token])
-        s = max([len(token[key]) for key in token])
 
+        values = [token[key] for key in token]
         T = Matrix(values)
-        #print('T:',T)
-        #print(mx.sum(T))
-        d = mx.max(mx.sum(T))
 
-        m,n = self.shape
+        m,n,d,s = self.shape
+        s = max([len(token[key]) for key in token])
+        d = mx.max(mx.sum(T))
+        if s != self.shape[3]:
+            raise Exception('mismatch of synapses size with token length')
+        self.shape = (m,n,d,s)
+
         self.K = Field(m,n,d,s)
         self.P = None
         self.W = Field(m,n,d,s)
@@ -143,10 +143,14 @@ class Excite(Attribute):
                 self.W[i,j] = Wij
 
     def __str__(self):
-        return 'Excite(%g,%g)' % self.shape
+        return 'Excite(%g,%g,%g,%g)' % self.shape
 
     def __repr__(self):
         return self.__str__()
+
+    def map(self):
+        self.K.map('K: ')
+        self.W.map('W: ')
 
 #===============================================================================
 # doc test
