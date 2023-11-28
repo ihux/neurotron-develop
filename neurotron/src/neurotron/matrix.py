@@ -1248,6 +1248,15 @@ def _case5d():  # indexing with slices, row & column ranges
     [11 8; 7 12]
     """
 
+def _case5e():
+    """
+    >>> M=magic(4)
+    >>> M[0,:4] = Matrix(range(4)); print(M)
+    [0 1 2 3; 5 11 10 8; 9 7 6 12; 4 14 15 1]
+    >>> M[:4,1]= 5+Matrix(range(4)).T; print(M)
+    [0 5 2 3; 5 6 10 8; 9 7 6 12; 4 8 15 1]
+    """
+
 def _case6a():
     """
     >>> Matrix(True)

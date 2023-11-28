@@ -3,7 +3,9 @@ module carabao.cluster.setup
     class Collab  # setup collaboration terminal
 """
 
-from neurotron.matrix import Attribute, Matrix, Field,ones
+import neurotron.matrix as mx
+from neurotron.matrix import Attribute, Matrix, Field, ones, zeros
+isa = isinstance
 
 #===============================================================================
 # class Collab
@@ -95,11 +97,51 @@ class Excite(Attribute):
     def setup(self,token):
         """
         >>> token = {'Mary':[1,0,0,0,1], 'John':[0,1,0,0,1], 'likes':[0,0,1,0,1]}
-        >>> excite = Excite(1,3); print(excite)
-        Excite(1,3)
+        >>> excite = Excite(1,5); print(excite)
+        Excite(1,5)
+        >>> excite.setup(token)
+        >>> excite.K.map()
+        +-000/0-+-001/1-+-002/2-+-003/3-+-004/4-+
+        | 01234 | 01234 | 01234 | 00000 | 01234 |
+        | 00000 | 00000 | 00000 | 00000 | 01234 |
+        | 00000 | 00000 | 00000 | 00000 | 01234 |
+        +-------+-------+-------+-------+-------+
+        >>> excite.W.map()
+        +-000/0-+-001/1-+-002/2-+-003/3-+-004/4-+
+        | 10001 | 01001 | 00101 | 00000 | 10001 |
+        | 00000 | 00000 | 00000 | 00000 | 01001 |
+        | 00000 | 00000 | 00000 | 00000 | 00101 |
+        +-------+-------+-------+-------+-------+
+        >>> (excite.P,excite.theta)
+        (None, 2)
         """
         assert isa(token,dict)
-        N = len(token[0])
+        values = [token[key] for key in token]
+        self.theta = max([sum(token[key]) for key in token])
+        s = max([len(token[key]) for key in token])
+
+        T = Matrix(values)
+        #print('T:',T)
+        #print(mx.sum(T))
+        d = mx.max(mx.sum(T))
+
+        m,n = self.shape
+        self.K = Field(m,n,d,s)
+        self.P = None
+        self.W = Field(m,n,d,s)
+
+        for j in range(n):
+            Kij = zeros(d,s)
+            Wij = zeros(d,s)
+            mu = 0
+            for l in range(T.shape[0]):
+                if T[l,j]:
+                    Wij[mu,:] = T[l,:]
+                    Kij[mu,:] = Matrix(range(s))
+                    mu += 1
+            for i in range(m):
+                self.K[i,j] = Kij
+                self.W[i,j] = Wij
 
     def __str__(self):
         return 'Excite(%g,%g)' % self.shape

@@ -5,6 +5,7 @@ neurotron: building blocks for neural computing circuits
        Matrix    matrix class
        Field     field class (matrix of matrices)
        Collab    parameters for collaboration terminal
+       Excite    parameters for excitation terminal
 
    functions:
        isa       is object a given class instance (same as isinstance)
@@ -36,6 +37,7 @@ import neurotron.cluster.setup
 
 Attribute = neurotron.matrix.Attribute
 Collab = neurotron.cluster.setup.Collab
+Excite = neurotron.cluster.setup.Excite
 Matrix = neurotron.matrix.Matrix
 Field  = neurotron.matrix.Field
 
