@@ -480,6 +480,10 @@ class Field:
         else:
             return i + j*m
 
+    def range(self):
+        m,n,d,s = self.shape
+        return range(m*n)
+
     def permanence(self,p):    # encode permanence
         """
         self.permanence(p): convert permanence to symbolic string
