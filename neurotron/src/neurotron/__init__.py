@@ -1,6 +1,7 @@
 """
 neurotron: building blocks for neural computing circuits
    classes:
+       Ansi      provide ANSI color sequences
        Attribute base class to support compact attribute access
        Matrix    matrix class
        Field     field class (matrix of matrices)
@@ -32,11 +33,13 @@ neurotron: building blocks for neural computing circuits
 import neurotron.matrix
 import neurotron.cluster.setup
 import neurotron.cluster.terminal
+import neurotron.ansi
 
 #===============================================================================
 # class attribute setup
 #===============================================================================
 
+Ansi = neurotron.ansi.Ansi
 Attribute = neurotron.matrix.Attribute
 Collab = neurotron.cluster.setup.Collab
 Excite = neurotron.cluster.setup.Excite
