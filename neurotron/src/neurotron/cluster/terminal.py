@@ -105,7 +105,7 @@ class Terminal(Attribute):
 # unit tests
 #===============================================================================
 
-class TestTerminal:
+class __TestTerminal__:
     def test_construction():
         """
         >>> collab = Terminal(Collab(3,7,2,5))
