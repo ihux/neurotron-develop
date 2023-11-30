@@ -4,7 +4,7 @@ module carabao.cluster.setup
 """
 
 import neurotron.matrix as mx
-from neurotron.matrix import Attribute, Matrix, Field, ones, zeros
+from neurotron.matrix import Attribute, Matrix, Field, ones, zeros, rand, seed
 isa = isinstance
 
 #===============================================================================
@@ -150,6 +150,80 @@ class Excite(Attribute):
 
     def map(self):
         self.K.map('K: ')
+        self.W.map('W: ')
+
+#===============================================================================
+# class Predict
+#===============================================================================
+
+class Predict:
+    """
+    >>> shape = (3,4,2,5)
+    >>> Predict(*shape)
+    Predict(3,4,2,5)
+    >>> seed(0);  Predict(*shape).map()
+    K: +-000/0-+-003/3-+-006/6-+-009/9-+
+       | 503B3 | 79352 | 47688 | A1677 |
+       | 81598 | 94303 | 50238 | 13337 |
+       +-001/1-+-004/4-+-007/7-+-010/A-+
+       | 01990 | A473B | 27200 | 45568 |
+       | 4149A | A8117 | 99367 | B2B03 |
+       +-002/2-+-005/5-+-008/8-+-011/B-+
+       | 59A4B | 46443 | 44843 | A7550 |
+       | 15930 | 50124 | 2032A | 07590 |
+       +-------+-------+-------+-------+
+    P: +-000/0-+-003/3-+-006/6-+-009/9-+
+       | CWErr | ppWMp | UWMAu | mCEcE |
+       | r1Rww | h1MC1 | cJrpr | EJRcc |
+       +-001/1-+-004/4-+-007/7-+-010/A-+
+       | 1crpH | MwmpJ | EJJER | MR1uc |
+       | wmhJe | PAWcP | EhPuH | pWPpC |
+       +-002/2-+-005/5-+-008/8-+-011/B-+
+       | HhpkE | wEcCE | kPcr1 | 1Mppe |
+       | AAApM | WHpAC | JeeuH | rrukc |
+       +-------+-------+-------+-------+
+    W: +-000/0-+-003/3-+-006/6-+-009/9-+
+       | 00000 | 00000 | 00000 | 00000 |
+       | 00000 | 00000 | 00000 | 00000 |
+       +-001/1-+-004/4-+-007/7-+-010/A-+
+       | 00000 | 00000 | 00000 | 00000 |
+       | 00000 | 00000 | 00000 | 00000 |
+       +-002/2-+-005/5-+-008/8-+-011/B-+
+       | 00000 | 00000 | 00000 | 00000 |
+       | 00000 | 00000 | 00000 | 00000 |
+       +-------+-------+-------+-------+
+    """
+    def __init__(self,m,n,d,s,eta=0.5,theta=3):
+        self.shape = (m,n,d,s)
+        self.eta = eta
+        self.theta = theta
+        self.K = Field(m,n,d,s);  self.initK()
+        self.P = Field(m,n,d,s);  self.initP()
+        self.W = Field(m,n,d,s);  self.initW()
+
+    def initK(self):
+        m,n,d,s = self.shape
+        self.K.set(rand((m*d,n*s),m*n))
+
+    def initP(self):
+        m,n,d,s = self.shape
+        Q = 20                          # quantizing constant
+        self.P.set((1+rand((m*d,n*s),Q))/Q)
+        self.P.map = self.P.vmap
+
+    def initW(self):
+        for k in self.W.range():
+            self.W[k] = self.P[k] >= self.theta
+
+    def __str__(self):
+        return 'Predict(%g,%g,%g,%g)' % self.shape
+
+    def __repr__(self):
+        return self.__str__()
+
+    def map(self):
+        self.K.map('K: ')
+        self.P.map('P: ')
         self.W.map('W: ')
 
 #===============================================================================
