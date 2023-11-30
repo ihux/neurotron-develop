@@ -14,7 +14,7 @@ Field methods:
 
 """
 
-from matrix import Matrix
+from neurotron.matrix.matrix import Matrix
 
 #===============================================================================
 # class Field

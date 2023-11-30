@@ -2,9 +2,9 @@
 
 import doctest
 #import neurotron.neurotron
-import neurotron.matrix
+#import neurotron.matrix.matrix
 import neurotron.matrix.matrix
-import neurotron.cluster.setup
+#import neurotron.cluster.setup
 from neurotron.ansi import Ansi
 
 err = 0

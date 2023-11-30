@@ -23,6 +23,7 @@ module matfun: Matrix functions:
 
 #import matrix as mx
 from neurotron.matrix.matrix import Matrix
+isa = isinstance
 
 #===============================================================================
 # helper functions

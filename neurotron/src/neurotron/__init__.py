@@ -31,7 +31,9 @@ neurotron: building blocks for neural computing circuits
        column    concatenate to column
 """
 
-import neurotron.matrix
+#import neurotron.matrix.attribute
+import neurotron.matrix.matrix
+import neurotron.matrix.field
 import neurotron.cluster.setup
 import neurotron.cluster.terminal
 import neurotron.ansi
@@ -41,12 +43,12 @@ import neurotron.ansi
 #===============================================================================
 
 Ansi = neurotron.ansi.Ansi
-Attribute = neurotron.matrix.Attribute
+#Attribute = neurotron.matrix.attribute.Attribute
 Collab = neurotron.cluster.setup.Collab
 Excite = neurotron.cluster.setup.Excite
 Predict = neurotron.cluster.setup.Predict
-Matrix = neurotron.matrix.Matrix
-Field  = neurotron.matrix.Field
+Matrix = neurotron.matrix.matrix.Matrix
+Field  = neurotron.matrix.field.Field
 Terminal = neurotron.cluster.terminal.Terminal
 
 #===============================================================================

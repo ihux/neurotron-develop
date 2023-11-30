@@ -67,7 +67,7 @@ import neurotron.ansi
 # class attribute setup
 #===============================================================================
 
-Attribute = neurotron.matrix.attribute.Attribute
+#Attribute = neurotron.matrix.attribute.Attribute
 Matrix = matrix.Matrix
 Field  = field.Field
 
