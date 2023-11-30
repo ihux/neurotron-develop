@@ -24,24 +24,6 @@ Field methods:
 - head                  # create a cell head
 - imap                  # create index map
 - vmap                  # create value map
-
-Utility functions:
-- eye                   # unit matrix
-- isnumber              # is arg a number?
-- zeros                 # zero matrix
-- one                   # one matrix
-- rand                  # random matrix
-- seed                  # set random seed
-- max                   # row of column maxima
-- min                   # row of column minima
-- size                  # matrix sizes
-- magic                 # magic matrix
-- sum                   # row of column sum
-- any                   # row of column any's
-- all                   # row of column all's
-- length                # maximum size
-- isempty               # check if matrix is empty
-
 """
 
 import numpy as np
@@ -295,16 +277,6 @@ class Matrix(np.ndarray):
     T = property(fget=_transpose)
     N = property(fget=_not)
 
-#===============================================================================
-# helper
-#===============================================================================
-
-def _max(x,y):
-    return x if x > y else y
-
-def _min(x,y):
-    return x if x < y else y
-
 def _magic(n):
     """
     >>> _magic(0)
@@ -361,7 +333,7 @@ def _MAX(arg1,arg2=None):
         if arg2 is None:
             return arg1
         elif scalar2:
-            return _max(arg1,arg2)
+            return max(arg1,arg2)
         else:
             arg1 = arg1 + 0*arg2
     elif scalar2:
@@ -371,24 +343,24 @@ def _MAX(arg1,arg2=None):
     if arg2 is None:
         if m == 1:
             s = arg1[0,0]
-            for j in range(1,n): s = _max(s,arg1[0,j])
+            for j in range(1,n): s = max(s,arg1[0,j])
             return int(s) if s == int(s) else s
         elif n == 1:
             s = arg1[0,0]
-            for i in range(m): s = _max(s,arg1[i,0])
+            for i in range(m): s = max(s,arg1[i,0])
             return int(s) if s == int(s) else s
         M = Matrix(1,n)
         for j in range(n):
             maxi = arg1[0,j]
             for i in range(1,m):
-                maxi = _max(arg1[i,j],maxi)
+                maxi = max(arg1[i,j],maxi)
             M[0,j] = maxi
     else:
         assert arg1.shape == arg2.shape
         M = Matrix(m,n)
         for i in range(m):
             for j in range(n):
-                M[i,j] = _max(arg1[i,j],arg2[i,j])
+                M[i,j] = max(arg1[i,j],arg2[i,j])
     m,n = M.shape
     if m != 1 or n != 1:
         return M
@@ -426,7 +398,7 @@ def _MIN(arg1,arg2=None):
         if arg2 is None:
             return arg1
         elif scalar2:
-            return _min(arg1,arg2)
+            return min(arg1,arg2)
         else:
             arg1 = arg1 + 0*arg2
     elif scalar2:
@@ -436,24 +408,24 @@ def _MIN(arg1,arg2=None):
     if arg2 is None:
         if m == 1:
             s = arg1[0,0]
-            for j in range(1,n): s = _min(s,arg1[0,j])
+            for j in range(1,n): s = min(s,arg1[0,j])
             return int(s) if s == int(s) else s
         elif n == 1:
             s = arg1[0,0]
-            for i in range(m): s = _min(s,arg1[i,0])
+            for i in range(m): s = min(s,arg1[i,0])
             return int(s) if s == int(s) else s
         M = Matrix(1,n)
         for j in range(n):
             maxi = arg1[0,j]
             for i in range(1,m):
-                maxi = _min(arg1[i,j],maxi)
-            M[0,j] = maxi
+                mini = min(arg1[i,j],maxi)
+            M[0,j] = mini
     else:
         assert arg1.shape == arg2.shape
         M = Matrix(m,n)
         for i in range(m):
             for j in range(n):
-                M[i,j] = _min(arg1[i,j],arg2[i,j])
+                M[i,j] = min(arg1[i,j],arg2[i,j])
     m,n = M.shape
     if m != 1 or n != 1:
         return M

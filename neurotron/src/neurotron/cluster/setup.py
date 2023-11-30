@@ -3,11 +3,11 @@ module carabao.cluster.setup
     class Collab  # setup collaboration terminal
 """
 
-import neurotron.math as mx
+import neurotron.math.matfun as mf
 from neurotron.math.attribute import Attribute
 from neurotron.math.matrix import Matrix
 from neurotron.math.field import Field
-from neurotron.math.matfun import ones, zeros, rand, seed
+from neurotron.math.matfun import ONES, ZEROS, RAND, SEED
 isa = isinstance
 
 #===============================================================================
@@ -71,8 +71,8 @@ class Collab(Attribute):  # to manage collaboration topology
         for i in range(m):
             for j in range(n):
                 self.K[i,j] = self._Kij(i,j)
-                self.P[i,j] = ones(1,m-1)
-                self.W[i,j] = ones(1,m-1)
+                self.P[i,j] = ONES(1,m-1)
+                self.W[i,j] = ONES(1,m-1)
         self.P.map = self.P.vmap
 
     def map(self):
@@ -123,7 +123,7 @@ class Excite(Attribute):
 
         m,n,d,s = self.shape
         s = max([len(token[key]) for key in token])
-        d = mx.max(mx.sum(T))
+        d = mf.max(mf.sum(T))
         #if s != self.shape[3]:
         #    raise Exception('mismatch of synapses size with token length')
         self.shape = (m,n,d,s)
@@ -133,8 +133,8 @@ class Excite(Attribute):
         self.W = Field(m,n,d,s)
 
         for j in range(n):
-            Kij = zeros(d,s)
-            Wij = zeros(d,s)
+            Kij = ZEROS(d,s)
+            Wij = ZEROS(d,s)
             mu = 0
             for l in range(T.shape[0]):
                 if T[l,j]:
@@ -164,7 +164,7 @@ class Predict(Attribute):
     >>> shape = (3,4,2,5)
     >>> Predict(*shape)
     Predict(3,4,2,5)
-    >>> seed(0);  Predict(*shape).map()
+    >>> SEED(0);  Predict(*shape).map()
     K: +-000/0-+-003/3-+-006/6-+-009/9-+
        | 503B3 | 79352 | 47688 | A1677 |
        | 81598 | 94303 | 50238 | 13337 |
@@ -206,12 +206,12 @@ class Predict(Attribute):
 
     def initK(self):
         m,n,d,s = self.shape
-        self.K.set(rand((m*d,n*s),m*n))
+        self.K.set(RAND((m*d,n*s),m*n))
 
     def initP(self):
         m,n,d,s = self.shape
         Q = 20                          # quantizing constant
-        self.P.set((1+rand((m*d,n*s),Q))/Q)
+        self.P.set((1+RAND((m*d,n*s),Q))/Q)
         self.P.map = self.P.vmap
 
     def initW(self):

@@ -1,9 +1,9 @@
-# test_attribute.py: test attribute module
+# test_matfun.py: test matrix function module
 
 import doctest
 import pytest
 
-import neurotron.math.attribute
+import neurotron.math.matfun
 
 
 #===============================================================================
@@ -15,12 +15,13 @@ def validator():
     return Validator()
 
 class Validator:
-    pass
+    def call(self,func) -> bool:
+        return func()
 
 #===============================================================================
 # doctest
 #===============================================================================
 
 def test_doctest(validator):
-   result = doctest.testmod(neurotron.math.attribute, verbose=False)
+   result = doctest.testmod(neurotron.math.matfun, verbose=False)
    assert result.failed == 0

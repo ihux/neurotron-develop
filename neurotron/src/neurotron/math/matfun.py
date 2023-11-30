@@ -1,11 +1,10 @@
 """
 module matfun: Matrix functions:
-- eye                   # unit matrix
-- isnumber              # is arg a number?
-- zeros                 # zero matrix
-- one                   # one matrix
-- rand                  # random matrix
-- seed                  # set random seed
+- EYE                   # unit matrix
+- ZEROS                 # zero matrix
+- ONES                  # one matrix
+- RAND                  # random matrix
+- SEED                  # set random seed
 - max                   # row of column maxima
 - min                   # row of column minima
 - size                  # matrix sizes
@@ -22,7 +21,8 @@ module matfun: Matrix functions:
 
 import numpy as np
 #import matrix as mx
-from neurotron.math.matrix import Matrix, isa
+from neurotron.math.matrix import Matrix
+from neurotron.math.helper import isa, isnumber
 
 #===============================================================================
 # helper functions
@@ -38,9 +38,9 @@ def _min(x,y):
 # matrix functions
 #===============================================================================
 
-def eye(n):
+def EYE(n):
     """
-    >>> eye(3)
+    >>> EYE(3)
     [1 0 0; 0 1 0; 0 0 1]
     """
     I = Matrix(n,n)
@@ -48,25 +48,11 @@ def eye(n):
         I[k,k] = 1
     return I
 
-def isnumber(arg):
+def ZEROS(m,n=None):
     """
-    >>> isnumber(5) and isnumber(3.14)
-    True
-    >>> isnumber(True) and isnumber(False)
-    True
-    >>> isnumber('abc') or isnumber([])
-    False
-    """
-    if isa(arg,int) or isa(arg,float): return True
-    if isa(arg,np.int64) or isa(arg,np.float64): return True
-    if isa(arg,bool): return True
-    return False
-
-def zeros(m,n=None):
-    """
-    >>> zeros(3)
+    >>> ZEROS(3)
     [0 0 0; 0 0 0; 0 0 0]
-    >>> zeros(2,4)
+    >>> ZEROS(2,4)
     [0 0 0 0; 0 0 0 0]
     """
     n = m if n is None else n
@@ -74,13 +60,13 @@ def zeros(m,n=None):
         return Matrix(m,n)
     return Matrix(m,n)
 
-def ones(m,n=None):
+def ONES(m,n=None):
     """
-    >>> ones(3)
+    >>> ONES(3)
     [1 1 1; 1 1 1; 1 1 1]
-    >>> ones(2,3)
+    >>> ONES(2,3)
     [1 1 1; 1 1 1]
-    >>> ones(0,0)
+    >>> ONES(0,0)
     []
     """
     n = m if n is None else n
@@ -88,20 +74,20 @@ def ones(m,n=None):
         return Matrix(m,n)
     return Matrix(m,n) + 1
 
-def rand(arg=None,modulus=None):
+def RAND(arg=None,modulus=None):
     """
-    >>> seed(0)
-    >>> rand((2,2))
+    >>> SEED(0)
+    >>> RAND((2,2))
     [0.548814 0.715189; 0.602763 0.544883]
-    >>> rand((2,3))
+    >>> RAND((2,3))
     [0.423655 0.645894 0.437587; 0.891773 0.963663 0.383442]
-    >>> rand((0,0))
+    >>> RAND((0,0))
     []
-    >>> rand(8)
+    >>> RAND(8)
     6
-    >>> rand()
+    >>> RAND()
     0.8121687287754932
-    >>> rand((2,3),40)
+    >>> RAND((2,3),40)
     [24 17 37; 25 13 8]
     """
     #isa = isinstance
@@ -130,10 +116,10 @@ def rand(arg=None,modulus=None):
                 R[i,j] = np.random.randint(modulus)
     return R
 
-def seed(s):
+def SEED(s):
     """
-    seed(): set random seed
-    >>> seed(0)
+    SEED(): set random seed
+    >>> SEED(0)
     """
     np.random.seed(s)
 
@@ -331,7 +317,7 @@ def sum(arg):
     34
     >>> sum(True)
     1
-    >>> C=ones(1,4)
+    >>> C=ONES(1,4)
     >>> sum(C>0)
     4
     """

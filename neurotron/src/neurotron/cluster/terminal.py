@@ -6,8 +6,9 @@ terminal.py:
 from neurotron.math.attribute import Attribute
 from neurotron.math.matrix import Matrix
 from neurotron.math.field import Field
-from neurotron.math.matfun import sum,isa,seed,row,ones
+from neurotron.math.matfun import sum,SEED,row,ONES
 from neurotron.cluster.setup import Collab, Excite, Predict
+from neurotron.math.helper import isa
 
 #===============================================================================
 # class Terminal
@@ -187,7 +188,7 @@ class __TestTerminal__:
 
     def test_predict():
         """
-        >>> seed(0); predict = Terminal(Predict(3,7,2,5))
+        >>> SEED(0); predict = Terminal(Predict(3,7,2,5))
         >>> predict.map()
         K: +-000/0-+-003/3-+-006/6-+-009/9-+-012/C-+-015/F-+-018/I-+
            | CF033 | 79JI4 | 6C167 | EH5D8 | 9KJGJ | 5FF0I | 3HJJJ |
@@ -219,7 +220,7 @@ class __TestTerminal__:
            | 00000 | 00000 | 00000 | 00000 | 00000 | 00000 | 00000 |
            | 00000 | 00000 | 00000 | 00000 | 00000 | 00000 | 00000 |
            +-------+-------+-------+-------+-------+-------+-------+
-        >>> c = row([1,0,0,1,1,0,0],ones(1,20))
+        >>> c = row([1,0,0,1,1,0,0],ONES(1,20))
         >>> predict(c)
         [0 0 0 0 0 1 1; 1 1 1 1 0 0 0; 0 1 0 0 0 1 0]
         >>> predict.spike(c).map('S: ')

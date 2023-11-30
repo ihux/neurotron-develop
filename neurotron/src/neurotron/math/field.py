@@ -14,7 +14,9 @@ Field methods:
 
 """
 
-from neurotron.math.matrix import Matrix
+import numpy as np
+from neurotron.math.matfun import Matrix, SEED, RAND
+from neurotron.math.helper import isa, isnumber
 
 #===============================================================================
 # class Field
@@ -70,8 +72,8 @@ class Field:
 
     def __getitem__(self,idx):
         """
-        >>> T = Field(2,3,1,3); seed(0)
-        >>> T[1,1] = rand((1,3))
+        >>> T = Field(2,3,1,3); SEED(0)
+        >>> T[1,1] = RAND((1,3))
         >>> T.vmap()
         +-000/0-+-002/2-+-004/4-+
         |  000  |  000  |  000  |
@@ -91,9 +93,9 @@ class Field:
 
     def __setitem__(self,idx,M):
         """
-        >>> T = Field(2,3,1,3); seed(0)
-        >>> T[1,1] = rand((1,3))
-        >>> T[4] = rand((1,3))
+        >>> T = Field(2,3,1,3); SEED(0)
+        >>> T[1,1] = RAND((1,3))
+        >>> T[4] = RAND((1,3))
         >>> T.vmap()
         +-000/0-+-002/2-+-004/4-+
         |  000  |  000  |  CdH  |
@@ -116,7 +118,7 @@ class Field:
     def set(self,M):  # set field with flat matrix
         """
         >>> F = Field(m:=1,n:=2,d:=3,s:=4)
-        >>> M = rand((m*d,n*s),10); print(M)
+        >>> M = RAND((m*d,n*s),10); print(M)
         [4 7 6 8 8 1 6 7; 7 8 1 5 9 8 9 4; 3 0 3 5 0 2 3 8]
         >>> F.set(M); F.imap()
         +-000/0-+-001/1-+
@@ -241,7 +243,7 @@ class Field:
 
     def head(self,i,n,s,width=0):
         line = '+'
-        #s = _max(s,width)
+        #s = max(s,width)
         s = s if width == 0 else width
         for j in range(n):
             if i < 0:
@@ -324,11 +326,11 @@ class Field:
 
     def vmap(self,label=''):
         m,n,d,s = self.shape
-        self._table('p',self.data,m,n,width=_max(s,7),label=label)
+        self._table('p',self.data,m,n,width=max(s,7),label=label)
 
     def imap(self,label=''):
         m,n,d,s = self.shape
-        self._table('i',self.data,m,n,width=_max(s,7),label=label)
+        self._table('i',self.data,m,n,width=max(s,7),label=label)
 
     def smap(self,label=''):  # state map
         m,n,d,s = self.shape
@@ -336,11 +338,11 @@ class Field:
 
     def _Gmap(self):
         m,n,d,s = self.shape
-        self._table('i',self.cluster.G,m,n,width=_max(s,7),label='')
+        self._table('i',self.cluster.G,m,n,width=max(s,7),label='')
 
     def _Wmap(self):
         m,n,d,s = self.shape
-        self._table('w',self.cluster.P,m,n,width=_max(s,7),label='')
+        self._table('w',self.cluster.P,m,n,width=max(s,7),label='')
 
 #===============================================================================
 # unit tests
@@ -381,11 +383,11 @@ def _case4a():
     | 00000 | 00000 | 00000 | 00000 |
     +-------+-------+-------+-------+
     >>> P = Field(2,2,1,3);
-    >>> m,n,d,s = P.shape; seed(0)
-    >>> P[0,0] = rand((1,3))
-    >>> P[0,1] = rand((1,3))
-    >>> P[1,0] = rand((1,3))
-    >>> P[1,1] = rand((1,3))
+    >>> m,n,d,s = P.shape; SEED(0)
+    >>> P[0,0] = RAND((1,3))
+    >>> P[0,1] = RAND((1,3))
+    >>> P[1,0] = RAND((1,3))
+    >>> P[1,1] = RAND((1,3))
     >>> P.map = P.vmap; P.map()
     +-000/0-+-002/2-+
     |  CKF  |  CdH  |

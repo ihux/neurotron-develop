@@ -1,9 +1,9 @@
-# test_attribute.py: test attribute module
+# test_attribute.py: test field module
 
 import doctest
 import pytest
 
-import neurotron.math.attribute
+import neurotron.math.field
 
 
 #===============================================================================
@@ -22,5 +22,5 @@ class Validator:
 #===============================================================================
 
 def test_doctest(validator):
-   result = doctest.testmod(neurotron.math.attribute, verbose=False)
+   result = doctest.testmod(neurotron.math.field, verbose=False)
    assert result.failed == 0

@@ -3,7 +3,7 @@
 import doctest
 import pytest
 
-import neurotron.matrix.matrix
+import neurotron.math.matrix
 
 
 #===============================================================================
@@ -30,7 +30,7 @@ class Validator:
 #===============================================================================
 
 def test_doctest(validator):
-   result = doctest.testmod(neurotron.matrix, verbose=False)
+   result = doctest.testmod(neurotron.math.matrix, verbose=False)
    assert result.failed == 0
 
 #===============================================================================
