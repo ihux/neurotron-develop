@@ -29,6 +29,11 @@ neurotron: building blocks for neural computing circuits
        isempty   check if matrix is empty
        row       concatenate to row
        column    concatenate to column
+
+    logical:
+       AND       logical matrix and
+       OR        logical matrix or
+       NOT       logical matrix not
 """
 
 import neurotron.math.attribute
@@ -69,3 +74,7 @@ magic = neurotron.math.matfun.MAGIC
 sum = neurotron.math.matfun.SUM
 row = neurotron.math.matfun.ROW
 column = neurotron.math.matfun.COLUMN
+
+AND = neurotron.math.matfun.AND
+OR  = neurotron.math.matfun.OR
+NOT = neurotron.math.matfun.NOT

@@ -10,8 +10,8 @@ module matfun: Matrix functions:
 - SIZE                  # matrix sizes
 - MAGIC                 # magic matrix
 - SUM                   # row of column sum
-- any                   # row of column any's
-- all                   # row of column all's
+- ANY                   # row of column any's
+- ALL                   # row of column all's
 - length                # maximum size
 - isempty               # check if matrix is empty
 - NOT                   # logical not
@@ -263,6 +263,49 @@ def MIN(arg1,arg2=None):
     iresult = int(result)
     return iresult if iresult == result else result
 
+def ALL(arg):
+    """
+    >>> M = Matrix([[2,0,-1],[2,-1,0]])
+    >>> ALL(M)
+    [1 0 0]
+    >>> ALL([1,2,3])
+    1
+    >>> ALL(Matrix([0,1,2]).T)
+    0
+    >>> ALL(5)
+    1
+    >>> ALL(0.0)
+    0
+    >>> ALL([])
+    1
+    >>> ALL(None)
+    []
+    """
+
+    if isnumber(arg):
+        return int(arg != 0)
+    elif arg is None:
+        return []
+    elif isa(arg,list):
+        arg = Matrix(arg)
+    elif not isa(arg,Matrix):
+        raise Exception('cannot handle arg')
+
+    m,n = arg.shape
+    if m == 1 or n == 1:
+        return all(arg) + 0
+    elif m == 0 or n == 0:
+        return 1
+
+    M = Matrix(1,n)
+    for j in range(n):
+        M[0,j] = all(arg[:,j])
+
+    m,n = M.shape
+    if m != 1 or n != 1:
+        return M
+    return M.item()+0
+
 def MAGIC(n):
     """
     >>> MAGIC(0)
@@ -444,3 +487,11 @@ def OR(x,y):
     [1 1 0]
     """
     return MIN(1,(x!=0)+(y!=0))
+
+#===============================================================================
+# doc test
+#===============================================================================
+
+if __name__ == '__main__':
+    import doctest
+    doctest.testmod()
