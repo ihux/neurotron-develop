@@ -17,6 +17,7 @@ err += doctest.testmod(neurotron, verbose=False).failed
 
 err += doctest.testmod(neurotron.cluster.setup, verbose=False).failed
 err += doctest.testmod(neurotron.cluster.terminal, verbose=False).failed
+err += doctest.testmod(neurotron.cluster.cluster, verbose=False).failed
 
 err += doctest.testmod(neurotron.neurotron, verbose=False).failed
 

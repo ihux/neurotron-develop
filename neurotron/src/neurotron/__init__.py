@@ -5,6 +5,7 @@ neurotron: building blocks for neural computing circuits
        Attribute base class to support compact attribute access
        Matrix    matrix class
        Field     field class (matrix of matrices)
+       Cluster   cluster of Neurotrons
        Collab    parameters for collaboration terminal
        Excite    parameters for excitation terminal
        Predict   parameters for prediction terminal
@@ -41,6 +42,7 @@ import neurotron.math.matrix
 import neurotron.math.field
 import neurotron.cluster.setup
 import neurotron.cluster.terminal
+import neurotron.cluster.cluster
 import neurotron.ansi
 
 #===============================================================================
