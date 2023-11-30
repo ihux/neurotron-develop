@@ -74,6 +74,8 @@ magic = neurotron.math.matfun.MAGIC
 sum = neurotron.math.matfun.SUM
 row = neurotron.math.matfun.ROW
 column = neurotron.math.matfun.COLUMN
+all = neurotron.math.matfun.ALL
+any = neurotron.math.matfun.ANY
 
 AND = neurotron.math.matfun.AND
 OR  = neurotron.math.matfun.OR

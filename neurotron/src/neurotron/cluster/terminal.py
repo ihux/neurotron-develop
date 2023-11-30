@@ -25,7 +25,7 @@ class Terminal(Attribute):
     >>> excite._simple([1,0,0,1,1])
     [1 0 0 1 1 0 0; 1 0 0 1 1 0 0; 1 0 0 1 1 0 0]
     """
-    def __init__(self,K,P=None,eta=0.5,theta=None):
+    def __init__(self,K,P=None,eta=0.5,theta=None,delta=(0.1,0.1)):
         if isa(K,int) and isa(P,int):
             m = K;  n = P
             self.shape = (m,n)
@@ -41,6 +41,7 @@ class Terminal(Attribute):
         self.W = W;  assert isa(W,Field)
         self.eta = eta
         self.theta = theta if theta is not None else 3
+        self.delta = delta
 
         if self.P is not None:
             self.I = Field(*self.K.shape)  #  learning increment
