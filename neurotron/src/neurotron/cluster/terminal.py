@@ -3,10 +3,10 @@ terminal.py:
     class Terminal
 """
 
-from neurotron.matrix.attribute import Attribute
-from neurotron.matrix.matrix import Matrix
-from neurotron.matrix.field import Field
-from neurotron.matrix.matfun import sum,isa,seed,row,ones
+from neurotron.math.attribute import Attribute
+from neurotron.math.matrix import Matrix
+from neurotron.math.field import Field
+from neurotron.math.matfun import sum,isa,seed,row,ones
 from neurotron.cluster.setup import Collab, Excite, Predict
 
 #===============================================================================

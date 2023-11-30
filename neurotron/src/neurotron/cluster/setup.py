@@ -3,11 +3,11 @@ module carabao.cluster.setup
     class Collab  # setup collaboration terminal
 """
 
-import neurotron.matrix as mx
-from neurotron.matrix.attribute import Attribute
-from neurotron.matrix.matrix import Matrix
-from neurotron.matrix.field import Field
-from neurotron.matrix.matfun import ones, zeros, rand, seed
+import neurotron.math as mx
+from neurotron.math.attribute import Attribute
+from neurotron.math.matrix import Matrix
+from neurotron.math.field import Field
+from neurotron.math.matfun import ones, zeros, rand, seed
 isa = isinstance
 
 #===============================================================================

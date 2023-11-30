@@ -58,7 +58,7 @@ neurotron: building blocks for neural computing circuits
        column    concatenate to column
 """
 
-import neurotron.matrix
+import neurotron.math
 import neurotron.cluster.setup
 import neurotron.cluster.terminal
 import neurotron.ansi

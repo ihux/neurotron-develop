@@ -18,13 +18,11 @@ module matfun: Matrix functions:
 - NOT                   # logical not
 - AND                   # logical and
 - OR                    # logical OR
-
 """
 
 import numpy as np
 #import matrix as mx
-from neurotron.matrix.matrix import Matrix
-isa = isinstance
+from neurotron.math.matrix import Matrix, isa
 
 #===============================================================================
 # helper functions

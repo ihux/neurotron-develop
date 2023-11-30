@@ -31,9 +31,9 @@ neurotron: building blocks for neural computing circuits
        column    concatenate to column
 """
 
-import neurotron.matrix.attribute
-import neurotron.matrix.matrix
-import neurotron.matrix.field
+import neurotron.math.attribute
+import neurotron.math.matrix
+import neurotron.math.field
 import neurotron.cluster.setup
 import neurotron.cluster.terminal
 import neurotron.ansi
@@ -43,12 +43,12 @@ import neurotron.ansi
 #===============================================================================
 
 Ansi = neurotron.ansi.Ansi
-#Attribute = neurotron.matrix.attribute.Attribute
+#Attribute = neurotron.math.attribute.Attribute
 Collab = neurotron.cluster.setup.Collab
 Excite = neurotron.cluster.setup.Excite
 Predict = neurotron.cluster.setup.Predict
-Matrix = neurotron.matrix.matrix.Matrix
-Field  = neurotron.matrix.field.Field
+Matrix = neurotron.math.matrix.Matrix
+Field  = neurotron.math.field.Field
 Terminal = neurotron.cluster.terminal.Terminal
 
 #===============================================================================
@@ -56,16 +56,16 @@ Terminal = neurotron.cluster.terminal.Terminal
 #===============================================================================
 
 isa = isinstance
-eye = neurotron.matrix.eye
-isnumber = neurotron.matrix.isnumber
-zeros = neurotron.matrix.zeros
-ones = neurotron.matrix.ones
-rand = neurotron.matrix.rand
-seed = neurotron.matrix.seed
-max = neurotron.matrix.max
-min = neurotron.matrix.min
-size = neurotron.matrix.size
-magic = neurotron.matrix.magic
-sum = neurotron.matrix.sum
-row = neurotron.matrix.row
-column = neurotron.matrix.column
+eye = neurotron.math.eye
+isnumber = neurotron.math.isnumber
+zeros = neurotron.math.zeros
+ones = neurotron.math.ones
+rand = neurotron.math.rand
+seed = neurotron.math.seed
+max = neurotron.math.max
+min = neurotron.math.min
+size = neurotron.math.size
+magic = neurotron.math.magic
+sum = neurotron.math.sum
+row = neurotron.math.row
+column = neurotron.math.column
