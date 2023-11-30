@@ -313,6 +313,13 @@ class Matrix(np.ndarray):
                 raise Exception('Matrix.__mul__: incompatible sizes')
         return super().__mul__(other)
 
+    def _not(self):
+        """
+        >>> Matrix([[1,-1,2],[0,0,0]])._not()
+        [0 0 0; 1 1 1]
+        """
+        return 1 - (self != 0)
+
     def reshape(self,m,n): # convert to column vector
         """
         >>> A = magic(4)[:3,:]; print(A)
@@ -343,7 +350,7 @@ class Matrix(np.ndarray):
         return out
 
     T = property(fget=_transpose)
-
+    N = property(fget=_not)
 
 #===============================================================================
 # class Field
@@ -1283,6 +1290,18 @@ def _case6b():
     +-000/0-+-001/1-+-002/2-+
     |   1   |   0   |   0   |
     +-------+-------+-------+
+    """
+
+#===============================================================================
+# unit tests logical matrix operations
+#===============================================================================
+
+def _case7a():
+    """
+    >>> A = Matrix([[1,-1,2],[0,0,0]]); print(A)
+    [1 -1 2; 0 0 0]
+    >>> A.N
+    [0 0 0; 1 1 1]
     """
 
 #===============================================================================
