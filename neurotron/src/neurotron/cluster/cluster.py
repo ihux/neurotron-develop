@@ -5,9 +5,49 @@ module neurotron.cluster.cluster
 
 from neurotron.math.attribute import Attribute
 from neurotron.math.matrix import Matrix
-from neurotron.math.matfun import ROW
+from neurotron.math.field import Field
+from neurotron.math.matfun import ROW, SEED, ZEROS
 from neurotron.cluster.terminal import Terminal
 from neurotron.cluster.setup import Collab,Excite,Predict
+from neurotron.neurotron import Monitor
+
+#=========================================================================
+# class Out
+#=========================================================================
+
+class Out:
+    def __init__(self,cluster,i,j,tag):
+        self.cluster = cluster
+        self.i = i
+        self.j = j
+        self.tag = tag
+
+    def out(self):
+        data = self.cluster.get(self.tag)
+        return data[self.i,self.j]
+
+#=========================================================================
+# class Cell
+#=========================================================================
+
+class Cell(Attribute):
+    def __init__(self,cluster,i,j):
+        """
+        class Cell: access state attributes of cells[i,j]
+        >>> cell = Cell(Cluster(),1,1)
+        >>> cell.u = 1
+        """
+        tags = ['u','q','d','b','x','y','s','l']
+        for tag in tags:
+            self.set(tag,Out(cluster,i,j,tag.upper()))
+        self.predict = None
+
+    def state(self):
+        tags = ['b','d','l','q','s','u','x','y']
+        dict = {}
+        for tag in tags:
+            dict[tag] = self.get(tag).out()
+        return dict
 
 #=========================================================================
 # class Cluster
@@ -206,6 +246,34 @@ class Cluster(Attribute):
             mon = Monitor(2*m+1,n);
             cells.plot(mon,0);  mon.title(prefix+'relax')
         return y
+
+#===============================================================================
+# unit tests
+#===============================================================================
+
+def _test_mary():
+    """
+    >>> token = {'Mary': [1,0,0,0,0,0,0,1,1]}
+    >>> shape = (2,9,2,5); m,n,d,s = shape
+    >>> SEED(1);  cells = Cluster(*shape,verbose=1)
+    >>> cells.X[0] = 1; cells._predict.I[0] = Matrix([[.1,0,.1,0,.1],[0,0,0,0,0]])
+    >>> y = ROW(ZEROS(1,m*n),token['Mary'])
+    >>> y = cells.stimu(y);  cells.smap();  print(y)
+    +-000/0-+-002/2-+-004/4-+-006/6-+-008/8-+-010/A-+-012/C-+-014/E-+-016/G-+
+    | UX--- | ----- | ----- | ----- | ----- | ----- | ----- | U---- | U---- |
+    +-001/1-+-003/3-+-005/5-+-007/7-+-009/9-+-011/B-+-013/D-+-015/F-+-017/H-+
+    | U---- | ----- | ----- | ----- | ----- | ----- | ----- | U---- | U---- |
+    +-------+-------+-------+-------+-------+-------+-------+-------+-------+
+    [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 1 1]
+    >>> y = cells.react(y);  cells.smap();  print(y)
+    learn P[0]: [0.85 1 1 0.6 0.5; 0.65 0.5 0.05 0.85 1] by [0.1 0 0.1 0 0.1; 0 0 0 0 0]
+    +-000/0-+-002/2-+-004/4-+-006/6-+-008/8-+-010/A-+-012/C-+-014/E-+-016/G-+
+    | UXL-Y | ----- | ----- | ----- | ----- | ----- | ----- | U---- | U---- |
+    +-001/1-+-003/3-+-005/5-+-007/7-+-009/9-+-011/B-+-013/D-+-015/F-+-017/H-+
+    | U---- | ----- | ----- | ----- | ----- | ----- | ----- | U---- | U---- |
+    +-------+-------+-------+-------+-------+-------+-------+-------+-------+
+    [1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 1 1]
+    """
 
 #===============================================================================
 # doc test
