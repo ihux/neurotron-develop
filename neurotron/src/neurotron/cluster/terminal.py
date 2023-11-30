@@ -30,6 +30,7 @@ class Terminal(Attribute):
         if isa(K,Collab) or isa(K,Excite) or isa(K,Predict):
             K,P,W,theta = K.get('K,P,W,theta')
         else:
+            #print('##### K:',K)
             W = K.copy()
         self.K = K;  assert isa(K,Field)
         self.P = P;  assert P is None or isa(P,Field)
