@@ -85,6 +85,12 @@ class Terminal(Attribute):
                 s = (v[j] > 0);  S[i,j] = s
         return S
 
+    def mind(self,sk,V):
+        m,n,d,s = self.P.shape
+        pdelta,ndelta = self.delta
+        S = sk.T @ ONES(1,s)
+        return S * (2*pdelta*V - ndelta)
+
     def spike(self,v):              # calculate spike vectors
         if not isa(v,Matrix): v = Matrix(v)
         if self.K is None:
@@ -99,16 +105,20 @@ class Terminal(Attribute):
             V = v[self.K[k]]
             E = V * self.W[k]
             S[k] = SUM(E.T) >= self.theta
-            #print('#### k:',k,'SUM(E.T)',SUM(E.T),'> theta:',S[k])
+            self.I[k] = self.mind(S[k],V)
+            #if any(S[k]):
+            #    print('##### spike L:   ',S[k].T@ONES(1,s))
+            #    print('##### spike V:   ',V)
+            #    print('##### spike I[k]:',self.I[k])
         return S
 
     def __call__(self,v):
         if self.K is None: return self._simple(v)
         S = self.spike(v)
-        M = Matrix(*S.shape[:2])
-        for k in M.range():
-            M[k] = max(S[k])
-        return M
+        J = Matrix(*S.shape[:2])
+        for k in J.range():
+            J[k] = max(S[k])
+        return J
 
 #===============================================================================
 # unit tests
