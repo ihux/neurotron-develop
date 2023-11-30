@@ -156,7 +156,7 @@ class Excite(Attribute):
 # class Predict
 #===============================================================================
 
-class Predict:
+class Predict(Attribute):
     """
     >>> shape = (3,4,2,5)
     >>> Predict(*shape)

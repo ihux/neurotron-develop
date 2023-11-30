@@ -3,8 +3,8 @@ terminal.py:
     class Terminal
 """
 
-from neurotron.matrix import Attribute, Matrix, Field, sum, isa
-from neurotron.cluster.setup import Collab, Excite
+from neurotron.matrix import Attribute,Matrix,Field, sum,isa,seed,row,ones
+from neurotron.cluster.setup import Collab, Excite, Predict
 
 #===============================================================================
 # class Terminal
@@ -27,7 +27,7 @@ class Terminal(Attribute):
             self.shape = (m,n)
             self.K = self.P = self.W = self.eta = self.theta = None
             return
-        if isa(K,Collab) or isa(K,Excite):
+        if isa(K,Collab) or isa(K,Excite) or isa(K,Predict):
             K,P,W,theta = K.get('K,P,W,theta')
         else:
             W = K.copy()
@@ -179,6 +179,53 @@ class __TestTerminal__:
         +-002/2-+-005/5-+-008/8-+-011/B-+-014/E-+-017/H-+-020/K-+
         |   1   |   0   |   0   |   1   |   1   |   0   |   0   |
         +-------+-------+-------+-------+-------+-------+-------+
+        """
+
+    def test_predict():
+        """
+        >>> seed(0); predict = Terminal(Predict(3,7,2,5))
+        >>> predict.map()
+        K: +-000/0-+-003/3-+-006/6-+-009/9-+-012/C-+-015/F-+-018/I-+
+           | CF033 | 79JI4 | 6C167 | EH5D8 | 9KJGJ | 5FF0I | 3HJJJ |
+           | E7019 | 0AK3B | I2004 | 568KH | F49A1 | 17936 | BEI0E |
+           +-001/1-+-004/4-+-007/7-+-010/A-+-013/D-+-016/G-+-019/J-+
+           | 3CAKB | 464FK | 3C4K8 | EFK3F | DGH59 | 3050H | I42G3 |
+           | 2ADG7 | 90AIB | 2233I | E3KHI | E914A | B8B2J | G006J |
+           +-002/2-+-005/5-+-008/8-+-011/B-+-014/E-+-017/H-+-020/K-+
+           | EAJ8D | 232BD | G88J8 | 2K3CE | 043DB | DDBGE | GJ180 |
+           | 46D7F | 9I8FB | 6F1C3 | IF3AC | 635B0 | B8KAB | 5F82J |
+           +-------+-------+-------+-------+-------+-------+-------+
+        P: +-000/0-+-003/3-+-006/6-+-009/9-+-012/C-+-015/F-+-018/I-+
+           | 1Mppe | AAApM | WHpAC | JeeuH | rrukc | mwErk | RcuUR |
+           | pcmRp | epWUu | WUrkk | HHrPe | eEUhe | WE1UA | MAWwA |
+           +-001/1-+-004/4-+-007/7-+-010/A-+-013/D-+-016/G-+-019/J-+
+           | EUAwR | Cmp1c | Mw1ce | JUwEm | wCMWm | p1ecJ | kwcPP |
+           | EmeJC | MU1pA | Wr1EW | JuhCR | RpUCA | HJhhe | cJeRP |
+           +-002/2-+-005/5-+-008/8-+-011/B-+-014/E-+-017/H-+-020/K-+
+           | cphUe | rRWJm | mHUuk | u11eA | UAw1m | URpCu | mmRRP |
+           | CJcEh | APp1H | WUCru | EpHmu | Uwemp | khprc | umwJ1 |
+           +-------+-------+-------+-------+-------+-------+-------+
+        W: +-000/0-+-003/3-+-006/6-+-009/9-+-012/C-+-015/F-+-018/I-+
+           | 00000 | 00000 | 00000 | 00000 | 00000 | 00000 | 00000 |
+           | 00000 | 00000 | 00000 | 00000 | 00000 | 00000 | 00000 |
+           +-001/1-+-004/4-+-007/7-+-010/A-+-013/D-+-016/G-+-019/J-+
+           | 00000 | 00000 | 00000 | 00000 | 00000 | 00000 | 00000 |
+           | 00000 | 00000 | 00000 | 00000 | 00000 | 00000 | 00000 |
+           +-002/2-+-005/5-+-008/8-+-011/B-+-014/E-+-017/H-+-020/K-+
+           | 00000 | 00000 | 00000 | 00000 | 00000 | 00000 | 00000 |
+           | 00000 | 00000 | 00000 | 00000 | 00000 | 00000 | 00000 |
+           +-------+-------+-------+-------+-------+-------+-------+
+        >>> c = row([1,0,0,1,1,0,0],ones(1,20))
+        >>> predict(c)
+        [0 0 0 0 0 1 1; 1 1 1 1 0 0 0; 0 1 0 0 0 1 0]
+        >>> predict.spike(c).map('S: ')
+        S: +-000/0-+-003/3-+-006/6-+-009/9-+-012/C-+-015/F-+-018/I-+
+           |  00   |  00   |  00   |  00   |  00   |  01   |  10   |
+           +-001/1-+-004/4-+-007/7-+-010/A-+-013/D-+-016/G-+-019/J-+
+           |  10   |  01   |  01   |  11   |  00   |  00   |  00   |
+           +-002/2-+-005/5-+-008/8-+-011/B-+-014/E-+-017/H-+-020/K-+
+           |  00   |  01   |  00   |  00   |  00   |  10   |  00   |
+           +-------+-------+-------+-------+-------+-------+-------+
         """
 
 #===============================================================================

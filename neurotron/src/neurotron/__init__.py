@@ -7,6 +7,7 @@ neurotron: building blocks for neural computing circuits
        Field     field class (matrix of matrices)
        Collab    parameters for collaboration terminal
        Excite    parameters for excitation terminal
+       Predict   parameters for prediction terminal
        Terminal  neurotron terminal
 
    functions:
@@ -43,6 +44,7 @@ Ansi = neurotron.ansi.Ansi
 Attribute = neurotron.matrix.Attribute
 Collab = neurotron.cluster.setup.Collab
 Excite = neurotron.cluster.setup.Excite
+Predict = neurotron.cluster.setup.Predict
 Matrix = neurotron.matrix.Matrix
 Field  = neurotron.matrix.Field
 Terminal = neurotron.cluster.terminal.Terminal
