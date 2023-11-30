@@ -37,6 +37,9 @@ class Terminal(Attribute):
         self.eta = eta
         self.theta = theta if theta is not None else 3
 
+        if self.P is not None:
+            self.I = Field(*self.K.shape)  #  learning increment
+
     def map(self):
         if self.K is None:
             print('K: None')
