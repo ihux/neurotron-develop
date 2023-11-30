@@ -4,6 +4,7 @@ module carabao.cluster.setup
 """
 
 import neurotron.math.matfun as mf
+#from neurotron import Attribute
 from neurotron.math.attribute import Attribute
 from neurotron.math.matrix import Matrix
 from neurotron.math.field import Field

@@ -43,7 +43,7 @@ import neurotron.ansi
 #===============================================================================
 
 Ansi = neurotron.ansi.Ansi
-#Attribute = neurotron.math.attribute.Attribute
+Attribute = neurotron.math.attribute.Attribute
 Collab = neurotron.cluster.setup.Collab
 Excite = neurotron.cluster.setup.Excite
 Predict = neurotron.cluster.setup.Predict
