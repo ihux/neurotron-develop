@@ -188,7 +188,7 @@ class __TestTerminal__:
 
     def test_predict():
         """
-        >>> SEED(0); predict = Terminal(Predict(3,7,2,5))
+        >>> SEED(0); predict = Terminal(Predict(3,7,2,5,rand=True))
         >>> predict.map()
         K: +-000/0-+-003/3-+-006/6-+-009/9-+-012/C-+-015/F-+-018/I-+
            | CF033 | 79JI4 | 6C167 | EH5D8 | 9KJGJ | 5FF0I | 3HJJJ |

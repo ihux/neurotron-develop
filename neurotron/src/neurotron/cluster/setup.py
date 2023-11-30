@@ -165,7 +165,92 @@ class Predict(Attribute):
     >>> shape = (3,4,2,5)
     >>> Predict(*shape)
     Predict(3,4,2,5)
+    """
+    def __init__(self,m,n,d,s,eta=0.5,theta=3,rand=False):
+        self.shape = (m,n,d,s)
+        self.eta = eta
+        self.theta = theta
+        self.K = Field(m,n,d,s);  self.initK(rand)
+        self.P = Field(m,n,d,s);  self.initP(rand)
+        self.W = Field(m,n,d,s);  self.initW(rand)
+
+    def initK(self,rand):
+        m,n,d,s = self.shape
+        if rand:
+            self.K.set(RAND((m*d,n*s),m*n))
+        else:
+            self.K.set(ZEROS(m*d,n*s))
+
+    def initP(self,rand):
+        m,n,d,s = self.shape
+        if rand:
+            Q = 20                     # quantizing constant
+            self.P.set((1+RAND((m*d,n*s),Q))/Q)
+        else:
+            self.P.set(ZEROS(m*d,n*s))
+        self.P.map = self.P.vmap
+
+    def initW(self,rand):
+        for k in self.W.range():
+            self.W[k] = self.P[k] >= self.theta
+
+    def __str__(self):
+        return 'Predict(%g,%g,%g,%g)' % self.shape
+
+    def __repr__(self):
+        return self.__str__()
+
+    def map(self):
+        self.K.map('K: ')
+        self.P.map('P: ')
+        self.W.map('W: ')
+
+#===============================================================================
+# unit test
+#===============================================================================
+
+def _test_predict1():
+    """
+    >>> shape = (3,4,2,5)
+    >>> Predict(*shape)
+    Predict(3,4,2,5)
     >>> SEED(0);  Predict(*shape).map()
+    K: +-000/0-+-003/3-+-006/6-+-009/9-+
+       | 00000 | 00000 | 00000 | 00000 |
+       | 00000 | 00000 | 00000 | 00000 |
+       +-001/1-+-004/4-+-007/7-+-010/A-+
+       | 00000 | 00000 | 00000 | 00000 |
+       | 00000 | 00000 | 00000 | 00000 |
+       +-002/2-+-005/5-+-008/8-+-011/B-+
+       | 00000 | 00000 | 00000 | 00000 |
+       | 00000 | 00000 | 00000 | 00000 |
+       +-------+-------+-------+-------+
+    P: +-000/0-+-003/3-+-006/6-+-009/9-+
+       | 00000 | 00000 | 00000 | 00000 |
+       | 00000 | 00000 | 00000 | 00000 |
+       +-001/1-+-004/4-+-007/7-+-010/A-+
+       | 00000 | 00000 | 00000 | 00000 |
+       | 00000 | 00000 | 00000 | 00000 |
+       +-002/2-+-005/5-+-008/8-+-011/B-+
+       | 00000 | 00000 | 00000 | 00000 |
+       | 00000 | 00000 | 00000 | 00000 |
+       +-------+-------+-------+-------+
+    W: +-000/0-+-003/3-+-006/6-+-009/9-+
+       | 00000 | 00000 | 00000 | 00000 |
+       | 00000 | 00000 | 00000 | 00000 |
+       +-001/1-+-004/4-+-007/7-+-010/A-+
+       | 00000 | 00000 | 00000 | 00000 |
+       | 00000 | 00000 | 00000 | 00000 |
+       +-002/2-+-005/5-+-008/8-+-011/B-+
+       | 00000 | 00000 | 00000 | 00000 |
+       | 00000 | 00000 | 00000 | 00000 |
+       +-------+-------+-------+-------+
+    """
+
+def _test_predict2():
+    """
+    >>> shape = (3,4,2,5)
+    >>> SEED(0);  Predict(*shape,rand=True).map()
     K: +-000/0-+-003/3-+-006/6-+-009/9-+
        | 503B3 | 79352 | 47688 | A1677 |
        | 81598 | 94303 | 50238 | 13337 |
@@ -197,38 +282,6 @@ class Predict(Attribute):
        | 00000 | 00000 | 00000 | 00000 |
        +-------+-------+-------+-------+
     """
-    def __init__(self,m,n,d,s,eta=0.5,theta=3):
-        self.shape = (m,n,d,s)
-        self.eta = eta
-        self.theta = theta
-        self.K = Field(m,n,d,s);  self.initK()
-        self.P = Field(m,n,d,s);  self.initP()
-        self.W = Field(m,n,d,s);  self.initW()
-
-    def initK(self):
-        m,n,d,s = self.shape
-        self.K.set(RAND((m*d,n*s),m*n))
-
-    def initP(self):
-        m,n,d,s = self.shape
-        Q = 20                          # quantizing constant
-        self.P.set((1+RAND((m*d,n*s),Q))/Q)
-        self.P.map = self.P.vmap
-
-    def initW(self):
-        for k in self.W.range():
-            self.W[k] = self.P[k] >= self.theta
-
-    def __str__(self):
-        return 'Predict(%g,%g,%g,%g)' % self.shape
-
-    def __repr__(self):
-        return self.__str__()
-
-    def map(self):
-        self.K.map('K: ')
-        self.P.map('P: ')
-        self.W.map('W: ')
 
 #===============================================================================
 # doc test
