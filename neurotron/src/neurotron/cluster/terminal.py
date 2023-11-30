@@ -1,5 +1,5 @@
 """
-terminal.py:
+neurotron.cluster.terminal.py:
     class Terminal
 """
 

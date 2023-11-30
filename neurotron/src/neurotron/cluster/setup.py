@@ -1,5 +1,5 @@
 """
-module carabao.cluster.setup
+module neurotron.cluster.setup
     class Collab  # setup collaboration terminal
 """
 
