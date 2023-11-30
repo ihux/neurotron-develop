@@ -6,7 +6,7 @@ terminal.py:
 from neurotron.math.attribute import Attribute
 from neurotron.math.matrix import Matrix
 from neurotron.math.field import Field
-from neurotron.math.matfun import sum,SEED,row,ONES
+from neurotron.math.matfun import SUM,SEED,ROW,ONES
 from neurotron.cluster.setup import Collab, Excite, Predict
 from neurotron.math.helper import isa
 
@@ -97,8 +97,8 @@ class Terminal(Attribute):
         for k in range(m*n):
             V = v[self.K[k]]
             E = V * self.W[k]
-            S[k] = sum(E.T) >= self.theta
-            #print('#### k:',k,'sum(E.T)',sum(E.T),'> theta:',S[k])
+            S[k] = SUM(E.T) >= self.theta
+            #print('#### k:',k,'SUM(E.T)',SUM(E.T),'> theta:',S[k])
         return S
 
     def __call__(self,v):
@@ -220,7 +220,7 @@ class __TestTerminal__:
            | 00000 | 00000 | 00000 | 00000 | 00000 | 00000 | 00000 |
            | 00000 | 00000 | 00000 | 00000 | 00000 | 00000 | 00000 |
            +-------+-------+-------+-------+-------+-------+-------+
-        >>> c = row([1,0,0,1,1,0,0],ONES(1,20))
+        >>> c = ROW([1,0,0,1,1,0,0],ONES(1,20))
         >>> predict(c)
         [0 0 0 0 0 1 1; 1 1 1 1 0 0 0; 0 1 0 0 0 1 0]
         >>> predict.spike(c).map('S: ')

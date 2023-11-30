@@ -5,11 +5,11 @@ module matfun: Matrix functions:
 - ONES                  # one matrix
 - RAND                  # random matrix
 - SEED                  # set random seed
-- max                   # row of column maxima
-- min                   # row of column minima
-- size                  # matrix sizes
-- magic                 # magic matrix
-- sum                   # row of column sum
+- MAX                   # row of column maxima
+- MIN                   # row of column minima
+- SIZE                  # matrix sizes
+- MAGIC                 # magic matrix
+- SUM                   # row of column sum
 - any                   # row of column any's
 - all                   # row of column all's
 - length                # maximum size
@@ -23,16 +23,6 @@ import numpy as np
 #import matrix as mx
 from neurotron.math.matrix import Matrix
 from neurotron.math.helper import isa, isnumber
-
-#===============================================================================
-# helper functions
-#===============================================================================
-
-def _max(x,y):
-    return x if x > y else y
-
-def _min(x,y):
-    return x if x < y else y
 
 #===============================================================================
 # matrix functions
@@ -123,14 +113,14 @@ def SEED(s):
     """
     np.random.seed(s)
 
-def size(arg):
+def SIZE(arg):
     """
-    size(): matrix sizes
-    >>> size(3.14)
+    SIZE(): matrix sizes
+    >>> SIZE(3.14)
     (1, 1)
-    >>> size(Matrix(3,5))
+    >>> SIZE(Matrix(3,5))
     (3, 5)
-    >>> size([])
+    >>> SIZE([])
     (0, 0)
     """
     if isinstance(arg,list) and len(arg) == 0:
@@ -143,27 +133,27 @@ def size(arg):
     else:
         raise Exception('bad type')
 
-def max(arg1,arg2=None):
+def MAX(arg1,arg2=None):
     """
-    >>> max(2,3)
+    >>> MAX(2,3)
     3
-    >>> max(2,3.6)
+    >>> MAX(2,3.6)
     3.6
     >>> A = Matrix([[1,3,-2],[0,2,-1]])
     >>> B = Matrix([[8,2,-3],[1,0,-2]])
-    >>> max(A,B)
+    >>> MAX(A,B)
     [8 3 -2; 1 2 -1]
-    >>> max(A)
+    >>> MAX(A)
     [1 3 -1]
-    >>> max(2,A)
+    >>> MAX(2,A)
     [2 3 2; 2 2 2]
-    >>> max(B,1)
+    >>> MAX(B,1)
     [8 2 1; 1 1 1]
-    >>> x = magic(2)();  print(x)
+    >>> x = MAGIC(2)();  print(x)
     [1; 4; 3; 2]
-    >>> max(x)
+    >>> MAX(x)
     4
-    >>> max(x.T)
+    >>> MAX(x.T)
     4
     """
     scalar1 = isinstance(arg1,int) or isinstance(arg1,float)
@@ -173,7 +163,7 @@ def max(arg1,arg2=None):
         if arg2 is None:
             return arg1
         elif scalar2:
-            return _max(arg1,arg2)
+            return max(arg1,arg2)
         else:
             arg1 = arg1 + 0*arg2
     elif scalar2:
@@ -183,24 +173,24 @@ def max(arg1,arg2=None):
     if arg2 is None:
         if m == 1:
             s = arg1[0,0]
-            for j in range(1,n): s = _max(s,arg1[0,j])
+            for j in range(1,n): s = max(s,arg1[0,j])
             return int(s) if s == int(s) else s
         elif n == 1:
             s = arg1[0,0]
-            for i in range(m): s = _max(s,arg1[i,0])
+            for i in range(m): s = max(s,arg1[i,0])
             return int(s) if s == int(s) else s
         M = Matrix(1,n)
         for j in range(n):
             maxi = arg1[0,j]
             for i in range(1,m):
-                maxi = _max(arg1[i,j],maxi)
+                maxi = max(arg1[i,j],maxi)
             M[0,j] = maxi
     else:
         assert arg1.shape == arg2.shape
         M = Matrix(m,n)
         for i in range(m):
             for j in range(n):
-                M[i,j] = _max(arg1[i,j],arg2[i,j])
+                M[i,j] = max(arg1[i,j],arg2[i,j])
     m,n = M.shape
     if m != 1 or n != 1:
         return M
@@ -208,27 +198,27 @@ def max(arg1,arg2=None):
     iresult = int(result)
     return iresult if iresult == result else result
 
-def min(arg1,arg2=None):
+def MIN(arg1,arg2=None):
     """
-    >>> min(2,3)
+    >>> MIN(2,3)
     2
-    >>> min(2.1,3)
+    >>> MIN(2.1,3)
     2.1
     >>> A = Matrix([[1,3,-2],[0,2,-1]])
     >>> B = Matrix([[8,2,-3],[1,0,-2]])
-    >>> min(A,B)
+    >>> MIN(A,B)
     [1 2 -3; 0 0 -2]
-    >>> min(A)
+    >>> MIN(A)
     [0 2 -2]
-    >>> min(2,B)
+    >>> MIN(2,B)
     [2 2 -3; 1 0 -2]
-    >>> min(A,1)
+    >>> MIN(A,1)
     [1 1 -2; 0 1 -1]
-    >>> x = magic(2)();  print(x)
+    >>> x = MAGIC(2)();  print(x)
     [1; 4; 3; 2]
-    >>> min(x)
+    >>> MIN(x)
     1
-    >>> min(x.T)
+    >>> MIN(x.T)
     1
     """
     scalar1 = isinstance(arg1,int) or isinstance(arg1,float)
@@ -238,7 +228,7 @@ def min(arg1,arg2=None):
         if arg2 is None:
             return arg1
         elif scalar2:
-            return _min(arg1,arg2)
+            return min(arg1,arg2)
         else:
             arg1 = arg1 + 0*arg2
     elif scalar2:
@@ -248,24 +238,24 @@ def min(arg1,arg2=None):
     if arg2 is None:
         if m == 1:
             s = arg1[0,0]
-            for j in range(1,n): s = _min(s,arg1[0,j])
+            for j in range(1,n): s = min(s,arg1[0,j])
             return int(s) if s == int(s) else s
         elif n == 1:
             s = arg1[0,0]
-            for i in range(m): s = _min(s,arg1[i,0])
+            for i in range(m): s = min(s,arg1[i,0])
             return int(s) if s == int(s) else s
         M = Matrix(1,n)
         for j in range(n):
             maxi = arg1[0,j]
             for i in range(1,m):
-                maxi = _min(arg1[i,j],maxi)
+                maxi = min(arg1[i,j],maxi)
             M[0,j] = maxi
     else:
         assert arg1.shape == arg2.shape
         M = Matrix(m,n)
         for i in range(m):
             for j in range(n):
-                M[i,j] = _min(arg1[i,j],arg2[i,j])
+                M[i,j] = min(arg1[i,j],arg2[i,j])
     m,n = M.shape
     if m != 1 or n != 1:
         return M
@@ -273,17 +263,17 @@ def min(arg1,arg2=None):
     iresult = int(result)
     return iresult if iresult == result else result
 
-def magic(n):
+def MAGIC(n):
     """
-    >>> magic(0)
+    >>> MAGIC(0)
     []
-    >>> magic(1)
+    >>> MAGIC(1)
     1
-    >>> magic(2)
+    >>> MAGIC(2)
     [1 3; 4 2]
-    >>> magic(3)
+    >>> MAGIC(3)
     [8 1 6; 3 5 7; 4 9 2]
-    >>> magic(4)
+    >>> MAGIC(4)
     [16 2 3 13; 5 11 10 8; 9 7 6 12; 4 14 15 1]
     """
     if n == 0:
@@ -299,26 +289,26 @@ def magic(n):
     else:
         raise Exception('n > 4 not supported')
 
-def sum(arg):
+def SUM(arg):
     """
-    >>> sum(2)
+    >>> SUM(2)
     2
-    >>> sum(3.14)
+    >>> SUM(3.14)
     3.14
-    >>> sum([1,2,3])
+    >>> SUM([1,2,3])
     6
-    >>> A = magic(4)[:3,:];  print(A)
+    >>> A = MAGIC(4)[:3,:];  print(A)
     [16 2 3 13; 5 11 10 8; 9 7 6 12]
-    >>> sum(A)
+    >>> SUM(A)
     [30 20 19 33]
-    >>> sum(A[:,1])
+    >>> SUM(A[:,1])
     20
-    >>> sum(A[2,:])
+    >>> SUM(A[2,:])
     34
-    >>> sum(True)
+    >>> SUM(True)
     1
     >>> C=ONES(1,4)
-    >>> sum(C>0)
+    >>> SUM(C>0)
     4
     """
     #isa = isinstance
@@ -326,7 +316,7 @@ def sum(arg):
         return arg
     elif isa(arg,list):
         M = Matrix(arg)
-        return sum(M)
+        return SUM(M)
     elif isa(arg,Matrix):
         #print('##### Matrix:',arg)
         m,n = arg.shape
@@ -352,16 +342,16 @@ def sum(arg):
     else:
         return arg.sum()
 
-def row(*args):
+def ROW(*args):
     """
-    >>> M = magic(4)
+    >>> M = MAGIC(4)
     >>> M1 = M[0:2,:];  print(M1)
     [16 2 3 13; 5 11 10 8]
     >>> M2 = M[2:4,:];  print(M2)
     [9 7 6 12; 4 14 15 1]
-    >>> row(M1,M2)
+    >>> ROW(M1,M2)
     [16 2 3 13 9 7 6 12; 5 11 10 8 4 14 15 1]
-    >>> row([1,2],[3,4])
+    >>> ROW([1,2],[3,4])
     [1 2 3 4]
     """
     if len(args) == 0:
@@ -392,16 +382,16 @@ def row(*args):
             off += nk
         return M
 
-def column(*args):
+def COLUMN(*args):
     """
-    >>> M = magic(4)
+    >>> M = MAGIC(4)
     >>> M1 = M[:,0:2];  print(M1)
     [16 2; 5 11; 9 7; 4 14]
     >>> M2 = M[:,2:4];  print(M2)
     [3 13; 10 8; 6 12; 15 1]
-    >>> column(M1,M2)
+    >>> COLUMN(M1,M2)
     [16 2; 5 11; 9 7; 4 14; 3 13; 10 8; 6 12; 15 1]
-    >>> column(Matrix([1,2]).T,Matrix([3,4]).T)
+    >>> COLUMN(Matrix([1,2]).T,Matrix([3,4]).T)
     [1; 2; 3; 4]
     """
     if len(args) == 0:
@@ -453,4 +443,4 @@ def OR(x,y):
     >>> OR(A,B)
     [1 1 0]
     """
-    return min(1,(x!=0)+(y!=0))
+    return MIN(1,(x!=0)+(y!=0))

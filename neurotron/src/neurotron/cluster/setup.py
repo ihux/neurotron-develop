@@ -123,7 +123,7 @@ class Excite(Attribute):
 
         m,n,d,s = self.shape
         s = max([len(token[key]) for key in token])
-        d = mf.max(mf.sum(T))
+        d = mf.MAX(mf.SUM(T))
         #if s != self.shape[3]:
         #    raise Exception('mismatch of synapses size with token length')
         self.shape = (m,n,d,s)
