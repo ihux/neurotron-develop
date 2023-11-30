@@ -306,6 +306,51 @@ def ALL(arg):
         return M
     return M.item()+0
 
+def ANY(arg):
+    """
+    >>> M = Matrix([[2,0,0],[2,-1,0]])
+    >>> ANY(M)
+    [1 1 0]
+    >>> ANY([1,2,3])
+    1
+    >>> ANY([0,0,0])
+    0
+    >>> ANY(Matrix([0,1,2]).T)
+    1
+    >>> ANY(5)
+    1
+    >>> ANY(0.0)
+    0
+    >>> ANY([])
+    1
+    >>> ANY(None)
+    []
+    """
+
+    if isnumber(arg):
+        return int(arg != 0)
+    elif arg is None:
+        return []
+    elif isa(arg,list):
+        arg = Matrix(arg)
+    elif not isa(arg,Matrix):
+        raise Exception('cannot handle arg')
+
+    m,n = arg.shape
+    if m == 1 or n == 1:
+        return any(arg) + 0
+    elif m == 0 or n == 0:
+        return 1
+
+    M = Matrix(1,n)
+    for j in range(n):
+        M[0,j] = any(arg[:,j])
+
+    m,n = M.shape
+    if m != 1 or n != 1:
+        return M
+    return M.item()+0
+
 def MAGIC(n):
     """
     >>> MAGIC(0)
