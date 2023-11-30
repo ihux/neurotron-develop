@@ -3,11 +3,7 @@
 import doctest
 import pytest
 
-#if __name__ == 'tests.test_matrix':
-#    print('@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@')
-#    import matrix
-#else:
-import neurotron.matrix
+import neurotron.math.matrix
 
 
 #===============================================================================
@@ -34,7 +30,7 @@ class Validator:
 #===============================================================================
 
 def test_doctest(validator):
-   result = doctest.testmod(neurotron.matrix, verbose=False)
+   result = doctest.testmod(neurotron.math.matrix, verbose=False)
    assert result.failed == 0
 
 #===============================================================================

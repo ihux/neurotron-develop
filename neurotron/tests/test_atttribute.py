@@ -1,10 +1,10 @@
-# test_cluster.py: test matrix module
+# test_attribute.py: test attribute module
 
 import doctest
 import pytest
 
-import neurotron.cluster.setup
-import neurotron.cluster.terminal
+import neurotron.math.attribute
+
 
 #===============================================================================
 # fixture
@@ -21,10 +21,6 @@ class Validator:
 # doctest
 #===============================================================================
 
-def test_setup(validator):
-   result = doctest.testmod(neurotron.cluster.setup, verbose=False)
-   assert result.failed == 0
-
-def test_terminal(validator):
-   result = doctest.testmod(neurotron.cluster.terminal, verbose=False)
+def test_doctest(validator):
+   result = doctest.testmod(neurotron.math.attribute, verbose=False)
    assert result.failed == 0
