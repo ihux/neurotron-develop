@@ -21,6 +21,7 @@ module matfun: Matrix functions:
 
 """
 
+import numpy as np
 #import matrix as mx
 from neurotron.matrix.matrix import Matrix
 isa = isinstance

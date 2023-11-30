@@ -12,7 +12,7 @@ err = 0
 #err += doctest.testmod(neurotron.cluster.setup, verbose=False).failed
 err += doctest.testmod(neurotron.matrix.attribute, verbose=False).failed
 err += doctest.testmod(neurotron.matrix.matrix, verbose=False).failed
-#err += doctest.testmod(neurotron.matfun, verbose=False).failed
+err += doctest.testmod(neurotron.matrix.matfun, verbose=False).failed
 #err += doctest.testmod(neurotron.field, verbose=False).failed
 #err += doctest.testmod(neurotron.matrix, verbose=False).failed
 
