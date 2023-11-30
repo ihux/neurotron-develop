@@ -4,7 +4,10 @@ module carabao.cluster.setup
 """
 
 import neurotron.matrix as mx
-from neurotron.matrix import Attribute, Matrix, Field, ones, zeros, rand, seed
+from neurotron.matrix.attribute import Attribute
+from neurotron.matrix.matrix import Matrix
+from neurotron.matrix.field import Field
+from neurotron.matrix.matfun import ones, zeros, rand, seed
 isa = isinstance
 
 #===============================================================================
