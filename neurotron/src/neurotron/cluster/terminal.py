@@ -6,7 +6,7 @@ terminal.py:
 from neurotron.math.attribute import Attribute
 from neurotron.math.matrix import Matrix
 from neurotron.math.field import Field
-from neurotron.math.matfun import SUM,SEED,ROW,ONES
+from neurotron.math.matfun import SUM,SEED,ROW,ONES,MAX,MIN
 from neurotron.cluster.setup import Collab, Excite, Predict
 from neurotron.math.helper import isa
 
@@ -25,7 +25,7 @@ class Terminal(Attribute):
     >>> excite._simple([1,0,0,1,1])
     [1 0 0 1 1 0 0; 1 0 0 1 1 0 0; 1 0 0 1 1 0 0]
     """
-    def __init__(self,K,P=None,eta=0.5,theta=None,delta=(0.1,0.1)):
+    def __init__(self,K,P=None,eta=0.5,theta=None,delta=(0.1,0.1),verbose=0):
         if isa(K,int) and isa(P,int):
             m = K;  n = P
             self.shape = (m,n)
@@ -34,7 +34,6 @@ class Terminal(Attribute):
         if isa(K,Collab) or isa(K,Excite) or isa(K,Predict):
             K,P,W,theta = K.get('K,P,W,theta')
         else:
-            #print('##### K:',K)
             W = K.copy()
         self.K = K;  assert isa(K,Field)
         self.P = P;  assert P is None or isa(P,Field)
@@ -42,6 +41,7 @@ class Terminal(Attribute):
         self.eta = eta
         self.theta = theta if theta is not None else 3
         self.delta = delta
+        self.verbose = verbose
 
         if self.P is not None:
             self.I = Field(*self.K.shape)  #  learning increment
@@ -90,6 +90,13 @@ class Terminal(Attribute):
         pdelta,ndelta = self.delta
         S = sk.T @ ONES(1,s)
         return S * (2*pdelta*V - ndelta)
+
+    def learn(self,L):
+        for k in self.P.range():
+            if L[k]:
+                self.P[k] = MAX(0,MIN(1,self.P[k]+self.I[k]))
+                if self.verbose > 0:
+                    print('learn P[%g]:' % k,self.P[k],'by',self.I[k])
 
     def spike(self,v):              # calculate spike vectors
         if not isa(v,Matrix): v = Matrix(v)
