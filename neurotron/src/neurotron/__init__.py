@@ -38,8 +38,11 @@ neurotron: building blocks for neural computing circuits
 """
 
 import neurotron.math.attribute
+import neurotron.math.helper
 import neurotron.math.matrix
+import neurotron.math.matfun
 import neurotron.math.field
+
 import neurotron.cluster.setup
 import neurotron.cluster.terminal
 import neurotron.cluster.cluster
