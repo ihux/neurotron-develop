@@ -27,42 +27,40 @@ neurotron.math: matrix algebra for neural computing
 """
 
 import neurotron.math.attribute
-#import neurotron.math.helper
-#import neurotron.math.matrix
-#import neurotron.math.matfun
-#import neurotron.math.field
+import neurotron.math.helper
+import neurotron.math.matrix
+import neurotron.math.matfun
+import neurotron.math.field
 
 #===============================================================================
 # classes
 #===============================================================================
 
 Attribute = attribute.Attribute
-"""
-Matrix = neurotron.math.matrix.Matrix
-Field  = neurotron.math.field.Field
+Matrix = matrix.Matrix
+Field  = field.Field
 
 #===============================================================================
 # function attribute setup
 #===============================================================================
 
 isa = isinstance
-eye = neurotron.math.matfun.EYE
-isnumber = neurotron.math.helper.isnumber
-zeros = neurotron.math.matfun.ZEROS
-ones = neurotron.math.matfun.ONES
-rand = neurotron.math.matfun.RAND
-seed = neurotron.math.matfun.SEED
-max = neurotron.math.matfun.MAX
-min = neurotron.math.matfun.MIN
-size = neurotron.math.matfun.SIZE
-magic = neurotron.math.matfun.MAGIC
-sum = neurotron.math.matfun.SUM
-row = neurotron.math.matfun.ROW
-column = neurotron.math.matfun.COLUMN
-all = neurotron.math.matfun.ALL
-any = neurotron.math.matfun.ANY
+eye = matfun.EYE
+isnumber = helper.isnumber
+zeros = matfun.ZEROS
+ones = matfun.ONES
+rand = matfun.RAND
+seed = matfun.SEED
+max = matfun.MAX
+min = matfun.MIN
+size = matfun.SIZE
+magic = matfun.MAGIC
+sum = matfun.SUM
+row = matfun.ROW
+column = matfun.COLUMN
+all = matfun.ALL
+any = matfun.ANY
 
-AND = neurotron.math.matfun.AND
-OR  = neurotron.math.matfun.OR
-NOT = neurotron.math.matfun.NOT
-"""
+AND = matfun.AND
+OR  = matfun.OR
+NOT = matfun.NOT
