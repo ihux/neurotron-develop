@@ -6,7 +6,7 @@ neurotron.cluster.terminal.py:
 from neurotron.math.attribute import Attribute
 from neurotron.math.matrix import Matrix
 from neurotron.math.field import Field
-from neurotron.math.matfun import SUM,SEED,ROW,ONES,MAX,MIN
+from neurotron.math.matfun import SUM,SEED,ROW,ZEROS,ONES,MAX,MIN
 from neurotron.cluster.setup import Collab, Excite, Predict
 from neurotron.math.helper import isa
 
@@ -118,6 +118,43 @@ class Terminal(Attribute):
             #    print('##### spike V:   ',V)
             #    print('##### spike I[k]:',self.I[k])
         return S
+
+    def clear(self):
+        """
+        >>> predict = Terminal(Predict(1,3,2,5,rand=True))
+        >>> predict.map()
+        K: +-000/0-+-001/1-+-002/2-+
+           | 00212 | 12020 | 11100 |
+           | 00001 | 02211 | 12110 |
+           +-------+-------+-------+
+        P: +-000/0-+-001/1-+-002/2-+
+           | rkkHH | rPeeE | UheWE |
+           | 1UAMA | WwAEU | AwRCm |
+           +-------+-------+-------+
+        W: +-000/0-+-001/1-+-002/2-+
+           | 00011 | 01001 | 10011 |
+           | 11111 | 10111 | 10110 |
+           +-------+-------+-------+
+        >>> predict.clear();  predict.map()
+        K: +-000/0-+-001/1-+-002/2-+
+           | 00000 | 00000 | 00000 |
+           | 00000 | 00000 | 00000 |
+           +-------+-------+-------+
+        P: +-000/0-+-001/1-+-002/2-+
+           | 00000 | 00000 | 00000 |
+           | 00000 | 00000 | 00000 |
+           +-------+-------+-------+
+        W: +-000/0-+-001/1-+-002/2-+
+           | 00000 | 00000 | 00000 |
+           | 00000 | 00000 | 00000 |
+           +-------+-------+-------+
+        """
+        m,n,d,s = self.K.shape
+        zero = ZEROS(d,s)
+        for k in self.K.range():
+            self.K[k] = self.W[k] = zero
+            if self.P is not None:
+                self.P[k] = zero
 
     def __call__(self,v):
         if self.K is None: return self._simple(v)

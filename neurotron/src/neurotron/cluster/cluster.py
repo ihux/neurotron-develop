@@ -1,6 +1,7 @@
 """
 module neurotron.cluster.cluster
     class Cluster  # simulate a cluster of Neurotrons
+    class Token    # wrapper for token dicts
 """
 
 from neurotron.math.attribute import Attribute
@@ -10,6 +11,16 @@ from neurotron.math.matfun import ROW, SEED, ZEROS, AND, OR, NOT
 from neurotron.cluster.terminal import Terminal
 from neurotron.cluster.setup import Collab,Excite,Predict
 from neurotron.neurotron import Monitor
+
+#=========================================================================
+# class Token
+#=========================================================================
+
+class Token(dict):
+    def __init__(self,arg=None):
+        self.dict = arg if arg is not None else {}
+    def __getitem__(self,key):
+        return self.dict[key]
 
 #=========================================================================
 # class Out
@@ -55,7 +66,7 @@ class Cell(Attribute):
 
 class Cluster(Attribute):
     verbose = 0
-    def __init__(self,m=4,n=10,d=2,s=5,f=None,verbose=0):
+    def __init__(self,m=4,n=10,d=2,s=5,f=None,verbose=0,rand=True):
         if f is None: f = n
         self.shape = (m,n,d,s)
         self.sizes = (f,n*m)               # (M,N)
@@ -66,7 +77,7 @@ class Cluster(Attribute):
 
         self._excite = Terminal(m,n)       # simple excite terminal
         self._collab = Terminal(Collab(m,n,d,s))
-        self._predict = Terminal(Predict(m,n,d,s,rand=True),verbose=verbose)
+        self._predict = Terminal(Predict(m,n,d,s,rand=rand),verbose=verbose)
 
         self.U = Matrix(m,n)
         self.Q = Matrix(m,n)
@@ -200,51 +211,51 @@ class Cluster(Attribute):
             print('stimu ...');  self.smap()
         if all is not None:
             mon = Monitor(2*m+1,n);
-            cells.plot(mon,0);  mon.title(prefix+'stimu')
+            self.plot(mon,0);  mon.title(prefix+'stimu')
 
         y = self.react(y);
         if log is not None:
             print('ract ...');  self.smap()
         if all is not None:
-            cells.plot(mon,1);  mon.xlabel(n/2-0.5,prefix+'react')
+            self.plot(mon,1);  mon.xlabel(n/2-0.5,prefix+'react')
         else:
             mon = Monitor(2*m+1,n);
-            cells.plot(mon,0);  mon.title(prefix+'react')
+            self.plot(mon,0);  mon.title(prefix+'react')
 
-        y = cells.depress(y);
+        y = self.depress(y);
         if log is not None:
             print('depress ...');  self.smap()
         if all is not None:
             mon = Monitor(2*m+1,n);
-            cells.plot(mon,0);  mon.title(prefix+'depress')
+            self.plot(mon,0);  mon.title(prefix+'depress')
 
-        y = cells.excite(y);
+        y = self.excite(y);
         if log is not None:
             print('excite ...');   self.smap()
         if all is not None:
-            cells.plot(mon,1);  mon.xlabel(n/2-0.5,prefix+'excite')
+            self.plot(mon,1);  mon.xlabel(n/2-0.5,prefix+'excite')
 
-        y = cells.burst(y);
+        y = self.burst(y);
         if log is not None:
             print('burst ...');    self.smap()
         if all is not None:
             mon = Monitor(2*m+1,n);
-            cells.plot(mon,0);  mon.title(prefix+'burst')
+            self.plot(mon,0);  mon.title(prefix+'burst')
 
-        y = cells.predict(y);
+        y = self.predict(y);
         if log is not None:
             print('predict ...');  self.smap()
         if all is not None:
-            cells.plot(mon,1);  mon.xlabel(n/2-0.5,prefix+'predict')
+            self.plot(mon,1);  mon.xlabel(n/2-0.5,prefix+'predict')
         else:
-            cells.plot(mon,1);  mon.xlabel(n/2-0.5,prefix+'predict')
+            self.plot(mon,1);  mon.xlabel(n/2-0.5,prefix+'predict')
 
-        y = cells.relax(y);
+        y = self.relax(y);
         if log is not None:
             print('relax ...');    self.smap()
         if all is not None:
             mon = Monitor(2*m+1,n);
-            cells.plot(mon,0);  mon.title(prefix+'relax')
+            self.plot(mon,0);  mon.title(prefix+'relax')
         return y
 
 #===============================================================================

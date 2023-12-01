@@ -10,6 +10,7 @@ neurotron: building blocks for neural computing circuits
        Excite    parameters for excitation terminal
        Predict   parameters for prediction terminal
        Terminal  neurotron terminal
+       Token     wrapper for token dicts
 
    functions:
        isa       is object a given class instance (same as isinstance)
@@ -60,6 +61,9 @@ Predict = neurotron.cluster.setup.Predict
 Matrix = neurotron.math.matrix.Matrix
 Field  = neurotron.math.field.Field
 Terminal = neurotron.cluster.terminal.Terminal
+
+Cluster = neurotron.cluster.cluster.Cluster
+Token = neurotron.cluster.cluster.Token
 
 #===============================================================================
 # function attribute setup
