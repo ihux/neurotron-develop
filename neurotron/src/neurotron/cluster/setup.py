@@ -7,7 +7,6 @@ import neurotron.math.matfun as mf
 
 from neurotron.math import Attribute, Matrix, Field
 from neurotron.math import isa, ones, zeros, rand, seed
-#isa = isinstance
 
 #===============================================================================
 # class Collab
