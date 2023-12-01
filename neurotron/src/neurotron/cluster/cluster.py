@@ -11,6 +11,7 @@ from neurotron.math.matfun import ROW, SEED, ZEROS, AND, OR, NOT
 from neurotron.cluster.terminal import Terminal
 from neurotron.cluster.setup import Collab,Excite,Predict
 from neurotron.neurotron import Monitor
+isa = isinstance
 
 #=========================================================================
 # class Token
@@ -42,7 +43,7 @@ class Out:
 #=========================================================================
 
 class Cell(Attribute):
-    def __init__(self,cluster,i,j):
+    def __init__(self,cluster,i,j,delta=(0.1,0.1)):
         """
         class Cell: access state attributes of cells[i,j]
         >>> cell = Cell(Cluster(),1,1)
@@ -52,6 +53,10 @@ class Cell(Attribute):
         for tag in tags:
             self.set(tag,Out(cluster,i,j,tag.upper()))
         self.predict = None
+        self._delta = delta
+
+    def delta(self):
+        return self._delta
 
     def state(self):
         tags = ['b','d','l','q','s','u','x','y']
@@ -87,6 +92,15 @@ class Cluster(Attribute):
         self.Y = Matrix(m,n)
         self.S = Matrix(m,n)
         self.L = Matrix(m,n)
+
+    def __len__(self):
+        m,n,d,s = self.shape
+        return m*n
+
+    def __getitem__(self,idx):
+        if isa(idx,int): idx = self.kappa(idx)
+        cell = Cell(self,*idx,self._predict.delta)
+        return cell
 
     def range(self):
         return range(self.sizes[1])
@@ -205,6 +219,7 @@ class Cluster(Attribute):
 
     def apply(self,y,tag='',log=None,all=None):
         m,n,d,s = self.shape
+        y = self.relax(y);
         y = self.stimu(y);
         prefix = tag + ' - ' if tag != '' else ''
         if log is not None:
@@ -250,13 +265,13 @@ class Cluster(Attribute):
         else:
             self.plot(mon,1);  mon.xlabel(n/2-0.5,prefix+'predict')
 
-        y = self.relax(y);
-        if log is not None:
-            print('relax ...');    self.smap()
-        if all is not None:
-            mon = Monitor(2*m+1,n);
-            self.plot(mon,0);  mon.title(prefix+'relax')
-        return y
+        #y = self.relax(y);
+        #if log is not None:
+        #    print('relax ...');    self.smap()
+        #if all is not None:
+        #    mon = Monitor(2*m+1,n);
+        #    self.plot(mon,0);  mon.title(prefix+'relax')
+        #return y
 
 #===============================================================================
 # unit tests

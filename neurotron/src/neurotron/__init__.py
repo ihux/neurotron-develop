@@ -56,6 +56,8 @@ import neurotron.neurotron
 #===============================================================================
 
 Ansi = neurotron.ansi.Ansi
+#Record = neurotron.neurotron.Record
+
 Attribute = neurotron.math.attribute.Attribute
 Collab = neurotron.cluster.setup.Collab
 Excite = neurotron.cluster.setup.Excite

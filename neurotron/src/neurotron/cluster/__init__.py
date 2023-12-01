@@ -12,14 +12,19 @@ neurotron.cluster: neural cluster computing
 import neurotron.cluster.cluster
 import neurotron.cluster.setup
 import neurotron.cluster.terminal
+import neurotron.cluster.monitor
 
 #===============================================================================
 # classes
 #===============================================================================
 
-Cluster = cluster.Cluster
 Collab = setup.Collab
 Excite = setup.Excite
 Predict = setup.Predict
 Terminal = terminal.Terminal
+
+Cluster = cluster.Cluster
+Cell = cluster.Cell
 Token = cluster.Token
+
+Record = monitor.Record

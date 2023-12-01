@@ -63,7 +63,7 @@ class Terminal(Attribute):
         if self.P is not None:
             m,n,d,s = self.K.shape
             for k in range(m*n):
-                self.W[k] = self.P[k] > self.eta
+                self.W[k] = self.P[k] >= self.eta
         return self.W
 
     def empower(self,v):
@@ -88,7 +88,12 @@ class Terminal(Attribute):
         m,n,d,s = self.P.shape
         pdelta,ndelta = self.delta
         S = sk.T @ ONES(1,s)
-        return S * (2*pdelta*V - ndelta)
+        I = S * (2*pdelta*V - ndelta)
+        #if any(sk):
+        #    print('##### mind V:',V)
+        #    print('#####      S:',S)
+        #    print('#####      I:',I)
+        return I
 
     def learn(self,L):
         for k in self.P.range():
@@ -134,7 +139,7 @@ class Terminal(Attribute):
            | 00011 | 01001 | 10011 |
            | 11111 | 10111 | 10110 |
            +-------+-------+-------+
-        >>> predict.clear();  predict.map()
+        >>> predict.clear().map()
         K: +-000/0-+-001/1-+-002/2-+
            | 00000 | 00000 | 00000 |
            | 00000 | 00000 | 00000 |
@@ -154,6 +159,7 @@ class Terminal(Attribute):
             self.K[k] = self.W[k] = zero
             if self.P is not None:
                 self.P[k] = zero
+        return self
 
     def __call__(self,v):
         if self.K is None: return self._simple(v)
@@ -276,14 +282,14 @@ class __TestTerminal__:
            +-------+-------+-------+-------+-------+-------+-------+
         >>> c = ROW([1,0,0,1,1,0,0],ONES(1,20))
         >>> predict(c)
-        [0 0 0 0 0 1 1; 1 1 1 1 0 0 0; 0 1 0 0 0 1 0]
+        [0 1 0 0 0 1 1; 1 1 1 1 1 0 0; 0 1 0 1 1 1 0]
         >>> predict.spike(c).map('S: ')
         S: +-000/0-+-003/3-+-006/6-+-009/9-+-012/C-+-015/F-+-018/I-+
-           |  00   |  00   |  00   |  00   |  00   |  01   |  10   |
+           |  00   |  10   |  00   |  00   |  00   |  01   |  11   |
            +-001/1-+-004/4-+-007/7-+-010/A-+-013/D-+-016/G-+-019/J-+
-           |  10   |  01   |  01   |  11   |  00   |  00   |  00   |
+           |  10   |  01   |  01   |  11   |  01   |  00   |  00   |
            +-002/2-+-005/5-+-008/8-+-011/B-+-014/E-+-017/H-+-020/K-+
-           |  00   |  01   |  00   |  00   |  00   |  10   |  00   |
+           |  00   |  01   |  00   |  10   |  10   |  10   |  00   |
            +-------+-------+-------+-------+-------+-------+-------+
         """
 
