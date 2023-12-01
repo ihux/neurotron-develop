@@ -4,12 +4,10 @@ module neurotron.cluster.setup
 """
 
 import neurotron.math.matfun as mf
-#from neurotron import Attribute
-from neurotron.math.attribute import Attribute
-from neurotron.math.matrix import Matrix
-from neurotron.math.field import Field
-from neurotron.math.matfun import ONES, ZEROS, RAND, SEED
-isa = isinstance
+
+from neurotron.math import Attribute, Matrix, Field
+from neurotron.math import isa, ones, zeros, rand, seed
+#isa = isinstance
 
 #===============================================================================
 # class Collab
@@ -72,8 +70,8 @@ class Collab(Attribute):  # to manage collaboration topology
         for i in range(m):
             for j in range(n):
                 self.K[i,j] = self._Kij(i,j)
-                self.P[i,j] = ONES(1,m-1)
-                self.W[i,j] = ONES(1,m-1)
+                self.P[i,j] = ones(1,m-1)
+                self.W[i,j] = ones(1,m-1)
         self.P.map = self.P.vmap
 
     def map(self):
@@ -134,8 +132,8 @@ class Excite(Attribute):
         self.W = Field(m,n,d,s)
 
         for j in range(n):
-            Kij = ZEROS(d,s)
-            Wij = ZEROS(d,s)
+            Kij = zeros(d,s)
+            Wij = zeros(d,s)
             mu = 0
             for l in range(T.shape[0]):
                 if T[l,j]:
@@ -174,23 +172,23 @@ class Predict(Attribute):
         self.P = Field(m,n,d,s);  self.initP(rand)
         self.W = Field(m,n,d,s);  self.initW(rand)
 
-    def initK(self,rand):
+    def initK(self,random):
         m,n,d,s = self.shape
-        if rand:
-            self.K.set(RAND((m*d,n*s),m*n))
+        if random:
+            self.K.set(rand((m*d,n*s),m*n))
         else:
-            self.K.set(ZEROS(m*d,n*s))
+            self.K.set(zeros(m*d,n*s))
 
-    def initP(self,rand):
+    def initP(self,random):
         m,n,d,s = self.shape
-        if rand:
+        if random:
             Q = 20                     # quantizing constant
-            self.P.set((1+RAND((m*d,n*s),Q))/Q)
+            self.P.set((1+rand((m*d,n*s),Q))/Q)
         else:
-            self.P.set(ZEROS(m*d,n*s))
+            self.P.set(zeros(m*d,n*s))
         self.P.map = self.P.vmap
 
-    def initW(self,rand):
+    def initW(self,random):
         for k in self.W.range():
             self.W[k] = self.P[k] >= self.eta
 
@@ -214,7 +212,7 @@ def _test_predict1():
     >>> shape = (3,4,2,5)
     >>> Predict(*shape)
     Predict(3,4,2,5)
-    >>> SEED(0);  Predict(*shape).map()
+    >>> seed(0);  Predict(*shape).map()
     K: +-000/0-+-003/3-+-006/6-+-009/9-+
        | 00000 | 00000 | 00000 | 00000 |
        | 00000 | 00000 | 00000 | 00000 |
@@ -250,7 +248,7 @@ def _test_predict1():
 def _test_predict2():
     """
     >>> shape = (3,4,2,5)
-    >>> SEED(0);  Predict(*shape,rand=True).map()
+    >>> seed(0);  Predict(*shape,rand=True).map()
     K: +-000/0-+-003/3-+-006/6-+-009/9-+
        | 503B3 | 79352 | 47688 | A1677 |
        | 81598 | 94303 | 50238 | 13337 |
