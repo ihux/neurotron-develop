@@ -3,10 +3,9 @@ neurotron.cluster.terminal.py:
     class Terminal
 """
 
-from neurotron.math.attribute import Attribute
-from neurotron.math.matrix import Matrix
-from neurotron.math.field import Field
+from neurotron.math import Attribute, Matrix, Field
 from neurotron.math.matfun import SUM,SEED,ROW,ZEROS,ONES,MAX,MIN
+#from neurotron.cluster import Collab
 from neurotron.cluster.setup import Collab, Excite, Predict
 from neurotron.math.helper import isa
 
