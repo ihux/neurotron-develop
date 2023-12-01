@@ -49,6 +49,8 @@ import neurotron.cluster.terminal
 import neurotron.cluster.cluster
 import neurotron.ansi
 
+import neurotron.neurotron
+
 #===============================================================================
 # class attribute setup
 #===============================================================================
@@ -64,6 +66,8 @@ Terminal = neurotron.cluster.terminal.Terminal
 
 Cluster = neurotron.cluster.cluster.Cluster
 Token = neurotron.cluster.cluster.Token
+
+#Record = neurotron.neurotron.Record
 
 #===============================================================================
 # function attribute setup
