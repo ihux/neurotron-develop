@@ -10,7 +10,7 @@ from neurotron.math.field import Field
 from neurotron.math.matfun import ROW, SEED, ZEROS, AND, OR, NOT
 from neurotron.cluster.terminal import Terminal
 from neurotron.cluster.setup import Collab,Excite,Predict
-from neurotron.neurotron import Monitor
+from neurotron.cluster.monitor import Monitor, Record
 isa = isinstance
 
 #=========================================================================
@@ -208,14 +208,21 @@ class Cluster(Attribute):
             y[k] = self.Y[k]
         return y
 
-    def plot(self,mon,subplot=0,title=None):
+    def plot(self,mon,subplot=0,title=None,label=None):
         m,n,d,s = self.shape
         for i in range(m):
             for j in range(n):
                 cell = Cell(self,i,j)
-                mon(cell,i+subplot*(m+1),j)
+                if label is not None:
+                    k = self.kappa(i,j)
+                    mon(cell,i+subplot*(m+1),j,k)
+                else:
+                    mon(cell,i+subplot*(m+1),j)
         if title is not None:
             mon.title(title)
+
+    def draw(self,mon,subplot):
+        self.plot(mon,subplot,label=True)
 
     def apply(self,y,tag='',log=None,all=None):
         m,n,d,s = self.shape
@@ -226,44 +233,44 @@ class Cluster(Attribute):
             print('stimu ...');  self.smap()
         if all is not None:
             mon = Monitor(2*m+1,n);
-            self.plot(mon,0);  mon.title(prefix+'stimu')
+            self.draw(mon,0);  mon.title(prefix+'stimu')
 
         y = self.react(y);
         if log is not None:
             print('ract ...');  self.smap()
         if all is not None:
-            self.plot(mon,1);  mon.xlabel(n/2-0.5,prefix+'react')
+            self.draw(mon,1);  mon.xlabel(n/2-0.5,prefix+'react')
         else:
             mon = Monitor(2*m+1,n);
-            self.plot(mon,0);  mon.title(prefix+'react')
+            self.draw(mon,0);  mon.title(prefix+'react')
 
         y = self.depress(y);
         if log is not None:
             print('depress ...');  self.smap()
         if all is not None:
             mon = Monitor(2*m+1,n);
-            self.plot(mon,0);  mon.title(prefix+'depress')
+            self.draw(mon,0);  mon.title(prefix+'depress')
 
         y = self.excite(y);
         if log is not None:
             print('excite ...');   self.smap()
         if all is not None:
-            self.plot(mon,1);  mon.xlabel(n/2-0.5,prefix+'excite')
+            self.draw(mon,1);  mon.xlabel(n/2-0.5,prefix+'excite')
 
         y = self.burst(y);
         if log is not None:
             print('burst ...');    self.smap()
         if all is not None:
             mon = Monitor(2*m+1,n);
-            self.plot(mon,0);  mon.title(prefix+'burst')
+            self.draw(mon,0);  mon.title(prefix+'burst')
 
         y = self.predict(y);
         if log is not None:
             print('predict ...');  self.smap()
         if all is not None:
-            self.plot(mon,1);  mon.xlabel(n/2-0.5,prefix+'predict')
+            self.draw(mon,1);  mon.xlabel(n/2-0.5,prefix+'predict')
         else:
-            self.plot(mon,1);  mon.xlabel(n/2-0.5,prefix+'predict')
+            self.draw(mon,1);  mon.xlabel(n/2-0.5,prefix+'predict')
 
         #y = self.relax(y);
         #if log is not None:
@@ -328,6 +335,16 @@ def _test_mary():
     | ----- | ----- | ----- | ----- | ----- | -X--- | ----- | ----- | ----- |
     +-------+-------+-------+-------+-------+-------+-------+-------+-------+
     [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 1 1]
+    """
+
+def test_record():
+    """
+    >>> cells = Cluster(2,7,2,5)
+    >>> cells.U[0] = cells.X[0] = 1
+    >>> record = Record(cells)
+    >>> record(cells)
+    >>> record.pattern()
+    '|UX|-|-|-|-|-|-|-|-|-|-|-|-|-|'
     """
 
 #===============================================================================

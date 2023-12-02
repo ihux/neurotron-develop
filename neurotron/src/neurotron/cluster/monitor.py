@@ -1,10 +1,11 @@
 """
 module neurotron.cluster.cluster
-    class Cluster  # simulate a cluster of Neurotrons
-    class Token    # wrapper for token dicts
+    class Monitor  # plot neurotron
+    class Record   # to record cluster states
 """
 
-from neurotron.cluster.cluster import Cluster
+#from neurotron.cluster.cluster import Cluster
+from neurotron.screen import Screen
 
 #===========================================================================
 # class Record
@@ -12,11 +13,11 @@ from neurotron.cluster.cluster import Cluster
 
 class Record:
     """
-    >>> cells=Cluster(2,7,2,5)
-    >>> cells.U[0]=cells.X[0]=1
-    >>> rec = Record(cells)
-    >>> rec(cells)
-    >>> rec.pattern()
+    cells=Cluster(2,7,2,5)
+    cells.U[0]=cells.X[0]=1
+    rec = Record(cells)
+    rec(cells)
+    rec.pattern()
     '|UX|-|-|-|-|-|-|-|-|-|-|-|-|-|'
     """
     def __init__(self,cells):
@@ -85,6 +86,41 @@ class Record:
                     line += sep + chunk;  sep = ','
             str += '|' + line;
         return str + '|'
+
+#===========================================================================
+# class Monitor
+#===========================================================================
+
+class Monitor:
+    def __init__(self,m,n,title=None):
+        self.screen = Screen('Neurons',m,n)
+        if title is not None: self.title(title)
+    def __call__(self,cell,i,j,index=None,size=7):
+        u = cell.u.out()
+        q = cell.q.out()
+        x = cell.x.out()
+        y = cell.y.out()
+        b = cell.b.out()
+        d = cell.d.out()
+        l = cell.l.out()
+        s = cell.s.out()
+
+        if cell.predict is not None:
+            pdelta,ndelta = cell.predict.synapses.delta
+            if pdelta == 0 and ndelta == 0:
+                l = s = 0   # no prediction & learnung spike if learning is disabled
+
+        self.screen.neurotron((i,j),u,q,x,y,b,d,l,s)
+        if index is not None:
+            x,y = self.screen.xy(i,j)
+            self.screen.text(x-0.40,y+0.35,"%g"%index,size=size)
+
+    def xlabel(self,x,txt,size=None):
+        self.screen.text(x,-0.75,txt,size=size)
+    def title(self,txt,size=10):
+        scr = self.screen
+        x = (scr.n-1)/2;  y = scr.m + 0.3
+        self.screen.text(x,y,txt,size=size)
 
 #===============================================================================
 # doc test
