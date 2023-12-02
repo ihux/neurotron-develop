@@ -11,6 +11,9 @@ neurotron: building blocks for neural computing circuits
        Predict   parameters for prediction terminal
        Terminal  neurotron terminal
        Token     wrapper for token dicts
+       Cell      access to cluster cell
+       Monitor   state monitoring of cells
+       Record    recording of cell states
 
    functions:
        isa       is object a given class instance (same as isinstance)
@@ -68,6 +71,10 @@ Terminal = neurotron.cluster.terminal.Terminal
 
 Cluster = neurotron.cluster.cluster.Cluster
 Token = neurotron.cluster.cluster.Token
+Cell = neurotron.cluster.cluster.Cell
+
+Monitor = neurotron.cluster.monitor.Monitor
+Record = neurotron.cluster.monitor.Record
 
 #Record = neurotron.neurotron.Record
 
