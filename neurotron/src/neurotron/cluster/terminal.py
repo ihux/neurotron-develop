@@ -85,11 +85,17 @@ class Terminal(Attribute):
                 s = (v[j] > 0);  S[i,j] = s
         return S
 
-    def mind(self,sk,V):
+    def mind(self,sk,V,k):
+        def log(I,k):
+            d,s = I.shape
+            for ii in range(d):
+                if nm.any(I[ii,:]):
+                    print('mind I[%g].%g:' % (k,ii), I[ii,:])
         m,n,d,s = self.P.shape
         pdelta,ndelta = self.delta
         S = sk.T @ ONES(1,s)
         I = S * (2*pdelta*V - ndelta)
+        if self.verbose > 0: log(I,k)
         #if any(sk):
         #    print('##### mind V:',V)
         #    print('#####      S:',S)
@@ -123,7 +129,7 @@ class Terminal(Attribute):
             V = v[self.K[k]]
             E = V * self.W[k]
             S[k] = SUM(E.T) >= self.theta
-            self.I[k] = self.mind(S[k],V)
+            self.I[k] = self.mind(S[k],V,k)
             #if any(S[k]):
             #    print('##### spike L:   ',S[k].T@ONES(1,s))
             #    print('##### spike V:   ',V)

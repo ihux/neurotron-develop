@@ -186,8 +186,8 @@ class Cluster(Attribute):
         c,f = self.split(y)
         self.S = self._predict(c)
         self.X = self.S
-        for k in self.range():
-            if self.S[k]: print('mind I[%g]:'%k,self._predict.I[k])
+        #for k in self.range():
+        #    if self.S[k]: print('mind I[%g]:'%k,self._predict.I[k])
         return y
 
     def relax(self,y):
@@ -338,7 +338,7 @@ def _test_mary():
     +-------+-------+-------+-------+-------+-------+-------+-------+-------+
     [1 1 0 0 0 0 0 0 0 0 0 0 0 0 1 1 1 1 1 0 0 0 0 0 0 1 1]
     >>> y = cells.predict(y);  cells.smap();  print(y)
-    mind I[11]: [0.1 0.1 -0.1 0.1 -0.1; 0 0 0 0 0]
+    mind I[11].0: [0.1 0.1 -0.1 0.1 -0.1]
     +-000/0-+-002/2-+-004/4-+-006/6-+-008/8-+-010/A-+-012/C-+-014/E-+-016/G-+
     | Q-LBY | ----- | ----- | ----- | ----- | ----- | ----- | Q--BY | Q--BY |
     +-001/1-+-003/3-+-005/5-+-007/7-+-009/9-+-011/B-+-013/D-+-015/F-+-017/H-+
