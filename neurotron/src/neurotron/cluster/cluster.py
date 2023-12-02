@@ -234,10 +234,9 @@ class Cluster(Attribute):
         y = self.predict(y);
         return y
 
-    def step(self,y,tag='',log=None):
+    def step(self,mon,y,tag='',log=None):
         y = self.iterate(y)
         m,n,d,s = self.shape
-        mon = Monitor(m,n);
         self.draw(mon);  mon.title(tag)
         return y
 
