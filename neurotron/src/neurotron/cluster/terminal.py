@@ -8,6 +8,7 @@ from neurotron.math.matfun import SUM,SEED,ROW,ZEROS,ONES,MAX,MIN
 #from neurotron.cluster import Collab
 from neurotron.cluster.setup import Collab, Excite, Predict
 from neurotron.math.helper import isa
+import neurotron.math as nm
 
 #===============================================================================
 # class Terminal
@@ -96,11 +97,17 @@ class Terminal(Attribute):
         return I
 
     def learn(self,L):
+        def log(P,I,k):
+            m,n,d,s = P.shape
+            for ii in range(d):
+                if nm.any(I[k][ii,:]):
+                    Pii = P[k][ii,:];  Iii = I[k][ii,:]
+                    print('learn P[%g].%g:' % (k,ii),Pii,'by',Iii)
         for k in self.P.range():
             if L[k]:
                 self.P[k] = MAX(0,MIN(1,self.P[k]+self.I[k]))
                 if self.verbose > 0:
-                    print('learn P[%g]:' % k,self.P[k],'by',self.I[k])
+                    log(self.P,self.I,k)
 
     def spike(self,v):              # calculate spike vectors
         if not isa(v,Matrix): v = Matrix(v)

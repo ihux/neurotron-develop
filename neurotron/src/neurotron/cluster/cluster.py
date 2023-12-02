@@ -170,7 +170,7 @@ class Cluster(Attribute):
     def depress(self,y):
         c,f = self.split(y)
         self.D = self._collab(c)
-        self.L = self.zero()
+        #self.L = self.zero()
         return y
 
     def excite(self,y):
@@ -221,8 +221,25 @@ class Cluster(Attribute):
         if title is not None:
             mon.title(title)
 
-    def draw(self,mon,subplot):
+    def draw(self,mon,subplot=0):
         self.plot(mon,subplot,label=True)
+
+    def iterate(self,y):
+        y = self.relax(y);
+        y = self.stimu(y);
+        y = self.react(y);
+        y = self.depress(y);
+        y = self.excite(y);
+        y = self.burst(y);
+        y = self.predict(y);
+        return y
+
+    def step(self,y,tag='',log=None):
+        y = self.iterate(y)
+        m,n,d,s = self.shape
+        mon = Monitor(m,n);
+        self.draw(mon);  mon.title(tag)
+        return y
 
     def apply(self,y,tag='',log=None,all=None):
         m,n,d,s = self.shape
@@ -278,7 +295,7 @@ class Cluster(Attribute):
         #if all is not None:
         #    mon = Monitor(2*m+1,n);
         #    self.plot(mon,0);  mon.title(prefix+'relax')
-        #return y
+        return y
 
 #===============================================================================
 # unit tests
@@ -299,7 +316,7 @@ def _test_mary():
     +-------+-------+-------+-------+-------+-------+-------+-------+-------+
     [0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 1 1]
     >>> y = cells.react(y);  cells.smap();  print(y)
-    learn P[0]: [0.85 1 1 0.6 0.5; 0.65 0.5 0.05 0.85 1] by [0.1 0 0.1 0 0.1; 0 0 0 0 0]
+    learn P[0].0: [0.85 1 1 0.6 0.5] by [0.1 0 0.1 0 0.1]
     +-000/0-+-002/2-+-004/4-+-006/6-+-008/8-+-010/A-+-012/C-+-014/E-+-016/G-+
     | UXL-Y | ----- | ----- | ----- | ----- | ----- | ----- | U---- | U---- |
     +-001/1-+-003/3-+-005/5-+-007/7-+-009/9-+-011/B-+-013/D-+-015/F-+-017/H-+
