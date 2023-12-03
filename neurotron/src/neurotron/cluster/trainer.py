@@ -195,12 +195,14 @@ class Train:
         """
         >>> train = Train(Cells('Mary'))
         """
-        print('### train:',(context,word))
+        #print('### train:',(context,word))
         if not word in self._words: self._word(word)
         #if context == '': return self._words[word]
         start = (context == '')
-        if context == '': context = '<>'
-        context = '<' + context[1:-1] + ' ' + word + '>'
+        if context == '':
+            context = '<' + word + '>'
+        else:
+            context = '<' + context[1:-1] + ' ' + word + '>'
         ans,triple = self._word(word)
         """
         '#':([3,7,8],'#1','to')
@@ -235,17 +237,39 @@ class Train:
     def __repr__(self):
         return self.__str__()
 
-    def show(self):
-        print('token:')
-        for word in self.cells.token:
-            idx = self.index(self.token(word))
-            print('   ',idx,'%s:' % word,self.token(word))
+    def show(self,token=True):
+        if token:
+            print('token:')
+            for word in self.cells.token:
+                idx = self.index(self.token(word))
+                print('   ',idx,'%s:' % word,self.token(word))
         print('words:')
         for word in self._words:
             print('   ','%s:' % word,self._words[word])
         print('contexts:')
         for context in self._contexts:
-            print('   ','%s:' % context,self._contexts[context])
+            dict = self._contexts[context]
+            print('   ','%s:' % context)
+            for key in dict:
+                print('       %s:' % key,dict[key])
+
+#===============================================================================
+# unit tests
+#===============================================================================
+
+def test_train_mary():
+    """
+    >>> train = Train(Cells('Mary'))
+    >>> train('','Mary')
+    ('<Mary>', ([0, 7, 8], '#0', [1 1 1; 0 0 0]))
+    >>> train.show(token=False)
+    words:
+        Mary: ([0, 7, 8], '#0', [1 1 1; 0 0 0])
+    contexts:
+        <Mary>:
+           #: ([0, 7, 8], '#0', 'Mary')
+           @: ['#0', [1 1 1; 0 0 0], '0.0-7.0-8.0']
+    """
 
 #===============================================================================
 # doc test
