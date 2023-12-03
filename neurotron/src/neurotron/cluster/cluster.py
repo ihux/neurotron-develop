@@ -41,13 +41,15 @@ class Token(dict):
     def decode(self,arg=None):
         """
         >>> token = Token({'word1':[0,1,0],'word2':[1,0,1]})
+        >>> print(token)
+        {'word1': [0, 1, 0], 'word2': [1, 0, 1]}
         >>> token.decode([0,1,0])
         'word1'
         >>> token.decode(Matrix([[1,0,0],[0,0,1]]))
         'word2'
         """
         if arg is None:
-            return token._decoder
+            return self._decoder
         elif isa(arg,list):
             return self._decoder[self.pattern(arg)]
         elif isa(arg,Matrix):
