@@ -156,6 +156,14 @@ class Cluster(Attribute):
         y[self.k] = self.Y
         return y
 
+    def relax(self,y):
+        #M,N = self.sizes
+        #m,n,d,s = self.shape
+        #c = y[:N];  f = y[N:N+M];
+        Z = self.zero()
+        self.set('U,Q,D,B,Y,S',(Z,Z,Z,Z,Z,Z))
+        return self.update(y)
+
     def stimu(self,y):
         c,f = self.split(y)
         self.U = self._excite(f)
@@ -190,23 +198,16 @@ class Cluster(Attribute):
         #    if self.S[k]: print('mind I[%g]:'%k,self._predict.I[k])
         return y
 
-    def relax(self,y):
-        M,N = self.sizes
-        m,n,d,s = self.shape
-        c = y[:N];  f = y[N:N+M]; Z = self.zero()
-        self.set('U,Q,D,B,Y,S',(Z,Z,Z,Z,Z,Z))
-        return self.update(y)
-
     def clear(self,M):
         m,n,d,s = self.shape
         M = Matrix(m,n)
 
-    def idle(self):
-        clear(self.B);  clear(self.D);  clear(self.L);  clear(self.Q)
-        clear(self.S);  clear(self.U);  clear(self.X);  clear(self.Y)
-        for k in range(self.sizes[1]):
-            y[k] = self.Y[k]
-        return y
+    #def idle(self):
+    #    clear(self.B);  clear(self.D);  clear(self.L);  clear(self.Q)
+    #    clear(self.S);  clear(self.U);  clear(self.X);  clear(self.Y)
+    #    for k in range(self.sizes[1]):
+    #        y[k] = self.Y[k]
+    #    return y
 
     def plot(self,mon,subplot=0,title=None,label=None):
         m,n,d,s = self.shape

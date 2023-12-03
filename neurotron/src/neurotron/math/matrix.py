@@ -274,8 +274,21 @@ class Matrix(np.ndarray):
             out[i,j] = v[k,0]
         return out
 
+    def list(self):
+        """
+        convert to list
+        >>> _magic(3).list()
+        [[8, 1, 6], [3, 5, 7], [4, 9, 2]]
+        """
+        m,n = self.shape
+        return [[self[i,j] for j in range(n)] for i in range(m)]
+
     T = property(fget=_transpose)
     N = property(fget=_not)
+
+#===============================================================================
+# helper
+#===============================================================================
 
 def _magic(n):
     """
