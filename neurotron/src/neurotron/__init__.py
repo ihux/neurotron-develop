@@ -37,9 +37,13 @@ neurotron: building blocks for neural computing circuits
        column      concatenate to column
 
     logical:
-       AND       logical matrix and
-       OR        logical matrix or
-       NOT       logical matrix not
+       AND         logical matrix and
+       OR          logical matrix or
+       NOT         logical matrix not
+
+    utility:
+       follow      following matrix during matrix iteration
+
 """
 
 import neurotron.math.attribute
@@ -104,3 +108,5 @@ any = neurotron.math.matfun.ANY
 AND = neurotron.math.matfun.AND
 OR  = neurotron.math.matfun.OR
 NOT = neurotron.math.matfun.NOT
+
+follow = neurotron.cluster.follow

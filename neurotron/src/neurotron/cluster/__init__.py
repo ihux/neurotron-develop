@@ -1,13 +1,16 @@
 """
 neurotron.cluster: neural cluster computing
-   classes:
-       Cluster     cluster of Neurotrons
-       Collab      parameters for collaboration terminal
-       Excite      parameters for excitation terminal
-       Predict     parameters for prediction terminal
-       Terminal    neurotron terminal
-       Token       wrapper for token dicts
-       SynapseErr  Synapse Exception
+    classes:
+        Cluster     cluster of Neurotrons
+        Collab      parameters for collaboration terminal
+        Excite      parameters for excitation terminal
+        Predict     parameters for prediction terminal
+        Terminal    neurotron terminal
+        Token       wrapper for token dicts
+        SynapseErr  Synapse Exception
+
+    functions:
+        follow      following matrix during matrix iteration
 """
 
 import neurotron.cluster.cluster
@@ -30,3 +33,9 @@ Token = cluster.Token
 SynapseErr = cluster.SynapseErr
 
 Record = monitor.Record
+
+#===============================================================================
+# functions
+#===============================================================================
+
+follow = cluster.follow
