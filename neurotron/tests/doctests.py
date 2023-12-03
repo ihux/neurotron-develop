@@ -19,6 +19,7 @@ err += doctest.testmod(neurotron.cluster.cluster, verbose=False).failed
 err += doctest.testmod(neurotron.neurotron, verbose=False).failed
 
 err += doctest.testmod(neurotron.cluster.monitor, verbose=False).failed
+err += doctest.testmod(neurotron.cluster.toy).failed
 
 if err:
    print(Ansi.R+'doctests: total fails:'+Ansi.N,err)

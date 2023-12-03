@@ -15,7 +15,8 @@ neurotron: building blocks for neural computing circuits
        Monitor     state monitoring of cells
        Record      recording of cell states
        SynapseErr  Synapse Exception
-
+       Toy         creating toy stuff
+       
    functions:
        isa         is object a given class instance (same as isinstance)
        eye         unit matrix
@@ -82,7 +83,7 @@ SynapseErr = neurotron.cluster.SynapseErr
 Monitor = neurotron.cluster.monitor.Monitor
 Record = neurotron.cluster.monitor.Record
 
-#Record = neurotron.neurotron.Record
+Toy = neurotron.cluster.toy.Toy
 
 #===============================================================================
 # function attribute setup
@@ -109,4 +110,4 @@ AND = neurotron.math.matfun.AND
 OR  = neurotron.math.matfun.OR
 NOT = neurotron.math.matfun.NOT
 
-follow = neurotron.cluster.follow
+follow = neurotron.cluster.cluster.follow

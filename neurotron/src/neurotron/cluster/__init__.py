@@ -8,6 +8,7 @@ neurotron.cluster: neural cluster computing
         Terminal    neurotron terminal
         Token       wrapper for token dicts
         SynapseErr  Synapse Exception
+        Toy         creating toy stuff
 
     functions:
         follow      following matrix during matrix iteration
@@ -17,6 +18,7 @@ import neurotron.cluster.cluster
 import neurotron.cluster.setup
 import neurotron.cluster.terminal
 import neurotron.cluster.monitor
+import neurotron.cluster.toy
 
 #===============================================================================
 # classes
@@ -31,6 +33,7 @@ Cluster = cluster.Cluster
 Cell = cluster.Cell
 Token = cluster.Token
 SynapseErr = cluster.SynapseErr
+Toy = toy.Toy
 
 Record = monitor.Record
 
