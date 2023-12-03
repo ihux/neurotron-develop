@@ -18,13 +18,14 @@ class Toy:
     """
     def __init__(self,tag='Sarah'):
         self.tag = tag
-        if tag == 'Sarah': self._sarah()
-        if tag == 'Mary':  self._mary()
+        if tag.lower() == 'sarah': self._sarah()
+        if tag.lower() == 'mary':  self._mary()
 
     def __str__(self):
         return "Toy('%s')" % self.tag
 
     def _sarah(self):
+       self.shape = (1,3,1,3)
        self.token = Token({
            'Sarah':[1,1,0,1,1,1,0,1,0,1],
            'loves':[0,1,1,1,0,1,1,0,1,1],
@@ -33,6 +34,7 @@ class Toy:
            })
 
     def _mary(self):
+        self.shape = (2,5,4,3)
         self.token = Token({
             'Mary': [1,0,0,0,0,0,0,1,1],
             'John': [0,1,0,0,0,0,0,1,1],
