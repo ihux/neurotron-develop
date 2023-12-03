@@ -122,7 +122,7 @@ class Cell(Attribute):
 #=========================================================================
 
 class Core(Attribute):
-    def __init__(self,m=2,n=7,d=4,s=3,f=None,verbose=0,rand=True):
+    def __init__(self,m=2,n=7,d=4,s=3,f=None,verbose=0,rand=False):
         if f is None: f = n
         self.shape = (m,n,d,s)
         self.sizes = (f,n*m)               # (M,N)
@@ -151,7 +151,7 @@ class Core(Attribute):
 
 class Cluster(Core):
     verbose = 0
-    def __init__(self,m=4,n=10,d=2,s=5,f=None,verbose=0,rand=True):
+    def __init__(self,m=4,n=10,d=2,s=5,f=None,verbose=0,rand=False):
         super().__init__(m,n,d,s,f,verbose=verbose,rand=rand)
 
     def __len__(self):
@@ -421,7 +421,7 @@ def _test_mary():
     """
     >>> token = {'Mary': [1,0,0,0,0,0,0,1,1]}
     >>> shape = (2,9,2,5); m,n,d,s = shape
-    >>> SEED(1);  cells = Cluster(*shape,verbose=1)
+    >>> SEED(1);  cells = Cluster(*shape,verbose=1,rand=True)
     >>> cells.X[0] = 1; cells._predict.I[0] = Matrix([[.1,0,.1,0,.1],[0,0,0,0,0]])
     >>> y = ROW(ZEROS(1,m*n),token['Mary'])
     >>> y = cells.stimu(y);  cells.smap();  print(y)
