@@ -47,6 +47,8 @@ class Matrix(np.ndarray):
     [1 2 3; 4 5 6]
     >>> Matrix(range(5))
     [0 1 2 3 4]
+    >>> Matrix(-3)  # magic(3)
+    [8 1 6; 3 5 7; 4 9 2]
 
     See also: Matrix, eye, zeros, ones
     """
@@ -54,6 +56,7 @@ class Matrix(np.ndarray):
         #isa = isinstance
         arg1 = [] if arg1 is None else arg1
         if isa(arg1,int) and arg2 is None:
+            if arg1 < 0: return _magic(-arg1)
             arg1 = [[arg1]]
         elif isa(arg1,float) and arg2 is None:
             arg1 = [[arg1]]
@@ -136,7 +139,7 @@ class Matrix(np.ndarray):
 
     def __getitem__(self,idx):
         """
-        >>> A = _magic(4)[:3,:]; print(A.T)
+        >>> A = Matrix(-4)[:3,:]; print(A.T)
         [16 5 9; 2 11 7; 3 10 6; 13 8 12]
         >>> K = Matrix([[2,1,0],[5,4,3]]); print(K)
         [2 1 0; 5 4 3]
@@ -209,7 +212,7 @@ class Matrix(np.ndarray):
 
     def __call__(self): # convert to column vector
         """
-        A = _magic(2)
+        A = Matrix(-2)
         A()
         [1; 3; 4; 2]
         """
@@ -223,7 +226,7 @@ class Matrix(np.ndarray):
 
     def __mul__(self,other):
         """
-        >>> A = _magic(2); B = A.T; print(A)
+        >>> A = Matrix(-2); B = A.T; print(A)
         [1 3; 4 2]
         >>> A*B
         [1 12; 12 4]
@@ -247,7 +250,7 @@ class Matrix(np.ndarray):
 
     def reshape(self,m,n): # convert to column vector
         """
-        >>> A = _magic(4)[:3,:]; print(A)
+        >>> A = Matrix(-4)[:3,:]; print(A)
         [16 2 3 13; 5 11 10 8; 9 7 6 12]
         >>> B = A(); print(B)
         [16; 5; 9; 2; 11; 7; 3; 10; 6; 13; 8; 12]
@@ -277,7 +280,7 @@ class Matrix(np.ndarray):
     def list(self):
         """
         convert to list
-        >>> _magic(3).list()
+        >>> Matrix(-3).list()
         [[8, 1, 6], [3, 5, 7], [4, 9, 2]]
         """
         m,n = self.shape
@@ -498,7 +501,7 @@ def _case4b():
 
 def _case5a():  # indexing with slices
     """
-    >>> A = _magic(4); print(A)
+    >>> A = Matrix(-4); print(A)
     [16 2 3 13; 5 11 10 8; 9 7 6 12; 4 14 15 1]
     >>> A[0,0]
     16
@@ -522,7 +525,7 @@ def _case5a():  # indexing with slices
 
 def _case5b():  # indexing with slices, column ranges
     """
-    >>> A = _magic(4); print(A)
+    >>> A = Matrix(-4); print(A)
     [16 2 3 13; 5 11 10 8; 9 7 6 12; 4 14 15 1]
     >>> B = A[:3,:]; print(B)
     [16 2 3 13; 5 11 10 8; 9 7 6 12]
@@ -535,7 +538,7 @@ def _case5b():  # indexing with slices, column ranges
     """
 def _case5c():  # indexing with slices, row ranges
     """
-    >>> A = _magic(4); print(A)
+    >>> A = Matrix(-4); print(A)
     [16 2 3 13; 5 11 10 8; 9 7 6 12; 4 14 15 1]
     >>> C = A[:3,:].T; print(C)
     [16 5 9; 2 11 7; 3 10 6; 13 8 12]
@@ -548,7 +551,7 @@ def _case5c():  # indexing with slices, row ranges
     """
 def _case5d():  # indexing with slices, row & column ranges
     """
-    >>> A = _magic(4); print(A)
+    >>> A = Matrix(-4); print(A)
     [16 2 3 13; 5 11 10 8; 9 7 6 12; 4 14 15 1]
     >>> A[:2,:2]
     [16 2; 5 11]
@@ -560,7 +563,7 @@ def _case5d():  # indexing with slices, row & column ranges
 
 def _case5e():
     """
-    >>> M=_magic(4)
+    >>> M=Matrix(-4)
     >>> M[0,:4] = Matrix(range(4)); print(M)
     [0 1 2 3; 5 11 10 8; 9 7 6 12; 4 14 15 1]
     >>> M[:4,1]= 5+Matrix(range(4)).T; print(M)
