@@ -47,16 +47,22 @@ class Token(dict):
         'word1'
         >>> token.decode(Matrix([[1,0,0],[0,0,1]]))
         'word2'
+        >>> token.decode([0,0,0])
+        ''
+        >>> token.decode('junk')
+        ''
         """
+        decoder = self._decoder
         if arg is None:
-            return self._decoder
+            return decoder
         elif isa(arg,list):
-            return self._decoder[self.pattern(arg)]
+            key = self.pattern(arg)
+            return decoder[key] if key in decoder else ''
         elif isa(arg,Matrix):
             row = mf.MAX(arg).list()[0]
-            return self._decoder[self.pattern(row)]
+            return decoder[self.pattern(row)]
         else:
-            raise Exception('unsupported arg type')
+            return ''
 
 #=========================================================================
 # class Out
