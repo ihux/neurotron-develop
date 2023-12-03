@@ -1,39 +1,40 @@
 """
 neurotron: building blocks for neural computing circuits
    classes:
-       Ansi      provide ANSI color sequences
-       Attribute base class to support compact attribute access
-       Matrix    matrix class
-       Field     field class (matrix of matrices)
-       Cluster   cluster of Neurotrons
-       Collab    parameters for collaboration terminal
-       Excite    parameters for excitation terminal
-       Predict   parameters for prediction terminal
-       Terminal  neurotron terminal
-       Token     wrapper for token dicts
-       Cell      access to cluster cell
-       Monitor   state monitoring of cells
-       Record    recording of cell states
+       Ansi        provide ANSI color sequences
+       Attribute   base class to support compact attribute access
+       Matrix      matrix class
+       Field       field class (matrix of matrices)
+       Cluster     cluster of Neurotrons
+       Collab      parameters for collaboration terminal
+       Excite      parameters for excitation terminal
+       Predict     parameters for prediction terminal
+       Terminal    neurotron terminal
+       Token       wrapper for token dicts
+       Cell        access to cluster cell
+       Monitor     state monitoring of cells
+       Record      recording of cell states
+       SynapseErr  Synapse Exception
 
    functions:
-       isa       is object a given class instance (same as isinstance)
-       eye       unit matrix
-       isnumber  is arg a number?
-       zeros     zero matrix
-       ones      one matrix
-       rand      random matrix
-       seed      set random seed
-       max       row of column maxima
-       min       row of column minima
-       size      matrix sizes
-       magic     magic matrix
-       sum       row of column sum
-       any       row of column any's
-       all       row of column all's
-       length    maximum size
-       isempty   check if matrix is empty
-       row       concatenate to row
-       column    concatenate to column
+       isa         is object a given class instance (same as isinstance)
+       eye         unit matrix
+       isnumber    is arg a number?
+       zeros       zero matrix
+       ones        one matrix
+       rand        random matrix
+       seed        set random seed
+       max         row of column maxima
+       min         row of column minima
+       size        matrix sizes
+       magic       magic matrix
+       sum         row of column sum
+       any         row of column any's
+       all         row of column all's
+       length      maximum size
+       isempty     check if matrix is empty
+       row         concatenate to row
+       column      concatenate to column
 
     logical:
        AND       logical matrix and
@@ -72,6 +73,7 @@ Terminal = neurotron.cluster.terminal.Terminal
 Cluster = neurotron.cluster.cluster.Cluster
 Token = neurotron.cluster.cluster.Token
 Cell = neurotron.cluster.cluster.Cell
+SynapseErr = neurotron.cluster.SynapseErr
 
 Monitor = neurotron.cluster.monitor.Monitor
 Record = neurotron.cluster.monitor.Record

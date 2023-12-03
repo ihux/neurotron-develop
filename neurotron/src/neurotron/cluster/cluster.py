@@ -66,6 +66,16 @@ class Token(dict):
             return ''
 
 #=========================================================================
+# class SynapseErr
+#=========================================================================
+
+class SynapseErr(Exception):
+    """
+    class Synapse: exception to raise if there are no more free synapses
+    """
+    pass
+
+#=========================================================================
 # class Out
 #=========================================================================
 
@@ -108,15 +118,15 @@ class Cell(Attribute):
         return dict
 
 #=========================================================================
-# class Cluster
+# class Core (Cluster Core)
 #=========================================================================
 
-class Cluster(Attribute):
-    verbose = 0
-    def __init__(self,m=4,n=10,d=2,s=5,f=None,verbose=0,rand=True):
+class Core(Attribute):
+    def __init__(self,m=2,n=7,d=4,s=3,f=None,verbose=0,rand=True):
         if f is None: f = n
         self.shape = (m,n,d,s)
         self.sizes = (f,n*m)               # (M,N)
+
         self.cdx = Matrix(range(m*n))      # access context vector
         self.fdx = m*n+Matrix(range(f))    # access feedforward vector
         self.k = Matrix(range(n*m))
@@ -134,6 +144,15 @@ class Cluster(Attribute):
         self.Y = Matrix(m,n)
         self.S = Matrix(m,n)
         self.L = Matrix(m,n)
+
+#=========================================================================
+# class Cluster
+#=========================================================================
+
+class Cluster(Core):
+    verbose = 0
+    def __init__(self,m=4,n=10,d=2,s=5,f=None,verbose=0,rand=True):
+        super().__init__(m,n,d,s,f,verbose=verbose,rand=rand)
 
     def __len__(self):
         m,n,d,s = self.shape
@@ -338,6 +357,61 @@ class Cluster(Attribute):
         #    mon = Monitor(2*m+1,n);
         #    self.plot(mon,0);  mon.title(prefix+'relax')
         return y
+
+    def connect(self,idx,kdx):
+        """
+        >>> cells = Cluster(2,5,2,3,rand=False)
+        >>> cells.connect([0,6,8],[4,6,8])
+        >>> cells._predict.map()
+        K: +-000/0-+-002/2-+-004/4-+-006/6-+-008/8-+
+           |  000  |  000  |  068  |  068  |  068  |
+           |  000  |  000  |  000  |  000  |  000  |
+           +-001/1-+-003/3-+-005/5-+-007/7-+-009/9-+
+           |  000  |  000  |  000  |  000  |  000  |
+           |  000  |  000  |  000  |  000  |  000  |
+           +-------+-------+-------+-------+-------+
+        P: +-000/0-+-002/2-+-004/4-+-006/6-+-008/8-+
+           |  000  |  000  |  AAA  |  AAA  |  AAA  |
+           |  000  |  000  |  000  |  000  |  000  |
+           +-001/1-+-003/3-+-005/5-+-007/7-+-009/9-+
+           |  000  |  000  |  000  |  000  |  000  |
+           |  000  |  000  |  000  |  000  |  000  |
+           +-------+-------+-------+-------+-------+
+        W: +-000/0-+-002/2-+-004/4-+-006/6-+-008/8-+
+           |  000  |  000  |  111  |  111  |  111  |
+           |  000  |  000  |  000  |  000  |  000  |
+           +-001/1-+-003/3-+-005/5-+-007/7-+-009/9-+
+           |  000  |  000  |  000  |  000  |  000  |
+           |  000  |  000  |  000  |  000  |  000  |
+           +-------+-------+-------+-------+-------+
+        """
+        assert isa(idx,list)
+        assert isa(kdx,list)
+        m,n,d,s = self.shape
+        if len(idx) > s:
+            raise Exception('more than %g indices provided (arg2)'%s)
+        predict = self._predict
+
+        for k in kdx:
+            done = False
+            for ii in range(d):
+                if mf.ALL(predict.P[k][ii,:]==0):
+                    for jj in range(s):
+                        predict.K[k][ii,jj] = 0
+                    for jj in range(len(idx)):
+                        predict.K[k][ii,jj] = idx[jj]
+                        predict.P[k][ii,jj] = 0.5
+                    done = True
+                    break
+            if not done:
+                print('K[%g]' % k, predict.K[k])
+                raise SynapseErr('no free synapses to connect: [%g]'%k)
+            predict.W[k] = predict.P[k] >= predict.eta
+
+    def decode(self):
+        output = self.token.decode(self.Y)
+        predict = self.token.decode(self.X)
+        return (output,predict)
 
 #===============================================================================
 # unit tests
