@@ -9,6 +9,7 @@ neurotron.cluster: neural cluster computing
         Token       wrapper for token dicts
         SynapseErr  Synapse Exception
         Toy         creating toy stuff
+        Train       sequence trainer
 
     functions:
         follow      following matrix during matrix iteration
@@ -19,6 +20,7 @@ import neurotron.cluster.setup
 import neurotron.cluster.terminal
 import neurotron.cluster.monitor
 import neurotron.cluster.toy
+import neurotron.cluster.trainer
 
 #===============================================================================
 # classes
@@ -33,9 +35,12 @@ Cluster = cluster.Cluster
 Cell = cluster.Cell
 Token = cluster.Token
 SynapseErr = cluster.SynapseErr
+
 Toy = toy.Toy
 
 Record = monitor.Record
+
+Train = trainer.Train
 
 #===============================================================================
 # functions

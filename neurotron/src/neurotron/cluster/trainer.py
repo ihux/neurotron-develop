@@ -1,0 +1,256 @@
+"""
+module neurotron.cluster.trainer
+    class Cells  # derived class of Cluster
+    class Train  # sequence trainer
+"""
+
+from neurotron.cluster.cluster import Cluster, Token, follow
+from neurotron.math.matrix import Matrix
+from neurotron.cluster.toy import Toy
+from neurotron.cluster.monitor import Record, Monitor
+import neurotron.math as nm
+isa = isinstance
+
+#===============================================================================
+# class Cells
+#===============================================================================
+
+class Cells(Cluster):
+    """
+    >>> Cells()
+    |-|-|-|-|-|-|-|-|-|-|
+    >>> Cells('Mary')
+    |-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|
+    """
+    def __init__(self,shape=(2,5,2,3),token=None):
+        if isa(shape,str):
+            tag = shape      # rename
+            self.toy = Toy(tag)
+            shape = self.toy.shape
+            token = self.toy.token
+        else:
+            self.toy = None
+        nm.seed(1)
+        cells = super().__init__(*shape,verbose=1)
+        self.token = token
+        m,n,d,s = shape
+        f = [0,0,0] if token is None else token['.']
+        self.y = nm.row(nm.zeros(1,m*n),f)
+        self.record = Record(self)
+
+    def process(self,seq):
+        m,n,d,s = self.shape
+        seq = [seq] if isa(seq,str) else seq
+        prediction = [seq[0],'->']
+        for word in seq:
+            mon = Monitor(m,n);
+            self.y = nm.row(nm.zeros(1,m*n),token[word])
+            self.y = self.step(mon,self.y,word)
+            output,predict = self.decode()
+            mon.xlabel((n-1)/2,output+' -> '+predict)
+            prediction.append(predict)
+        return prediction
+
+    def predictive(self,list):
+        for k in list:
+            cells.X[k] = 1;
+            cells._predict.I[k] = Matrix([[.1,-.1,.1,-.1,.1],[0,0,0,0,0]])
+
+    def map(self):
+        self._predict.map()
+
+    def __str__(self):
+        self.record.clear();
+        self.record(self)
+        return self.record.pattern()
+
+    def __repr__(self):
+        return self.__str__()
+
+#===============================================================================
+# class Train
+#===============================================================================
+
+class Train:
+    """
+    parameter training
+    >>> Train()
+    Train(Cells(2,5,2,3))
+    >>> Train(Cells('Mary'))
+    Train(Cells('Mary'))
+    """
+    def __init__(self,cells=None):
+        self.memory = {}
+        self._words = {}
+        self._contexts = {}
+        self.cells = Cells() if cells is None else cells
+
+    def pattern(self,list):
+        """
+        >>> Train().pattern([1,0,1,0])
+        '1010'
+        """
+        str = ''
+        for item in list: str += '1' if item else '0'
+        return str
+
+    def hash(self,M):    # hash of a matrix
+        """
+        Train().hash(Matrix([[1,1,0],[0,1,1]]))
+        """
+        list = M.list();  str = ''
+        m,n = M.shape; sep = ''
+        for i in range(m):
+            row = list[i]
+            str += sep + self.pattern(row); sep = '|'
+        return str
+
+    def next(self,M):
+        """
+        >>> Train().next(Matrix(2,3))
+        [1 1 1; 0 0 0]
+        >>> Train().next([[0,1,1],[1,0,0]])
+        [1 0 1; 0 1 0]
+        >>> Train().next([[0,0,0],[1,1,1]])
+        """
+        if M is None:
+            m,n,d,s = self.cells.shape
+            return follow(Matrix(m,n))
+        return follow(M)
+
+    def token(self,word=None):
+        """
+        >>> dict = Train(Cells('Mary')).token()
+        >>> Train(Cells('Mary')).token('likes')
+        [0, 0, 1, 0, 0, 0, 0, 1, 1]
+        """
+        if word is None: return self.cells.token
+        return self.cells.token[word]
+
+    def number(self,M):
+        m,n = M.shape; nmb = 0; base = 1;
+        for j in range(n):
+            for i in range(m):
+                if M[i,j]:
+                    nmb += base*i; break
+            base *= m
+        return nmb
+
+    def code(self,M):
+        m,n = M.shape; code = Matrix(1,n)
+        for j in range(n):
+            for i in range(m):
+                if M[i,j]:
+                    code[0,j] = i; break
+        return code
+
+    def index(self,token):
+        """
+        >>> train = Train(Cells('Mary'))
+        >>> train.index(train.token('likes'))
+        [2, 7, 8]
+        """
+        idx = []
+        for k in range(len(token)):
+            if token[k]: idx.append(k)
+        return idx
+
+    def _word(self,word):  # store/update word to ._words
+        """
+        word 'Mary' is stored as ([0,7,8],'#0',[[1,1,1],[0,0,0]])
+        >>> Train(Cells('Mary'))._word('Mary')
+        ('Mary', ([0, 7, 8], '#-1', [0 0 0; 0 0 0]))
+        """
+        m = self.cells.shape[0]
+        n = len(self.index(self.token(word)))
+        if not word in self._words:
+            triple = (self.index(self.token(word)),'#-1',Matrix(m,n))
+            #print('### triple:',triple)
+        else:
+            triple = self._words[word]
+            idx,key,M = triple
+            key = '#%g' % (int(key[1:])+1)
+            M = self.next(M)
+            if M is None:
+                raise Exception('representation overflow (max %g)' % m**n)
+            triple = (idx,key,M)
+        self._words[word] = triple
+        return(word,triple)
+
+    def _learn(self,context,word):    # process first item of sequence
+        if context == '':
+            context = word
+        else:
+            context = context + ' ' + word
+        value = self.memory[context] if context in self.memory else []
+        print('### learn: ',context,'->',value)
+        idx = self.index(self.token(word))
+        if value == []:
+            value.append((word,idx))
+            self.memory[context] = value
+        print('           ',context,'->',self.memory[context])
+        return context
+
+    def _train(self,context,word):
+        """
+        >>> train = Train(Cells('Mary'))
+        """
+        print('### train:',(context,word))
+        if not word in self._words: self._word(word)
+        #if context == '': return self._words[word]
+        start = (context == '')
+        if context == '': context = '<>'
+        context = '<' + context[1:-1] + ' ' + word + '>'
+        ans,triple = self._word(word)
+        """
+        '#':([3,7,8],'#1','to')
+        '@':['#1',[0 1 1; 1 0 0],'2.1-7.0-8.0'],
+        'sing': [2,'<John likes to sing>']
+        'climb': [1,'<John likes to climb>']
+        {'#': ([2, 7, 8], '#0', [1 1 1; 0 0 0]), '@': ['#0', [1 1 1; 0 0 0], '*.*-*.*-*.*']}
+
+        """
+        if not context in self._contexts:
+            if not start: self._word(word)  # next word representation
+            idx,key,M = triple
+            idx = self.index(self.token(word))
+            dict = {'#':(idx,key,word)}
+            code = self.code(M)
+            tag = '';  sep = ''
+            for k in range(code.shape[1]):
+                tag += sep + '%g.%g' % (idx[k],code[0,k]); sep = '-'
+            dict['@'] = [key,M,tag]
+            self._contexts[context] = dict
+        return(context,triple)
+
+    def __call__(self,context,word):
+        return self._train(context,word)
+
+    def __str__(self):
+        if self.cells is None: return 'Train()'
+        if self.cells.toy is not None:
+            return "Train(Cells('%s'))" % self.cells.toy.tag
+        return 'Train(Cells(%g,%g,%g,%g))' % self.cells.shape
+
+    def __repr__(self):
+        return self.__str__()
+
+    def show(self):
+        print('token:')
+        for word in self.cells.token:
+            idx = self.index(self.token(word))
+            print('   ',idx,'%s:' % word,self.token(word))
+        print('words:')
+        for word in self._words:
+            print('   ','%s:' % word,self._words[word])
+        print('contexts:')
+        for context in self._contexts:
+            print('   ','%s:' % context,self._contexts[context])
+
+#===============================================================================
+# doc test
+#===============================================================================
+
+if __name__ == '__main__':
+    import doctest
+    doctest.testmod()

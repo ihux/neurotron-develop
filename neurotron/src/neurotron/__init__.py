@@ -16,7 +16,8 @@ neurotron: building blocks for neural computing circuits
        Record      recording of cell states
        SynapseErr  Synapse Exception
        Toy         creating toy stuff
-       
+       Train       sequence trainer
+
    functions:
        isa         is object a given class instance (same as isinstance)
        eye         unit matrix
@@ -56,6 +57,7 @@ import neurotron.math.field
 import neurotron.cluster.setup
 import neurotron.cluster.terminal
 import neurotron.cluster.cluster
+import neurotron.cluster.trainer
 import neurotron.ansi
 
 import neurotron.neurotron
@@ -84,6 +86,8 @@ Monitor = neurotron.cluster.monitor.Monitor
 Record = neurotron.cluster.monitor.Record
 
 Toy = neurotron.cluster.toy.Toy
+
+Train = neurotron.cluster.trainer.Train
 
 #===============================================================================
 # function attribute setup

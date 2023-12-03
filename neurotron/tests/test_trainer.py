@@ -1,9 +1,9 @@
-# test_toy.py: test neurotron.cluster.toy module
+# test_trainer.py: test neurotron.cluster.trainer module
 
 import doctest
 import pytest
 
-import neurotron.cluster.toy
+import neurotron.cluster.trainer
 
 #===============================================================================
 # fixture
@@ -22,5 +22,5 @@ class Validator:
 #===============================================================================
 
 def test_doctest(validator):
-   result = doctest.testmod(neurotron.cluster.toy)
+   result = doctest.testmod(neurotron.cluster.trainer)
    assert result.failed == 0
