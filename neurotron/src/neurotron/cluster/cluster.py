@@ -60,7 +60,8 @@ class Token(dict):
             return decoder[key] if key in decoder else ''
         elif isa(arg,Matrix):
             row = mf.MAX(arg).list()[0]
-            return decoder[self.pattern(row)]
+            key = self.pattern(row)
+            return decoder[key] if key in decoder else ''
         else:
             return ''
 
