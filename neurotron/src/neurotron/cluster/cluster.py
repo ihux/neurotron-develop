@@ -11,6 +11,7 @@ from neurotron.math.matfun import ROW, SEED, ZEROS, AND, OR, NOT
 from neurotron.cluster.terminal import Terminal
 from neurotron.cluster.setup import Collab,Excite,Predict
 from neurotron.cluster.monitor import Monitor, Record
+import neurotron.math.matfun as mf
 isa = isinstance
 
 #=========================================================================
@@ -18,10 +19,42 @@ isa = isinstance
 #=========================================================================
 
 class Token(dict):
-    def __init__(self,arg=None):
-        self.dict = arg if arg is not None else {}
-    def __getitem__(self,key):
-        return self.dict[key]
+    def __init__(self, *args, **kwargs):
+        super(Token, self).__init__(*args, **kwargs)
+        self._init()
+
+    def pattern(self,list):
+        """
+        >>> Token().pattern([1,0,1,0])
+        '1010'
+        """
+        str = ''
+        for item in list: str += '1' if item else '0'
+        return str
+
+    def _init(self):
+        self._decoder = {}  # inverse map's dictionary
+        for key in self:
+            pat = self.pattern(self[key])
+            self._decoder[pat] = key
+
+    def decode(self,arg=None):
+        """
+        >>> token = Token({'word1':[0,1,0],'word2':[1,0,1]})
+        >>> token.decode([0,1,0])
+        'word1'
+        >>> token.decode(Matrix([[1,0,0],[0,0,1]]))
+        'word2'
+        """
+        if arg is None:
+            return token._decoder
+        elif isa(arg,list):
+            return self._decoder[self.pattern(arg)]
+        elif isa(arg,Matrix):
+            row = mf.MAX(arg).list()[0]
+            return self._decoder[self.pattern(row)]
+        else:
+            raise Exception('unsupported arg type')
 
 #=========================================================================
 # class Out
