@@ -234,6 +234,17 @@ class Train:
             self._contexts[curctx] = dict
         return newctx
 
+    def _sequence(self,context,sequence):
+        """
+        process sequence:
+        >>> train = Train(Cells('Mary'))
+        >>> train._sequence('',['Mary','likes'])
+        '<Mary likes>'
+        """
+        for word in sequence:
+            context = self._train(context,word)
+        return context
+
     def __call__(self,context,word):
         """
         >>> train = Train(Cells('Mary'))
@@ -241,7 +252,13 @@ class Train:
         '<Mary>'
         >>> train('<Mary>','likes')
         '<Mary likes>'
+
+        #>>> train('',['Mary','likes'])
+        #'<Mary likes>'
         """
+        if isa(word,list):
+            sequence = word  # rename
+            return self._sequence(context,sequence)
         return self._train(context,word)
 
     def __str__(self):
