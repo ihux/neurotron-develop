@@ -198,6 +198,18 @@ class Train:
         '<Mary>'
         >>> train._train('<Mary>','likes')
         '<Mary likes>'
+        >>> train.show(token=False)
+        words:
+            Mary: ([0, 7, 8], '#0', [1 1 1; 0 0 0])
+            likes: ([2, 7, 8], '#1', [0 1 1; 1 0 0])
+        contexts:
+            <Mary>:
+               #: ([0, 7, 8], '#0', 'Mary')
+               @: ['#0', [1 1 1; 0 0 0], '0.0-7.0-8.0']
+               likes: (1, '<Mary likes>')
+            <Mary likes>:
+               #: ([2, 7, 8], '#0', 'likes')
+               @: ['#0', [1 1 1; 0 0 0], '2.0-7.0-8.0']
         """
         if not word in self._words: self._word(word)
         if ctx == '':
@@ -218,7 +230,14 @@ class Train:
             dict['@'] = [key,M,tag]
             self._contexts[context] = dict
         if ctx in self._contexts:
-            self._contexts[ctx][word] = context
+            dict = self._contexts[ctx]
+            if word in dict:
+                count,value = dict[word]
+                assert value == context
+            else:
+                count = 0
+            dict[word] = (count+1,context)
+            self._contexts[ctx] = dict
         return context
 
     def __call__(self,context,word):
@@ -309,7 +328,7 @@ def test_train_mary_likes():
         <Mary>:
            #: ([0, 7, 8], '#0', 'Mary')
            @: ['#0', [1 1 1; 0 0 0], '0.0-7.0-8.0']
-           likes: <Mary likes>
+           likes: (1, '<Mary likes>')
         <Mary likes>:
            #: ([2, 7, 8], '#0', 'likes')
            @: ['#0', [1 1 1; 0 0 0], '2.0-7.0-8.0']
@@ -331,11 +350,11 @@ def test_train_mary_likes_to():
         <Mary>:
            #: ([0, 7, 8], '#0', 'Mary')
            @: ['#0', [1 1 1; 0 0 0], '0.0-7.0-8.0']
-           likes: <Mary likes>
+           likes: (1, '<Mary likes>')
         <Mary likes>:
            #: ([2, 7, 8], '#0', 'likes')
            @: ['#0', [1 1 1; 0 0 0], '2.0-7.0-8.0']
-           to: <Mary likes to>
+           to: (1, '<Mary likes to>')
         <Mary likes to>:
            #: ([3, 7, 8], '#0', 'to')
            @: ['#0', [1 1 1; 0 0 0], '3.0-7.0-8.0']
@@ -361,19 +380,19 @@ def test_train_mary_likes_to_sing():
         <Mary>:
            #: ([0, 7, 8], '#0', 'Mary')
            @: ['#0', [1 1 1; 0 0 0], '0.0-7.0-8.0']
-           likes: <Mary likes>
+           likes: (1, '<Mary likes>')
         <Mary likes>:
            #: ([2, 7, 8], '#0', 'likes')
            @: ['#0', [1 1 1; 0 0 0], '2.0-7.0-8.0']
-           to: <Mary likes to>
+           to: (1, '<Mary likes to>')
         <Mary likes to>:
            #: ([3, 7, 8], '#0', 'to')
            @: ['#0', [1 1 1; 0 0 0], '3.0-7.0-8.0']
-           sing: <Mary likes to sing>
+           sing: (1, '<Mary likes to sing>')
         <Mary likes to sing>:
            #: ([4, 7, 8], '#0', 'sing')
            @: ['#0', [1 1 1; 0 0 0], '4.0-7.0-8.0']
-           .: <Mary likes to sing .>
+           .: (1, '<Mary likes to sing .>')
         <Mary likes to sing .>:
            #: ([6, 7, 8], '#0', '.')
            @: ['#0', [1 1 1; 0 0 0], '6.0-7.0-8.0']
