@@ -32,6 +32,7 @@ Predict = setup.Predict
 Terminal = terminal.Terminal
 
 Cluster = cells.Cluster
+Cells = cells.Cells
 Cell = cells.Cell
 Token = cells.Token
 SynapseErr = cells.SynapseErr

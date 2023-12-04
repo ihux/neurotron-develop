@@ -4,68 +4,12 @@ module neurotron.cluster.trainer
     class Train  # sequence trainer
 """
 
-from neurotron.cluster.cells import Cluster, Token, follow
+from neurotron.cluster.cells import Cluster, Cells, Token, follow
 from neurotron.math.matrix import Matrix
 from neurotron.cluster.toy import Toy
 from neurotron.cluster.monitor import Record, Monitor
 import neurotron.math as nm
 isa = isinstance
-
-#===============================================================================
-# class Cells
-#===============================================================================
-
-class Cells(Cluster):
-    """
-    >>> Cells()
-    |-|-|-|-|-|-|-|-|-|-|
-    >>> Cells('Mary')
-    |-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|
-    """
-    def __init__(self,shape=(2,5,2,3),token=None):
-        if isa(shape,str):
-            tag = shape      # rename
-            self.toy = Toy(tag)
-            shape = self.toy.shape
-            token = self.toy.token
-        else:
-            self.toy = None
-        nm.seed(1)
-        cells = super().__init__(*shape,verbose=1)
-        self.token = token
-        m,n,d,s = shape
-        f = [0,0,0] if token is None else token['.']
-        self.y = nm.row(nm.zeros(1,m*n),f)
-        self.record = Record(self)
-
-    def process(self,seq):
-        m,n,d,s = self.shape
-        seq = [seq] if isa(seq,str) else seq
-        prediction = [seq[0],'->']
-        for word in seq:
-            mon = Monitor(m,n);
-            self.y = nm.row(nm.zeros(1,m*n),self.token[word])
-            self.y = self.step(mon,self.y,word)
-            output,predict = self.decode()
-            mon.xlabel((n-1)/2,output+' -> '+predict)
-            prediction.append(predict)
-        return prediction
-
-    def predictive(self,list):
-        for k in list:
-            cells.X[k] = 1;
-            cells._predict.I[k] = Matrix([[.1,-.1,.1,-.1,.1],[0,0,0,0,0]])
-
-    def map(self):
-        self._predict.map()
-
-    def __str__(self):
-        self.record.clear();
-        self.record(self)
-        return self.record.pattern()
-
-    def __repr__(self):
-        return self.__str__()
 
 #===============================================================================
 # class Train
