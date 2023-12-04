@@ -193,7 +193,7 @@ class Train:
             <Mary>:
                #: ([0, 7, 8], '#0', 'Mary')
                @: ['#0', [0 0 0; 0 0 0], '0.0-7.0-8.0']
-               likes: (1, '<Mary likes>')
+               likes: (1, '<Mary likes>', [2, 7, 8])
             <Mary likes>:
                #: ([2, 7, 8], '#1', 'likes')
                @: ['#1', [1 1 1; 0 0 0], '2.0-7.0-8.0']
@@ -209,8 +209,6 @@ class Train:
 
         if not newctx in self._contexts:
             if not curctx == '': self._word(word,False) # next word representation
-            #if not word in self._words: self._word(word)
-            #ans,triple = self._word(word,False)
             triple = self._words[word]
             idx,key,M = triple     # triple = ([2, 7, 8], '#1', [1 1 1; 0 0 0])
             idx = self.index(self.token(word))
@@ -223,13 +221,15 @@ class Train:
             self._contexts[newctx] = dict
 
         if curctx in self._contexts:
+            idx = self.index(self.token(word))
             dict = self._contexts[curctx]
             if word in dict:
-                count,value = dict[word]
+                count,value,index = dict[word]
                 assert value == newctx
+                assert index == idx
             else:
                 count = 0
-            dict[word] = (count+1,newctx)
+            dict[word] = (count+1,newctx,idx)
             self._contexts[curctx] = dict
         return newctx
 
@@ -343,7 +343,7 @@ def test_train_mary_likes_1():
         <Mary>:
            #: ([0, 7, 8], '#0', 'Mary')
            @: ['#0', [0 0 0; 0 0 0], '0.0-7.0-8.0']
-           likes: (1, '<Mary likes>')
+           likes: (1, '<Mary likes>', [2, 7, 8])
         <Mary likes>:
            #: ([2, 7, 8], '#1', 'likes')
            @: ['#1', [1 1 1; 0 0 0], '2.0-7.0-8.0']
@@ -367,7 +367,7 @@ def test_train_mary_likes_2():
         <Mary>:
            #: ([0, 7, 8], '#0', 'Mary')
            @: ['#0', [0 0 0; 0 0 0], '0.0-7.0-8.0']
-           likes: (3, '<Mary likes>')
+           likes: (3, '<Mary likes>', [2, 7, 8])
         <Mary likes>:
            #: ([2, 7, 8], '#1', 'likes')
            @: ['#1', [1 1 1; 0 0 0], '2.0-7.0-8.0']
@@ -389,11 +389,11 @@ def test_train_mary_likes_to():
         <Mary>:
            #: ([0, 7, 8], '#0', 'Mary')
            @: ['#0', [0 0 0; 0 0 0], '0.0-7.0-8.0']
-           likes: (1, '<Mary likes>')
+           likes: (1, '<Mary likes>', [2, 7, 8])
         <Mary likes>:
            #: ([2, 7, 8], '#1', 'likes')
            @: ['#1', [1 1 1; 0 0 0], '2.0-7.0-8.0']
-           to: (1, '<Mary likes to>')
+           to: (1, '<Mary likes to>', [3, 7, 8])
         <Mary likes to>:
            #: ([3, 7, 8], '#1', 'to')
            @: ['#1', [1 1 1; 0 0 0], '3.0-7.0-8.0']
@@ -415,19 +415,19 @@ def test_train_mary_likes_to_sing():
         <Mary>:
            #: ([0, 7, 8], '#0', 'Mary')
            @: ['#0', [0 0 0; 0 0 0], '0.0-7.0-8.0']
-           likes: (1, '<Mary likes>')
+           likes: (1, '<Mary likes>', [2, 7, 8])
         <Mary likes>:
            #: ([2, 7, 8], '#1', 'likes')
            @: ['#1', [1 1 1; 0 0 0], '2.0-7.0-8.0']
-           to: (1, '<Mary likes to>')
+           to: (1, '<Mary likes to>', [3, 7, 8])
         <Mary likes to>:
            #: ([3, 7, 8], '#1', 'to')
            @: ['#1', [1 1 1; 0 0 0], '3.0-7.0-8.0']
-           sing: (1, '<Mary likes to sing>')
+           sing: (1, '<Mary likes to sing>', [4, 7, 8])
         <Mary likes to sing>:
            #: ([4, 7, 8], '#1', 'sing')
            @: ['#1', [1 1 1; 0 0 0], '4.0-7.0-8.0']
-           .: (1, '<Mary likes to sing .>')
+           .: (1, '<Mary likes to sing .>', [6, 7, 8])
         <Mary likes to sing .>:
            #: ([6, 7, 8], '#1', '.')
            @: ['#1', [1 1 1; 0 0 0], '6.0-7.0-8.0']
@@ -451,19 +451,19 @@ def test_train_mary_john():
         <Mary>:
            #: ([0, 7, 8], '#0', 'Mary')
            @: ['#0', [0 0 0; 0 0 0], '0.0-7.0-8.0']
-           likes: (1, '<Mary likes>')
+           likes: (1, '<Mary likes>', [2, 7, 8])
         <Mary likes>:
            #: ([2, 7, 8], '#1', 'likes')
            @: ['#1', [1 1 1; 0 0 0], '2.0-7.0-8.0']
-           to: (1, '<Mary likes to>')
+           to: (1, '<Mary likes to>', [3, 7, 8])
         <Mary likes to>:
            #: ([3, 7, 8], '#1', 'to')
            @: ['#1', [1 1 1; 0 0 0], '3.0-7.0-8.0']
-           sing: (1, '<Mary likes to sing>')
+           sing: (1, '<Mary likes to sing>', [4, 7, 8])
         <Mary likes to sing>:
            #: ([4, 7, 8], '#1', 'sing')
            @: ['#1', [1 1 1; 0 0 0], '4.0-7.0-8.0']
-           .: (1, '<Mary likes to sing .>')
+           .: (1, '<Mary likes to sing .>', [6, 7, 8])
         <Mary likes to sing .>:
            #: ([6, 7, 8], '#1', '.')
            @: ['#1', [1 1 1; 0 0 0], '6.0-7.0-8.0']
@@ -490,26 +490,26 @@ def test_train_mary_john_likes():
         <Mary>:
            #: ([0, 7, 8], '#0', 'Mary')
            @: ['#0', [0 0 0; 0 0 0], '0.0-7.0-8.0']
-           likes: (1, '<Mary likes>')
+           likes: (1, '<Mary likes>', [2, 7, 8])
         <Mary likes>:
            #: ([2, 7, 8], '#1', 'likes')
            @: ['#1', [1 1 1; 0 0 0], '2.0-7.0-8.0']
-           to: (1, '<Mary likes to>')
+           to: (1, '<Mary likes to>', [3, 7, 8])
         <Mary likes to>:
            #: ([3, 7, 8], '#1', 'to')
            @: ['#1', [1 1 1; 0 0 0], '3.0-7.0-8.0']
-           sing: (1, '<Mary likes to sing>')
+           sing: (1, '<Mary likes to sing>', [4, 7, 8])
         <Mary likes to sing>:
            #: ([4, 7, 8], '#1', 'sing')
            @: ['#1', [1 1 1; 0 0 0], '4.0-7.0-8.0']
-           .: (1, '<Mary likes to sing .>')
+           .: (1, '<Mary likes to sing .>', [6, 7, 8])
         <Mary likes to sing .>:
            #: ([6, 7, 8], '#1', '.')
            @: ['#1', [1 1 1; 0 0 0], '6.0-7.0-8.0']
         <John>:
            #: ([1, 7, 8], '#0', 'John')
            @: ['#0', [0 0 0; 0 0 0], '1.0-7.0-8.0']
-           likes: (1, '<John likes>')
+           likes: (1, '<John likes>', [2, 7, 8])
         <John likes>:
            #: ([2, 7, 8], '#2', 'likes')
            @: ['#2', [0 1 1; 1 0 0], '2.1-7.0-8.0']
