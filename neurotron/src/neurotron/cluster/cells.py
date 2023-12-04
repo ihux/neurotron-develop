@@ -7,7 +7,6 @@ module neurotron.cluster.cells
 from neurotron.math.attribute import Attribute
 from neurotron.math.matrix import Matrix
 from neurotron.math.field import Field
-from neurotron.math.matfun import ROW, SEED, ZEROS, AND, OR, NOT
 from neurotron.cluster.terminal import Terminal
 from neurotron.cluster.setup import Collab,Excite,Predict
 from neurotron.cluster.monitor import Monitor, Record
@@ -107,7 +106,7 @@ class Core(Attribute):
     def split(self,y):    # split y int context c and feedforward f
         """
         >>> cells = Cluster(3,4,2,5,7)
-        >>> y = ROW([1,1,1,0,0,0,1,1,1,0,0,0],[1,0,1,0,1,0,1])
+        >>> y = nm.row([1,1,1,0,0,0,1,1,1,0,0,0],[1,0,1,0,1,0,1])
         >>> cells.split(y)
         ([1 1 1 0 0 0 1 1 1 0 0 0], [1 0 1 0 1 0 1])
         """
@@ -144,8 +143,8 @@ class Core(Attribute):
         return y
 
     def burst(self,y):
-        self.B = AND(NOT(self.D),self.Q)
-        self.Y = OR(self.Y,self.B)
+        self.B = nm.AND(nm.NOT(self.D),self.Q)
+        self.Y = nm.OR(self.Y,self.B)
         return self.update(y)
 
     def predict(self,y):
@@ -449,9 +448,9 @@ def _test_mary():
     """
     >>> token = {'Mary': [1,0,0,0,0,0,0,1,1]}
     >>> shape = (2,9,2,5); m,n,d,s = shape
-    >>> SEED(1);  cells = Cluster(*shape,verbose=1,rand=True)
+    >>> nm.seed(1);  cells = Cluster(*shape,verbose=1,rand=True)
     >>> cells.X[0] = 1; cells._predict.I[0] = Matrix([[.1,0,.1,0,.1],[0,0,0,0,0]])
-    >>> y = ROW(ZEROS(1,m*n),token['Mary'])
+    >>> y = nm.row(nm.zeros(1,m*n),token['Mary'])
     >>> y = cells.stimu(y);  cells.smap();  print(y)
     +-000/0-+-002/2-+-004/4-+-006/6-+-008/8-+-010/A-+-012/C-+-014/E-+-016/G-+
     | UX--- | ----- | ----- | ----- | ----- | ----- | ----- | U---- | U---- |
