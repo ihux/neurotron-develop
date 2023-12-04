@@ -177,7 +177,7 @@ class Train:
         self._words[word] = triple
         return(word,triple)
 
-    def _learn(self,context,word):    # process first item of sequence
+    def old_learn(self,context,word):    # process first item of sequence
         if context == '':
             context = word
         else:
@@ -194,22 +194,18 @@ class Train:
     def _train(self,ctx,word):
         """
         >>> train = Train(Cells('Mary'))
+        >>> train._train('','Mary')
+        '<Mary>'
+        >>> train._train('<Mary>','likes')
+        '<Mary likes>'
         """
-        #print('### train:',(context,word))
         if not word in self._words: self._word(word)
         if ctx == '':
             context = '<' + word + '>'
         else:
             context = '<' + ctx[1:-1] + ' ' + word + '>'
         ans,triple = self._word(word)
-        """
-        '#':([3,7,8],'#1','to')
-        '@':['#1',[0 1 1; 1 0 0],'2.1-7.0-8.0'],
-        'sing': [2,'<John likes to sing>']
-        'climb': [1,'<John likes to climb>']
-        {'#': ([2, 7, 8], '#0', [1 1 1; 0 0 0]), '@': ['#0', [1 1 1; 0 0 0], '*.*-*.*-*.*']}
 
-        """
         if not context in self._contexts:
             if not ctx == '': self._word(word)  # next word representation
             idx,key,M = triple
@@ -222,13 +218,17 @@ class Train:
             dict['@'] = [key,M,tag]
             self._contexts[context] = dict
         if ctx in self._contexts:
-            #print('##### self._contexts[ctx]',self._contexts[ctx])
             self._contexts[ctx][word] = context
-        #else:
-        #    print("*** key '%s' not found in self._contexts" % ctx)
-        return(context,triple)
+        return context
 
     def __call__(self,context,word):
+        """
+        >>> train = Train(Cells('Mary'))
+        >>> train('','Mary')
+        '<Mary>'
+        >>> train('<Mary>','likes')
+        '<Mary likes>'
+        """
         return self._train(context,word)
 
     def __str__(self):
@@ -260,11 +260,32 @@ class Train:
 # unit tests
 #===============================================================================
 
+def test_train():
+    """
+    >>> train = Train(Cells('Mary'))
+    >>> train.show()
+    token:
+        [0, 7, 8] Mary: [1, 0, 0, 0, 0, 0, 0, 1, 1]
+        [1, 7, 8] John: [0, 1, 0, 0, 0, 0, 0, 1, 1]
+        [0, 6, 7] Lisa: [1, 0, 0, 0, 0, 0, 1, 1, 0]
+        [1, 6, 7] Andy: [0, 1, 0, 0, 0, 0, 1, 1, 0]
+        [2, 7, 8] likes: [0, 0, 1, 0, 0, 0, 0, 1, 1]
+        [3, 7, 8] to: [0, 0, 0, 1, 0, 0, 0, 1, 1]
+        [4, 7, 8] sing: [0, 0, 0, 0, 1, 0, 0, 1, 1]
+        [4, 6, 7] dance: [0, 0, 0, 0, 1, 0, 1, 1, 0]
+        [5, 7, 8] hike: [0, 0, 0, 0, 0, 1, 0, 1, 1]
+        [5, 6, 7] paint: [0, 0, 0, 0, 0, 1, 1, 1, 0]
+        [4, 6, 7] climb: [0, 0, 0, 0, 1, 0, 1, 1, 0]
+        [6, 7, 8] .: [0, 0, 0, 0, 0, 0, 1, 1, 1]
+    words:
+    contexts:
+    """
+
 def test_train_mary():
     """
     >>> train = Train(Cells('Mary'))
     >>> train('','Mary')
-    ('<Mary>', ([0, 7, 8], '#0', [1 1 1; 0 0 0]))
+    '<Mary>'
     >>> train.show(token=False)
     words:
         Mary: ([0, 7, 8], '#0', [1 1 1; 0 0 0])
@@ -279,7 +300,7 @@ def test_train_mary_likes():
     >>> train = Train(Cells('Mary'))
     >>> ans=train('','Mary')
     >>> train('<Mary>','likes')
-    ('<Mary likes>', ([2, 7, 8], '#0', [1 1 1; 0 0 0]))
+    '<Mary likes>'
     >>> train.show(token=False)
     words:
         Mary: ([0, 7, 8], '#0', [1 1 1; 0 0 0])
@@ -294,13 +315,71 @@ def test_train_mary_likes():
            @: ['#0', [1 1 1; 0 0 0], '2.0-7.0-8.0']
     """
 
-"""
-'<Mary likes>': {
-    '#':([2,7,8],'#0','likes')
-    '@':['#0',[1 1 1; 0 0 0],'2.0-7.0-8.0'],
-    'to': '<Mary likes to>'
-    }
-"""
+def test_train_mary_likes_to():
+    """
+    >>> train = Train(Cells('Mary'))
+    >>> ans=train('','Mary')
+    >>> ans = train('<Mary>','likes')
+    >>> train('<Mary likes>','to')
+    '<Mary likes to>'
+    >>> train.show(token=False)
+    words:
+        Mary: ([0, 7, 8], '#0', [1 1 1; 0 0 0])
+        likes: ([2, 7, 8], '#1', [0 1 1; 1 0 0])
+        to: ([3, 7, 8], '#1', [0 1 1; 1 0 0])
+    contexts:
+        <Mary>:
+           #: ([0, 7, 8], '#0', 'Mary')
+           @: ['#0', [1 1 1; 0 0 0], '0.0-7.0-8.0']
+           likes: <Mary likes>
+        <Mary likes>:
+           #: ([2, 7, 8], '#0', 'likes')
+           @: ['#0', [1 1 1; 0 0 0], '2.0-7.0-8.0']
+           to: <Mary likes to>
+        <Mary likes to>:
+           #: ([3, 7, 8], '#0', 'to')
+           @: ['#0', [1 1 1; 0 0 0], '3.0-7.0-8.0']
+    """
+
+def test_train_mary_likes_to_sing():
+    """
+    >>> train = Train(Cells('Mary'))
+    >>> ans=train('','Mary')
+    >>> ans = train('<Mary>','likes')
+    >>> ans = train('<Mary likes>','to')
+    >>> ans = train('<Mary likes to>','sing')
+    >>> train('<Mary likes to sing>','.')
+    '<Mary likes to sing .>'
+    >>> train.show(token=False)
+    words:
+        Mary: ([0, 7, 8], '#0', [1 1 1; 0 0 0])
+        likes: ([2, 7, 8], '#1', [0 1 1; 1 0 0])
+        to: ([3, 7, 8], '#1', [0 1 1; 1 0 0])
+        sing: ([4, 7, 8], '#1', [0 1 1; 1 0 0])
+        .: ([6, 7, 8], '#1', [0 1 1; 1 0 0])
+    contexts:
+        <Mary>:
+           #: ([0, 7, 8], '#0', 'Mary')
+           @: ['#0', [1 1 1; 0 0 0], '0.0-7.0-8.0']
+           likes: <Mary likes>
+        <Mary likes>:
+           #: ([2, 7, 8], '#0', 'likes')
+           @: ['#0', [1 1 1; 0 0 0], '2.0-7.0-8.0']
+           to: <Mary likes to>
+        <Mary likes to>:
+           #: ([3, 7, 8], '#0', 'to')
+           @: ['#0', [1 1 1; 0 0 0], '3.0-7.0-8.0']
+           sing: <Mary likes to sing>
+        <Mary likes to sing>:
+           #: ([4, 7, 8], '#0', 'sing')
+           @: ['#0', [1 1 1; 0 0 0], '4.0-7.0-8.0']
+           .: <Mary likes to sing .>
+        <Mary likes to sing .>:
+           #: ([6, 7, 8], '#0', '.')
+           @: ['#0', [1 1 1; 0 0 0], '6.0-7.0-8.0']
+    """
+
+
 #===============================================================================
 # doc test
 #===============================================================================
