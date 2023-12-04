@@ -34,7 +34,7 @@ Terminal = terminal.Terminal
 Cluster = cells.Cluster
 Cells = cells.Cells
 Cell = cells.Cell
-Token = cells.Token
+Token = token.Token
 SynapseErr = cells.SynapseErr
 
 Toy = toy.Toy

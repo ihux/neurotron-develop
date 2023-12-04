@@ -4,7 +4,8 @@ module neurotron.cluster.trainer
     class Train  # sequence trainer
 """
 
-from neurotron.cluster.cells import Cluster, Cells, Token, follow
+from neurotron.cluster.cells import Cluster, Cells, follow
+from neurotron.cluster.token import Token
 from neurotron.math.matrix import Matrix
 from neurotron.cluster.toy import Toy
 from neurotron.cluster.monitor import Record, Monitor

@@ -78,7 +78,7 @@ Field  = neurotron.math.field.Field
 Terminal = neurotron.cluster.terminal.Terminal
 
 Cluster = neurotron.cluster.cells.Cluster
-Token = neurotron.cluster.cells.Token
+Token = neurotron.cluster.token.Token
 Cell = neurotron.cluster.cells.Cell
 SynapseErr = neurotron.cluster.SynapseErr
 
