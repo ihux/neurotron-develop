@@ -252,9 +252,8 @@ class Train:
         '<Mary>'
         >>> train('<Mary>','likes')
         '<Mary likes>'
-
-        #>>> train('',['Mary','likes'])
-        #'<Mary likes>'
+        >>> train('',['Mary','likes'])
+        '<Mary likes>'
         """
         if isa(word,list):
             sequence = word  # rename
