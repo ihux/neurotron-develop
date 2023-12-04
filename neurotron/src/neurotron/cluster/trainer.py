@@ -334,8 +334,9 @@ def test_train_mary_likes_2():
     >>> ans=train('','Mary')
     >>> train('<Mary>','likes')
     '<Mary likes>'
-
-    ### train('<Mary>','likes')
+    >>> train('<Mary>','likes')
+    '<Mary likes>'
+    >>> train('<Mary>','likes')
     '<Mary likes>'
     >>> train.show(token=False)
     words:
@@ -345,7 +346,7 @@ def test_train_mary_likes_2():
         <Mary>:
            #: ([0, 7, 8], '#0', 'Mary')
            @: ['#0', [0 0 0; 0 0 0], '0.0-7.0-8.0']
-           likes: (1, '<Mary likes>')
+           likes: (3, '<Mary likes>')
         <Mary likes>:
            #: ([2, 7, 8], '#1', 'likes')
            @: ['#1', [1 1 1; 0 0 0], '2.0-7.0-8.0']
