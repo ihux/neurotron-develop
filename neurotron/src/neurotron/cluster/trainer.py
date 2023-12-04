@@ -191,11 +191,10 @@ class Train:
         print('           ',context,'->',self.memory[context])
         return context
 
-    def _train(self,ctx,word):
+    def _train(self,curctx,word):
         """
         >>> train = Train(Cells('Mary'))
-        >>> train._train('','Mary')
-        '<Mary>'
+        >>> ans = train._train('','Mary')
         >>> train._train('<Mary>','likes')
         '<Mary likes>'
         >>> train.show(token=False)
@@ -212,14 +211,17 @@ class Train:
                @: ['#0', [1 1 1; 0 0 0], '2.0-7.0-8.0']
         """
         if not word in self._words: self._word(word)
-        if ctx == '':
-            context = '<' + word + '>'
+        if curctx == '':
+            newctx = '<' + word + '>'
         else:
-            context = '<' + ctx[1:-1] + ' ' + word + '>'
+            newctx = '<' + curctx[1:-1] + ' ' + word + '>'
         ans,triple = self._word(word)
 
-        if not context in self._contexts:
-            if not ctx == '': self._word(word)  # next word representation
+            # example: curctx = '<Mary>', word = 'likes'
+            #          newctx = '<Mary likes>'
+
+        if not newctx in self._contexts:
+            if not curctx == '': self._word(word)  # next word representation
             idx,key,M = triple
             idx = self.index(self.token(word))
             dict = {'#':(idx,key,word)}
@@ -228,17 +230,18 @@ class Train:
             for k in range(code.shape[1]):
                 tag += sep + '%g.%g' % (idx[k],code[0,k]); sep = '-'
             dict['@'] = [key,M,tag]
-            self._contexts[context] = dict
-        if ctx in self._contexts:
-            dict = self._contexts[ctx]
+            self._contexts[newctx] = dict
+
+        if curctx in self._contexts:
+            dict = self._contexts[curctx]
             if word in dict:
                 count,value = dict[word]
-                assert value == context
+                assert value == newctx
             else:
                 count = 0
-            dict[word] = (count+1,context)
-            self._contexts[ctx] = dict
-        return context
+            dict[word] = (count+1,newctx)
+            self._contexts[curctx] = dict
+        return newctx
 
     def __call__(self,context,word):
         """
@@ -314,11 +317,34 @@ def test_train_mary():
            @: ['#0', [1 1 1; 0 0 0], '0.0-7.0-8.0']
     """
 
-def test_train_mary_likes():
+def test_train_mary_likes_1():
     """
     >>> train = Train(Cells('Mary'))
     >>> ans=train('','Mary')
     >>> train('<Mary>','likes')
+    '<Mary likes>'
+    >>> train.show(token=False)
+    words:
+        Mary: ([0, 7, 8], '#0', [1 1 1; 0 0 0])
+        likes: ([2, 7, 8], '#1', [0 1 1; 1 0 0])
+    contexts:
+        <Mary>:
+           #: ([0, 7, 8], '#0', 'Mary')
+           @: ['#0', [1 1 1; 0 0 0], '0.0-7.0-8.0']
+           likes: (1, '<Mary likes>')
+        <Mary likes>:
+           #: ([2, 7, 8], '#0', 'likes')
+           @: ['#0', [1 1 1; 0 0 0], '2.0-7.0-8.0']
+    """
+
+def test_train_mary_likes_2():
+    """
+    >>> train = Train(Cells('Mary'))
+    >>> ans=train('','Mary')
+    >>> train('<Mary>','likes')
+    '<Mary likes>'
+
+    ### train('<Mary>','likes')
     '<Mary likes>'
     >>> train.show(token=False)
     words:
