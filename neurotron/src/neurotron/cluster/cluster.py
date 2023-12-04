@@ -135,7 +135,10 @@ class Core(Attribute):
         self._excite = Terminal(m,n)       # simple excite terminal
         self._collab = Terminal(Collab(m,n,d,s))
         self._predict = Terminal(Predict(m,n,d,s,rand=rand),verbose=verbose)
+        self.init()
 
+    def init(self):
+        m,n = self.shape[:2]
         self.U = Matrix(m,n)
         self.Q = Matrix(m,n)
         self.D = Matrix(m,n)
@@ -144,9 +147,6 @@ class Core(Attribute):
         self.Y = Matrix(m,n)
         self.S = Matrix(m,n)
         self.L = Matrix(m,n)
-
-    def reset(self):
-        for x in 'U Q D B X Y S L'.split(): self.set(x,self.zero())
 
     def zero(self):
         return Matrix(*self.shape[:2])
@@ -387,6 +387,9 @@ class Cluster(Core):
                         predict.P[k][ii,jj] = 0.5
                     done = True
                     break
+                elif mf.ALL(predict.K[k][ii,:]==Matrix(idx)):
+                    done = True
+                    break
             if not done:
                 print('K[%g]' % k, predict.K[k])
                 raise SynapseErr('no free synapses to connect: [%g]'%k)
@@ -546,6 +549,29 @@ def test_follow2():
     [0 0 0; 0 0 0; 1 1 1]
     >>> follow([[0,0,0],[0,0,0],[1,1,1]])
     """
+
+def test_connect():
+    """
+    >>> cells = Cluster(1,5,2,3)
+    >>> cells._predict.K.map()
+    +-000/0-+-001/1-+-002/2-+-003/3-+-004/4-+
+    |  000  |  000  |  000  |  000  |  000  |
+    |  000  |  000  |  000  |  000  |  000  |
+    +-------+-------+-------+-------+-------+
+    >>> cells.connect([1,2,3],[2,3,4])
+    >>> cells._predict.K.map()
+    +-000/0-+-001/1-+-002/2-+-003/3-+-004/4-+
+    |  000  |  000  |  123  |  123  |  123  |
+    |  000  |  000  |  000  |  000  |  000  |
+    +-------+-------+-------+-------+-------+
+    >>> cells.connect([1,2,3],[2,3,4]) # same again
+    >>> cells._predict.K.map()
+    +-000/0-+-001/1-+-002/2-+-003/3-+-004/4-+
+    |  000  |  000  |  123  |  123  |  123  |
+    |  000  |  000  |  000  |  000  |  000  |
+    +-------+-------+-------+-------+-------+
+    """
+
 #===============================================================================
 # doc test
 #===============================================================================
