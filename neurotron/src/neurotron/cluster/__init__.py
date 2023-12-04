@@ -15,7 +15,7 @@ neurotron.cluster: neural cluster computing
         follow      following matrix during matrix iteration
 """
 
-import neurotron.cluster.cluster
+import neurotron.cluster.cells
 import neurotron.cluster.setup
 import neurotron.cluster.terminal
 import neurotron.cluster.monitor
@@ -31,10 +31,10 @@ Excite = setup.Excite
 Predict = setup.Predict
 Terminal = terminal.Terminal
 
-Cluster = cluster.Cluster
-Cell = cluster.Cell
-Token = cluster.Token
-SynapseErr = cluster.SynapseErr
+Cluster = cells.Cluster
+Cell = cells.Cell
+Token = cells.Token
+SynapseErr = cells.SynapseErr
 
 Toy = toy.Toy
 
@@ -46,4 +46,4 @@ Train = trainer.Train
 # functions
 #===============================================================================
 
-follow = cluster.follow
+follow = cells.follow

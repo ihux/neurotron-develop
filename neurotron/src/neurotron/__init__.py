@@ -56,7 +56,7 @@ import neurotron.math.field
 
 import neurotron.cluster.setup
 import neurotron.cluster.terminal
-import neurotron.cluster.cluster
+import neurotron.cluster.cells
 import neurotron.cluster.trainer
 import neurotron.ansi
 
@@ -77,9 +77,9 @@ Matrix = neurotron.math.matrix.Matrix
 Field  = neurotron.math.field.Field
 Terminal = neurotron.cluster.terminal.Terminal
 
-Cluster = neurotron.cluster.cluster.Cluster
-Token = neurotron.cluster.cluster.Token
-Cell = neurotron.cluster.cluster.Cell
+Cluster = neurotron.cluster.cells.Cluster
+Token = neurotron.cluster.cells.Token
+Cell = neurotron.cluster.cells.Cell
 SynapseErr = neurotron.cluster.SynapseErr
 
 Monitor = neurotron.cluster.monitor.Monitor
@@ -115,4 +115,4 @@ AND = neurotron.math.matfun.AND
 OR  = neurotron.math.matfun.OR
 NOT = neurotron.math.matfun.NOT
 
-follow = neurotron.cluster.cluster.follow
+follow = neurotron.cluster.cells.follow

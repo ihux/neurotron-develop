@@ -1,5 +1,5 @@
 """
-module neurotron.cluster.cluster
+module neurotron.cluster.cells
     class Cluster  # simulate a cluster of Neurotrons
     class Token    # wrapper for token dicts
 """

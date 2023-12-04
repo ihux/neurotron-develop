@@ -3,7 +3,7 @@ module neurotron.cluster.toy
     class Toy  # to provide toy stuff for neurotron cluster
 """
 
-from neurotron.cluster.cluster import Token
+from neurotron.cluster.cells import Token
 
 #===============================================================================
 # class Toy
