@@ -257,7 +257,14 @@ class Train:
         '<Mary likes>'
         >>> train('Mary likes')
         '<Mary likes>'
+        >>> train('Mary likes',5)
+        '<Mary likes>'
         """
+        if isa(arg,int):
+            sequence = context
+            for k in range(arg):
+                context = self(sequence)
+            return context
         if arg is None:
             arg = context.split();  context = ''
         if isa(arg,list):
