@@ -403,11 +403,7 @@ def test_train_mary_likes_to():
 def test_train_mary_likes_to_sing():
     """
     >>> train = Train(Cells('Mary'))
-    >>> ans=train('','Mary')
-    >>> ans = train('<Mary>','likes')
-    >>> ans = train('<Mary likes>','to')
-    >>> ans = train('<Mary likes to>','sing')
-    >>> train('<Mary likes to sing>','.')
+    >>> train('Mary likes to sing .')
     '<Mary likes to sing .>'
     >>> train.show(token=False)
     words:
@@ -441,12 +437,8 @@ def test_train_mary_likes_to_sing():
 def test_train_mary_john():
     """
     >>> train = Train(Cells('Mary'))
-    >>> ans=train('','Mary')
-    >>> ans = train('<Mary>','likes')
-    >>> ans = train('<Mary likes>','to')
-    >>> ans = train('<Mary likes to>','sing')
-    >>> ans = train('<Mary likes to sing>','.')
-    >>> train('','John')
+    >>> ans = train('Mary likes to sing .')
+    >>> train('John')
     '<John>'
     >>> train.show(token=False)
     words:
@@ -484,13 +476,8 @@ def test_train_mary_john():
 def test_train_mary_john_likes():
     """
     >>> train = Train(Cells('Mary'))
-    >>> ans=train('','Mary')
-    >>> ans = train('<Mary>','likes')
-    >>> ans = train('<Mary likes>','to')
-    >>> ans = train('<Mary likes to>','sing')
-    >>> ans = train('<Mary likes to sing>','.')
-    >>> ans = train('','John')
-    >>> train('<John>','likes')
+    >>> ans = train('Mary likes to sing .')
+    >>> train('John likes')
     '<John likes>'
     >>> train.show(token=False)
     words:
