@@ -20,6 +20,7 @@ err += doctest.testmod(neurotron.neurotron, verbose=False).failed
 
 err += doctest.testmod(neurotron.cluster.monitor, verbose=False).failed
 err += doctest.testmod(neurotron.cluster.toy).failed
+err += doctest.testmod(neurotron.cluster.token).failed
 err += doctest.testmod(neurotron.cluster.trainer).failed
 
 if err:

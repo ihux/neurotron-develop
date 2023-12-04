@@ -4,7 +4,9 @@ module neurotron.cluster.token
 """
 
 from neurotron.math.matrix import Matrix
+from neurotron.math.matfun import SEED as seed, RAND as rand
 import neurotron.math.matfun as mf
+isa = isinstance
 
 #=========================================================================
 # class Token
@@ -26,9 +28,14 @@ class Token(dict):
 
     def _init(self):
         self._decoder = {}  # inverse map's dictionary
+        low = 999999999; high = -1
         for key in self:
-            pat = self.pattern(self[key])
+            bits = self[key]
+            pat = self.pattern(bits)
             self._decoder[pat] = key
+            n = sum(bits)
+            low = min(low,n);  high = max(high,n)
+        self.range = (low,high)
 
     def decode(self,arg=None):
         """
@@ -56,6 +63,44 @@ class Token(dict):
             return decoder[key] if key in decoder else ''
         else:
             return ''
+
+    def upgrade(self,word):
+        """
+        >>> token = Token({'word1':[0,1,0,1],'word2':[1,0,1,0]})
+        >>> seed(0); token.upgrade('word3')
+        [1, 0, 0, 1]
+        """
+        if len(self) == 0: raise Exception('cannot upgrade empty tokenizer')
+        key = next(iter(self))        # 1st key
+        n = len(self[key])
+        zero = [0 for k in range(n)]  # zero token
+        low,high = self.range
+
+        for k in range(100000):       # max 100000 trials
+            m = low + rand(1+high-low)
+            pattern = zero.copy()
+            count = 0
+            while count < m:          # while not all m bits set
+                idx = rand(n)
+                if pattern[idx] == 0:
+                    pattern[idx] = 1
+                    count += 1
+
+                # is this a new pattern?
+
+            for key in self:
+                if self[key] != pattern:   # cool - found pattern
+                    self[word] = pattern
+                    return pattern
+
+    def __call__(self,word):
+        """
+        >>> token = Token({'word1':[0,1,0,1],'word2':[1,0,1,0]})
+        >>> seed(0); token('word3')
+        [1, 0, 0, 1]
+        """
+        if word in self: return self[word]
+        return self.upgrade(word)          # upgrade if not found
 
 #===============================================================================
 # doc test
