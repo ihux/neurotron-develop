@@ -145,6 +145,62 @@ class Core(Attribute):
         self.S = Matrix(m,n)
         self.L = Matrix(m,n)
 
+    def reset(self):
+        for x in 'U Q D B X Y S L'.split(): self.set(x,self.zero())
+
+    def zero(self):
+        return Matrix(*self.shape[:2])
+
+    def split(self,y):    # split y int context c and feedforward f
+        """
+        >>> cells = Cluster(3,4,2,5,7)
+        >>> y = ROW([1,1,1,0,0,0,1,1,1,0,0,0],[1,0,1,0,1,0,1])
+        >>> cells.split(y)
+        ([1 1 1 0 0 0 1 1 1 0 0 0], [1 0 1 0 1 0 1])
+        """
+        return (y[self.cdx],y[self.fdx])
+
+    def update(self,y):        # update y
+        if y is not None:
+            y[self.k] = self.Y
+        return y
+
+    def relax(self,y=None):
+        for x in 'U Q D B Y S'.split(): self.set(x,self.zero())
+        return self.update(y)
+
+    def stimu(self,y):
+        c,f = self.split(y)
+        self.U = self._excite(f)
+        return y
+
+    def react(self,y):
+        self.Y = self.U * self.X
+        self.L = self.X * self.Y
+        self._predict.learn(self.L)
+        return self.update(y)
+
+    def depress(self,y):
+        c,f = self.split(y)
+        self.D = self._collab(c)
+        #self.L = self.zero()
+        return y
+
+    def excite(self,y):
+        self.Q = self.U.copy()
+        return y
+
+    def burst(self,y):
+        self.B = AND(NOT(self.D),self.Q)
+        self.Y = OR(self.Y,self.B)
+        return self.update(y)
+
+    def predict(self,y):
+        c,f = self.split(y)
+        self.S = self._predict(c)
+        self.X = self.S
+        return y
+
 #=========================================================================
 # class Cluster
 #=========================================================================
@@ -165,18 +221,6 @@ class Cluster(Core):
 
     def range(self):
         return range(self.sizes[1])
-
-    def zero(self):
-        return Matrix(*self.shape[:2])
-
-    def split(self,y):    # split y int context c and feedforward f
-        """
-        >>> cells = Cluster(3,4,2,5,7)
-        >>> y = ROW([1,1,1,0,0,0,1,1,1,0,0,0],[1,0,1,0,1,0,1])
-        >>> cells.split(y)
-        ([1 1 1 0 0 0 1 1 1 0 0 0], [1 0 1 0 1 0 1])
-        """
-        return (y[self.cdx],y[self.fdx])
 
     def kappa(self,i,j=None):
         """
@@ -213,62 +257,9 @@ class Cluster(Core):
         self.K.imap('K: ')     # Map(self).Kmap()
         self.P.vmap('P: ')
 
-    def update(self,y):        # update y
-        y[self.k] = self.Y
-        return y
-
-    def relax(self,y):
-        #M,N = self.sizes
-        #m,n,d,s = self.shape
-        #c = y[:N];  f = y[N:N+M];
-        Z = self.zero()
-        self.set('U,Q,D,B,Y,S',(Z,Z,Z,Z,Z,Z))
-        return self.update(y)
-
-    def stimu(self,y):
-        c,f = self.split(y)
-        self.U = self._excite(f)
-        return y
-
-    def react(self,y):
-        self.Y = self.U * self.X
-        self.L = self.X * self.Y
-        self._predict.learn(self.L)
-        return self.update(y)
-
-    def depress(self,y):
-        c,f = self.split(y)
-        self.D = self._collab(c)
-        #self.L = self.zero()
-        return y
-
-    def excite(self,y):
-        self.Q = self.U.copy()
-        return y
-
-    def burst(self,y):
-        self.B = AND(NOT(self.D),self.Q)
-        self.Y = OR(self.Y,self.B)
-        return self.update(y)
-
-    def predict(self,y):
-        c,f = self.split(y)
-        self.S = self._predict(c)
-        self.X = self.S
-        #for k in self.range():
-        #    if self.S[k]: print('mind I[%g]:'%k,self._predict.I[k])
-        return y
-
     def clear(self,M):
         m,n,d,s = self.shape
         M = Matrix(m,n)
-
-    #def idle(self):
-    #    clear(self.B);  clear(self.D);  clear(self.L);  clear(self.Q)
-    #    clear(self.S);  clear(self.U);  clear(self.X);  clear(self.Y)
-    #    for k in range(self.sizes[1]):
-    #        y[k] = self.Y[k]
-    #    return y
 
     def plot(self,mon,subplot=0,title=None,label=None):
         m,n,d,s = self.shape
@@ -349,13 +340,6 @@ class Cluster(Core):
             self.draw(mon,1);  mon.xlabel(n/2-0.5,prefix+'predict')
         else:
             self.draw(mon,1);  mon.xlabel(n/2-0.5,prefix+'predict')
-
-        #y = self.relax(y);
-        #if log is not None:
-        #    print('relax ...');    self.smap()
-        #if all is not None:
-        #    mon = Monitor(2*m+1,n);
-        #    self.plot(mon,0);  mon.title(prefix+'relax')
         return y
 
     def connect(self,idx,kdx):
