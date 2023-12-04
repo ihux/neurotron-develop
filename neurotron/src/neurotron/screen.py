@@ -163,7 +163,7 @@ class Screen:
         self.ds = 0.11; self.rs = self.ds/3;
         self.gray = (0.7,0.7,0.7);  self.red = (1,0,0)
         self.gold = (1,0.9,0);      self.dark = (.5,.5,.5)
-        self.blue = (0,0.5,1);      self.green=(0,.8,0)
+        self.blue = (0,0.6,1);      self.green=(0,.8,0)
         self.magenta = (1,0.2,1);   self.orange = (1,.5,0)
         self.lila = (.7,0.3,1);     self.cyan = (0,.7,1)
         self.white = (1,1,1);       self.black = (0,0,0)
@@ -290,8 +290,8 @@ class Screen:
         l = l if l is not None else 0      # learning state
         s = s if s is not None else 0      # spiking state
 
-        ucol = self.blue   if u > 0 else self.gray
-        ucol = self.lila   if q > 0 else ucol
+        ucol = self.lila   if u > 0 else self.gray
+        ucol = self.blue   if q > 0 else ucol
         pcol = self.green  if x > 0 else self.gray
         ycol = self.red    if y > 0 else self.gray
         bcol = self.dark   if d > 0 else self.gray

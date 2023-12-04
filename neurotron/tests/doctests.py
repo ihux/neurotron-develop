@@ -2,9 +2,6 @@
 
 import doctest
 import neurotron
-#import neurotron.math.attribute
-#import neurotron.math.matrix
-#import neurotron.cluster.setup
 from neurotron.ansi import Ansi
 
 err = 0
@@ -17,8 +14,13 @@ err += doctest.testmod(neurotron, verbose=False).failed
 
 err += doctest.testmod(neurotron.cluster.setup, verbose=False).failed
 err += doctest.testmod(neurotron.cluster.terminal, verbose=False).failed
+err += doctest.testmod(neurotron.cluster.cluster, verbose=False).failed
 
 err += doctest.testmod(neurotron.neurotron, verbose=False).failed
+
+err += doctest.testmod(neurotron.cluster.monitor, verbose=False).failed
+err += doctest.testmod(neurotron.cluster.toy).failed
+err += doctest.testmod(neurotron.cluster.trainer).failed
 
 if err:
    print(Ansi.R+'doctests: total fails:'+Ansi.N,err)

@@ -15,7 +15,7 @@ Field methods:
 """
 
 import numpy as np
-from neurotron.math.matfun import Matrix, SEED, RAND
+from neurotron.math.matfun import Matrix, SEED, RAND, ZEROS
 from neurotron.math.helper import isa, isnumber
 
 #===============================================================================
@@ -405,6 +405,40 @@ def _case6b():
     >>> F[0] = 1; F.map()
     +-000/0-+-001/1-+-002/2-+
     |   1   |   0   |   0   |
+    +-------+-------+-------+
+    """
+
+def _case7a():  # assignment must be by copy
+    """
+    >>> F = Field(1,3,2,3); SEED(0)
+    >>> for k in F.range(): F[k] = RAND((2,3))
+    >>> zero = ZEROS(2,3)
+    >>> F[0] = zero; F[1] = zero; F.vmap()
+    +-000/0-+-001/1-+-002/2-+
+    |  000  |  000  |  DVv  |
+    |  000  |  000  |  uxQ  |
+    +-------+-------+-------+
+    >>> F[0] = RAND((2,3)); F.vmap()
+    +-000/0-+-001/1-+-002/2-+
+    |  NSX  |  000  |  DVv  |
+    |  ObO  |  000  |  uxQ  |
+    +-------+-------+-------+
+    """
+
+def _case7a():  # assignment must be by copy
+    """
+    >>> F = Field(1,3,2,3); SEED(0)
+    >>> for k in F.range(): F[k] = RAND((2,3))
+    >>> zero = ZEROS(2,3)
+    >>> F[0] = F[1] = zero; F.vmap()
+    +-000/0-+-001/1-+-002/2-+
+    |  000  |  000  |  DVv  |
+    |  000  |  000  |  uxQ  |
+    +-------+-------+-------+
+    >>> F[0] = RAND((2,3)); F.vmap()
+    +-000/0-+-001/1-+-002/2-+
+    |  NSX  |  000  |  DVv  |
+    |  ObO  |  000  |  uxQ  |
     +-------+-------+-------+
     """
 

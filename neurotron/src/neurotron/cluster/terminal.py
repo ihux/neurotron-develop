@@ -1,14 +1,14 @@
 """
-terminal.py:
+neurotron.cluster.terminal.py:
     class Terminal
 """
 
-from neurotron.math.attribute import Attribute
-from neurotron.math.matrix import Matrix
-from neurotron.math.field import Field
-from neurotron.math.matfun import SUM,SEED,ROW,ONES
+from neurotron.math import Attribute, Matrix, Field
+from neurotron.math.matfun import SUM,SEED,ROW,ZEROS,ONES,MAX,MIN
+#from neurotron.cluster import Collab
 from neurotron.cluster.setup import Collab, Excite, Predict
 from neurotron.math.helper import isa
+import neurotron.math as nm
 
 #===============================================================================
 # class Terminal
@@ -25,7 +25,7 @@ class Terminal(Attribute):
     >>> excite._simple([1,0,0,1,1])
     [1 0 0 1 1 0 0; 1 0 0 1 1 0 0; 1 0 0 1 1 0 0]
     """
-    def __init__(self,K,P=None,eta=0.5,theta=None):
+    def __init__(self,K,P=None,eta=0.5,theta=None,delta=(0.1,0.1),verbose=0):
         if isa(K,int) and isa(P,int):
             m = K;  n = P
             self.shape = (m,n)
@@ -34,13 +34,14 @@ class Terminal(Attribute):
         if isa(K,Collab) or isa(K,Excite) or isa(K,Predict):
             K,P,W,theta = K.get('K,P,W,theta')
         else:
-            #print('##### K:',K)
             W = K.copy()
         self.K = K;  assert isa(K,Field)
         self.P = P;  assert P is None or isa(P,Field)
         self.W = W;  assert isa(W,Field)
         self.eta = eta
         self.theta = theta if theta is not None else 3
+        self.delta = delta
+        self.verbose = verbose
 
         if self.P is not None:
             self.I = Field(*self.K.shape)  #  learning increment
@@ -63,7 +64,7 @@ class Terminal(Attribute):
         if self.P is not None:
             m,n,d,s = self.K.shape
             for k in range(m*n):
-                self.W[k] = self.P[k] > self.eta
+                self.W[k] = self.P[k] >= self.eta
         return self.W
 
     def empower(self,v):
@@ -84,6 +85,36 @@ class Terminal(Attribute):
                 s = (v[j] > 0);  S[i,j] = s
         return S
 
+    def mind(self,sk,V,k):
+        def log(I,k):
+            d,s = I.shape
+            for ii in range(d):
+                if nm.any(I[ii,:]):
+                    print('mind I[%g].%g:' % (k,ii), I[ii,:])
+        m,n,d,s = self.P.shape
+        pdelta,ndelta = self.delta
+        S = sk.T @ ONES(1,s)
+        I = S * (2*pdelta*V - ndelta)
+        if self.verbose > 0: log(I,k)
+        #if any(sk):
+        #    print('##### mind V:',V)
+        #    print('#####      S:',S)
+        #    print('#####      I:',I)
+        return I
+
+    def learn(self,L):
+        def log(P,I,k):
+            m,n,d,s = P.shape
+            for ii in range(d):
+                if nm.any(I[k][ii,:]):
+                    Pii = P[k][ii,:];  Iii = I[k][ii,:]
+                    print('learn P[%g].%g:' % (k,ii),Pii,'by',Iii)
+        for k in self.P.range():
+            if L[k]:
+                self.P[k] = MAX(0,MIN(1,self.P[k]+self.I[k]))
+                if self.verbose > 0:
+                    log(self.P,self.I,k)
+
     def spike(self,v):              # calculate spike vectors
         if not isa(v,Matrix): v = Matrix(v)
         if self.K is None:
@@ -98,16 +129,58 @@ class Terminal(Attribute):
             V = v[self.K[k]]
             E = V * self.W[k]
             S[k] = SUM(E.T) >= self.theta
-            #print('#### k:',k,'SUM(E.T)',SUM(E.T),'> theta:',S[k])
+            self.I[k] = self.mind(S[k],V,k)
+            #if any(S[k]):
+            #    print('##### spike L:   ',S[k].T@ONES(1,s))
+            #    print('##### spike V:   ',V)
+            #    print('##### spike I[k]:',self.I[k])
         return S
+
+    def clear(self):
+        """
+        >>> predict = Terminal(Predict(1,3,2,5,rand=True))
+        >>> predict.map()
+        K: +-000/0-+-001/1-+-002/2-+
+           | 00212 | 12020 | 11100 |
+           | 00001 | 02211 | 12110 |
+           +-------+-------+-------+
+        P: +-000/0-+-001/1-+-002/2-+
+           | rkkHH | rPeeE | UheWE |
+           | 1UAMA | WwAEU | AwRCm |
+           +-------+-------+-------+
+        W: +-000/0-+-001/1-+-002/2-+
+           | 00011 | 01001 | 10011 |
+           | 11111 | 10111 | 10110 |
+           +-------+-------+-------+
+        >>> predict.clear().map()
+        K: +-000/0-+-001/1-+-002/2-+
+           | 00000 | 00000 | 00000 |
+           | 00000 | 00000 | 00000 |
+           +-------+-------+-------+
+        P: +-000/0-+-001/1-+-002/2-+
+           | 00000 | 00000 | 00000 |
+           | 00000 | 00000 | 00000 |
+           +-------+-------+-------+
+        W: +-000/0-+-001/1-+-002/2-+
+           | 00000 | 00000 | 00000 |
+           | 00000 | 00000 | 00000 |
+           +-------+-------+-------+
+        """
+        m,n,d,s = self.K.shape
+        zero = ZEROS(d,s)
+        for k in self.K.range():
+            self.K[k] = self.W[k] = zero
+            if self.P is not None:
+                self.P[k] = zero
+        return self
 
     def __call__(self,v):
         if self.K is None: return self._simple(v)
         S = self.spike(v)
-        M = Matrix(*S.shape[:2])
-        for k in M.range():
-            M[k] = max(S[k])
-        return M
+        J = Matrix(*S.shape[:2])
+        for k in J.range():
+            J[k] = max(S[k])
+        return J
 
 #===============================================================================
 # unit tests
@@ -188,7 +261,7 @@ class __TestTerminal__:
 
     def test_predict():
         """
-        >>> SEED(0); predict = Terminal(Predict(3,7,2,5))
+        >>> SEED(0); predict = Terminal(Predict(3,7,2,5,rand=True))
         >>> predict.map()
         K: +-000/0-+-003/3-+-006/6-+-009/9-+-012/C-+-015/F-+-018/I-+
            | CF033 | 79JI4 | 6C167 | EH5D8 | 9KJGJ | 5FF0I | 3HJJJ |
@@ -211,25 +284,25 @@ class __TestTerminal__:
            | CJcEh | APp1H | WUCru | EpHmu | Uwemp | khprc | umwJ1 |
            +-------+-------+-------+-------+-------+-------+-------+
         W: +-000/0-+-003/3-+-006/6-+-009/9-+-012/C-+-015/F-+-018/I-+
-           | 00000 | 00000 | 00000 | 00000 | 00000 | 00000 | 00000 |
-           | 00000 | 00000 | 00000 | 00000 | 00000 | 00000 | 00000 |
+           | 11000 | 11101 | 11011 | 10001 | 00000 | 00100 | 10011 |
+           | 00010 | 00110 | 11000 | 11010 | 01100 | 11111 | 11101 |
            +-001/1-+-004/4-+-007/7-+-010/A-+-013/D-+-016/G-+-019/J-+
-           | 00000 | 00000 | 00000 | 00000 | 00000 | 00000 | 00000 |
-           | 00000 | 00000 | 00000 | 00000 | 00000 | 00000 | 00000 |
+           | 11101 | 10010 | 10100 | 11010 | 01110 | 01001 | 00011 |
+           | 10011 | 11101 | 10111 | 10011 | 10111 | 11000 | 01011 |
            +-002/2-+-005/5-+-008/8-+-011/B-+-014/E-+-017/H-+-020/K-+
-           | 00000 | 00000 | 00000 | 00000 | 00000 | 00000 | 00000 |
-           | 00000 | 00000 | 00000 | 00000 | 00000 | 00000 | 00000 |
+           | 00010 | 01110 | 01100 | 01101 | 11010 | 11010 | 00111 |
+           | 11010 | 11011 | 11100 | 10100 | 10000 | 00000 | 00011 |
            +-------+-------+-------+-------+-------+-------+-------+
         >>> c = ROW([1,0,0,1,1,0,0],ONES(1,20))
         >>> predict(c)
-        [0 0 0 0 0 1 1; 1 1 1 1 0 0 0; 0 1 0 0 0 1 0]
+        [0 1 0 0 0 1 1; 1 1 1 1 1 0 0; 0 1 0 1 1 1 0]
         >>> predict.spike(c).map('S: ')
         S: +-000/0-+-003/3-+-006/6-+-009/9-+-012/C-+-015/F-+-018/I-+
-           |  00   |  00   |  00   |  00   |  00   |  01   |  10   |
+           |  00   |  10   |  00   |  00   |  00   |  01   |  11   |
            +-001/1-+-004/4-+-007/7-+-010/A-+-013/D-+-016/G-+-019/J-+
-           |  10   |  01   |  01   |  11   |  00   |  00   |  00   |
+           |  10   |  01   |  01   |  11   |  01   |  00   |  00   |
            +-002/2-+-005/5-+-008/8-+-011/B-+-014/E-+-017/H-+-020/K-+
-           |  00   |  01   |  00   |  00   |  00   |  10   |  00   |
+           |  00   |  01   |  00   |  10   |  10   |  10   |  00   |
            +-------+-------+-------+-------+-------+-------+-------+
         """
 

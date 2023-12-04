@@ -1,15 +1,12 @@
 """
-module carabao.cluster.setup
+module neurotron.cluster.setup
     class Collab  # setup collaboration terminal
 """
 
 import neurotron.math.matfun as mf
-#from neurotron import Attribute
-from neurotron.math.attribute import Attribute
-from neurotron.math.matrix import Matrix
-from neurotron.math.field import Field
-from neurotron.math.matfun import ONES, ZEROS, RAND, SEED
-isa = isinstance
+
+from neurotron.math import Attribute, Matrix, Field
+from neurotron.math import isa, ones, zeros, rand, seed
 
 #===============================================================================
 # class Collab
@@ -72,8 +69,8 @@ class Collab(Attribute):  # to manage collaboration topology
         for i in range(m):
             for j in range(n):
                 self.K[i,j] = self._Kij(i,j)
-                self.P[i,j] = ONES(1,m-1)
-                self.W[i,j] = ONES(1,m-1)
+                self.P[i,j] = ones(1,m-1)
+                self.W[i,j] = ones(1,m-1)
         self.P.map = self.P.vmap
 
     def map(self):
@@ -134,8 +131,8 @@ class Excite(Attribute):
         self.W = Field(m,n,d,s)
 
         for j in range(n):
-            Kij = ZEROS(d,s)
-            Wij = ZEROS(d,s)
+            Kij = zeros(d,s)
+            Wij = zeros(d,s)
             mu = 0
             for l in range(T.shape[0]):
                 if T[l,j]:
@@ -165,7 +162,92 @@ class Predict(Attribute):
     >>> shape = (3,4,2,5)
     >>> Predict(*shape)
     Predict(3,4,2,5)
-    >>> SEED(0);  Predict(*shape).map()
+    """
+    def __init__(self,m,n,d,s,eta=0.5,theta=3,rand=False):
+        self.shape = (m,n,d,s)
+        self.eta = eta
+        self.theta = theta
+        self.K = Field(m,n,d,s);  self.initK(rand)
+        self.P = Field(m,n,d,s);  self.initP(rand)
+        self.W = Field(m,n,d,s);  self.initW(rand)
+
+    def initK(self,random):
+        m,n,d,s = self.shape
+        if random:
+            self.K.set(rand((m*d,n*s),m*n))
+        else:
+            self.K.set(zeros(m*d,n*s))
+
+    def initP(self,random):
+        m,n,d,s = self.shape
+        if random:
+            Q = 20                     # quantizing constant
+            self.P.set((1+rand((m*d,n*s),Q))/Q)
+        else:
+            self.P.set(zeros(m*d,n*s))
+        self.P.map = self.P.vmap
+
+    def initW(self,random):
+        for k in self.W.range():
+            self.W[k] = self.P[k] >= self.eta
+
+    def __str__(self):
+        return 'Predict(%g,%g,%g,%g)' % self.shape
+
+    def __repr__(self):
+        return self.__str__()
+
+    def map(self):
+        self.K.map('K: ')
+        self.P.map('P: ')
+        self.W.map('W: ')
+
+#===============================================================================
+# unit test
+#===============================================================================
+
+def _test_predict1():
+    """
+    >>> shape = (3,4,2,5)
+    >>> Predict(*shape)
+    Predict(3,4,2,5)
+    >>> seed(0);  Predict(*shape).map()
+    K: +-000/0-+-003/3-+-006/6-+-009/9-+
+       | 00000 | 00000 | 00000 | 00000 |
+       | 00000 | 00000 | 00000 | 00000 |
+       +-001/1-+-004/4-+-007/7-+-010/A-+
+       | 00000 | 00000 | 00000 | 00000 |
+       | 00000 | 00000 | 00000 | 00000 |
+       +-002/2-+-005/5-+-008/8-+-011/B-+
+       | 00000 | 00000 | 00000 | 00000 |
+       | 00000 | 00000 | 00000 | 00000 |
+       +-------+-------+-------+-------+
+    P: +-000/0-+-003/3-+-006/6-+-009/9-+
+       | 00000 | 00000 | 00000 | 00000 |
+       | 00000 | 00000 | 00000 | 00000 |
+       +-001/1-+-004/4-+-007/7-+-010/A-+
+       | 00000 | 00000 | 00000 | 00000 |
+       | 00000 | 00000 | 00000 | 00000 |
+       +-002/2-+-005/5-+-008/8-+-011/B-+
+       | 00000 | 00000 | 00000 | 00000 |
+       | 00000 | 00000 | 00000 | 00000 |
+       +-------+-------+-------+-------+
+    W: +-000/0-+-003/3-+-006/6-+-009/9-+
+       | 00000 | 00000 | 00000 | 00000 |
+       | 00000 | 00000 | 00000 | 00000 |
+       +-001/1-+-004/4-+-007/7-+-010/A-+
+       | 00000 | 00000 | 00000 | 00000 |
+       | 00000 | 00000 | 00000 | 00000 |
+       +-002/2-+-005/5-+-008/8-+-011/B-+
+       | 00000 | 00000 | 00000 | 00000 |
+       | 00000 | 00000 | 00000 | 00000 |
+       +-------+-------+-------+-------+
+    """
+
+def _test_predict2():
+    """
+    >>> shape = (3,4,2,5)
+    >>> seed(0);  Predict(*shape,rand=True).map()
     K: +-000/0-+-003/3-+-006/6-+-009/9-+
        | 503B3 | 79352 | 47688 | A1677 |
        | 81598 | 94303 | 50238 | 13337 |
@@ -187,48 +269,16 @@ class Predict(Attribute):
        | AAApM | WHpAC | JeeuH | rrukc |
        +-------+-------+-------+-------+
     W: +-000/0-+-003/3-+-006/6-+-009/9-+
-       | 00000 | 00000 | 00000 | 00000 |
-       | 00000 | 00000 | 00000 | 00000 |
+       | 11100 | 00110 | 11110 | 01101 |
+       | 01100 | 01111 | 01000 | 11100 |
        +-001/1-+-004/4-+-007/7-+-010/A-+
-       | 00000 | 00000 | 00000 | 00000 |
-       | 00000 | 00000 | 00000 | 00000 |
+       | 10001 | 10001 | 11111 | 11100 |
+       | 00010 | 11101 | 10101 | 01101 |
        +-002/2-+-005/5-+-008/8-+-011/B-+
-       | 00000 | 00000 | 00000 | 00000 |
-       | 00000 | 00000 | 00000 | 00000 |
+       | 10001 | 01011 | 01001 | 11000 |
+       | 11101 | 11011 | 10001 | 00000 |
        +-------+-------+-------+-------+
     """
-    def __init__(self,m,n,d,s,eta=0.5,theta=3):
-        self.shape = (m,n,d,s)
-        self.eta = eta
-        self.theta = theta
-        self.K = Field(m,n,d,s);  self.initK()
-        self.P = Field(m,n,d,s);  self.initP()
-        self.W = Field(m,n,d,s);  self.initW()
-
-    def initK(self):
-        m,n,d,s = self.shape
-        self.K.set(RAND((m*d,n*s),m*n))
-
-    def initP(self):
-        m,n,d,s = self.shape
-        Q = 20                          # quantizing constant
-        self.P.set((1+RAND((m*d,n*s),Q))/Q)
-        self.P.map = self.P.vmap
-
-    def initW(self):
-        for k in self.W.range():
-            self.W[k] = self.P[k] >= self.theta
-
-    def __str__(self):
-        return 'Predict(%g,%g,%g,%g)' % self.shape
-
-    def __repr__(self):
-        return self.__str__()
-
-    def map(self):
-        self.K.map('K: ')
-        self.P.map('P: ')
-        self.W.map('W: ')
 
 #===============================================================================
 # doc test
