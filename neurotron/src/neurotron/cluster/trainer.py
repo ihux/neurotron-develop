@@ -245,20 +245,26 @@ class Train:
             context = self._train(context,word)
         return context
 
-    def __call__(self,context,word):
+    def __call__(self,context,arg=None):
         """
         >>> train = Train(Cells('Mary'))
         >>> train('','Mary')
         '<Mary>'
+        >>> train('Mary')
+        '<Mary>'
         >>> train('<Mary>','likes')
         '<Mary likes>'
-        >>> train('',['Mary','likes'])
+        >>> train('','Mary likes'.split())
+        '<Mary likes>'
+        >>> train('Mary likes')
         '<Mary likes>'
         """
-        if isa(word,list):
-            sequence = word  # rename
+        if arg is None:
+            arg = context.split();  context = ''
+        if isa(arg,list):
+            sequence = arg  # rename
             return self._sequence(context,sequence)
-        return self._train(context,word)
+        return self._train(context,arg)
 
     def __str__(self):
         if self.cells is None: return 'Train()'
@@ -521,6 +527,13 @@ def test_train_mary_john_likes():
         <John likes>:
            #: ([2, 7, 8], '#2', 'likes')
            @: ['#2', [0 1 1; 1 0 0], '2.1-7.0-8.0']
+    """
+
+def test_sequence():
+    """
+    >>> train = Train(Cells('Mary'))
+    >>> train('Mary likes')
+    '<Mary likes>'
     """
 
 #===============================================================================
