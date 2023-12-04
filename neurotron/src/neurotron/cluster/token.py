@@ -95,6 +95,7 @@ class Token(dict):
 
     def __call__(self,word):
         """
+        return token pattern (with auto-upgrade)
         >>> token = Token({'word1':[0,1,0,1],'word2':[1,0,1,0]})
         >>> seed(0); token('word3')
         [1, 0, 0, 1]

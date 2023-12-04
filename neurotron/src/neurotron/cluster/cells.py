@@ -153,6 +153,16 @@ class Core(Attribute):
         self.X = self.S
         return y
 
+    def iterate(self,y):
+        y = self.relax(y);
+        y = self.stimu(y);
+        y = self.react(y);
+        y = self.depress(y);
+        y = self.excite(y);
+        y = self.burst(y);
+        y = self.predict(y);
+        return y
+
 #=========================================================================
 # class Cluster
 #=========================================================================
@@ -229,19 +239,9 @@ class Cluster(Core):
     def draw(self,mon,subplot=0):
         self.plot(mon,subplot,label=True)
 
-    def iterate(self,y):
-        y = self.relax(y);
-        y = self.stimu(y);
-        y = self.react(y);
-        y = self.depress(y);
-        y = self.excite(y);
-        y = self.burst(y);
-        y = self.predict(y);
-        return y
-
     def step(self,mon,y,tag='',log=None):
         y = self.iterate(y)
-        m,n,d,s = self.shape
+        #m,n,d,s = self.shape
         self.draw(mon);  mon.title(tag)
         return y
 
@@ -363,7 +363,7 @@ class Cells(Cluster):
     >>> Cells('Mary')
     |-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|
     """
-    def __init__(self,shape=(2,5,2,3),token=None):
+    def __init__(self,shape=(2,5,2,3),token=None,verbose=0):
         if isa(shape,str):
             tag = shape      # rename
             self.toy = Toy(tag)
@@ -372,7 +372,7 @@ class Cells(Cluster):
         else:
             self.toy = None
         nm.seed(1)
-        cells = super().__init__(*shape,verbose=1)
+        cells = super().__init__(*shape,verbose=verbose)
         self.token = token
         m,n,d,s = shape
         f = [0,0,0] if token is None else token['.']
@@ -381,7 +381,7 @@ class Cells(Cluster):
 
     def process(self,seq):
         m,n,d,s = self.shape
-        seq = [seq] if isa(seq,str) else seq
+        seq = seq.split() if isa(seq,str) else seq
         prediction = [seq[0],'->']
         for word in seq:
             mon = Monitor(m,n);
@@ -389,6 +389,17 @@ class Cells(Cluster):
             self.y = self.step(mon,self.y,word)
             output,predict = self.decode()
             mon.xlabel((n-1)/2,output+' -> '+predict)
+            prediction.append(predict)
+        return prediction
+
+    def run(self,seq):
+        m,n,d,s = self.shape
+        seq = seq.split() if isa(seq,str) else seq
+        prediction = [seq[0],'->']
+        for word in seq:
+            self.y = nm.row(nm.zeros(1,m*n),self.token[word])
+            self.y = self.iterate(self.y)
+            output,predict = self.decode()
             prediction.append(predict)
         return prediction
 

@@ -70,7 +70,8 @@ class Train:
         [0, 0, 1, 0, 0, 0, 0, 1, 1]
         """
         if word is None: return self.cells.token
-        return self.cells.token[word]
+#       return self.cells.token[word]
+        return self.cells.token(word)
 
     def number(self,M):
         m,n = M.shape; nmb = 0; base = 1;
