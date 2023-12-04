@@ -459,6 +459,54 @@ def test_train_mary_john():
            @: ['#0', [0 0 0; 0 0 0], '1.0-7.0-8.0']
     """
 
+def test_train_mary_john_likes():
+    """
+    >>> train = Train(Cells('Mary'))
+    >>> ans=train('','Mary')
+    >>> ans = train('<Mary>','likes')
+    >>> ans = train('<Mary likes>','to')
+    >>> ans = train('<Mary likes to>','sing')
+    >>> ans = train('<Mary likes to sing>','.')
+    >>> ans = train('','John')
+    >>> train('<John>','likes')
+    '<John likes>'
+    >>> train.show(token=False)
+    words:
+        Mary: ([0, 7, 8], '#0', [0 0 0; 0 0 0])
+        likes: ([2, 7, 8], '#2', [0 1 1; 1 0 0])
+        to: ([3, 7, 8], '#1', [1 1 1; 0 0 0])
+        sing: ([4, 7, 8], '#1', [1 1 1; 0 0 0])
+        .: ([6, 7, 8], '#1', [1 1 1; 0 0 0])
+        John: ([1, 7, 8], '#0', [0 0 0; 0 0 0])
+    contexts:
+        <Mary>:
+           #: ([0, 7, 8], '#0', 'Mary')
+           @: ['#0', [0 0 0; 0 0 0], '0.0-7.0-8.0']
+           likes: (1, '<Mary likes>')
+        <Mary likes>:
+           #: ([2, 7, 8], '#1', 'likes')
+           @: ['#1', [1 1 1; 0 0 0], '2.0-7.0-8.0']
+           to: (1, '<Mary likes to>')
+        <Mary likes to>:
+           #: ([3, 7, 8], '#1', 'to')
+           @: ['#1', [1 1 1; 0 0 0], '3.0-7.0-8.0']
+           sing: (1, '<Mary likes to sing>')
+        <Mary likes to sing>:
+           #: ([4, 7, 8], '#1', 'sing')
+           @: ['#1', [1 1 1; 0 0 0], '4.0-7.0-8.0']
+           .: (1, '<Mary likes to sing .>')
+        <Mary likes to sing .>:
+           #: ([6, 7, 8], '#1', '.')
+           @: ['#1', [1 1 1; 0 0 0], '6.0-7.0-8.0']
+        <John>:
+           #: ([1, 7, 8], '#0', 'John')
+           @: ['#0', [0 0 0; 0 0 0], '1.0-7.0-8.0']
+           likes: (1, '<John likes>')
+        <John likes>:
+           #: ([2, 7, 8], '#2', 'likes')
+           @: ['#2', [0 1 1; 1 0 0], '2.1-7.0-8.0']
+    """
+
 #===============================================================================
 # doc test
 #===============================================================================
