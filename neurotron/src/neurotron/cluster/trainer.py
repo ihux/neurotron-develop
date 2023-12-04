@@ -44,7 +44,7 @@ class Cells(Cluster):
         prediction = [seq[0],'->']
         for word in seq:
             mon = Monitor(m,n);
-            self.y = nm.row(nm.zeros(1,m*n),token[word])
+            self.y = nm.row(nm.zeros(1,m*n),self.token[word])
             self.y = self.step(mon,self.y,word)
             output,predict = self.decode()
             mon.xlabel((n-1)/2,output+' -> '+predict)
@@ -203,7 +203,6 @@ class Train:
             newctx = '<' + word + '>'
         else:
             newctx = '<' + curctx[1:-1] + ' ' + word + '>'
-        #ans,triple = self._word(word)
 
             # example: curctx = '<Mary>', word = 'likes'
             #          newctx = '<Mary likes>'

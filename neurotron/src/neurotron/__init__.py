@@ -88,6 +88,7 @@ Record = neurotron.cluster.monitor.Record
 Toy = neurotron.cluster.toy.Toy
 
 Train = neurotron.cluster.trainer.Train
+Cells = neurotron.cluster.trainer.Cells
 
 #===============================================================================
 # function attribute setup
