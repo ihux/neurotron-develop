@@ -177,20 +177,6 @@ class Train:
         self._words[word] = triple
         return(word,triple)
 
-    def old_learn(self,context,word):    # process first item of sequence
-        if context == '':
-            context = word
-        else:
-            context = context + ' ' + word
-        value = self.memory[context] if context in self.memory else []
-        print('### learn: ',context,'->',value)
-        idx = self.index(self.token(word))
-        if value == []:
-            value.append((word,idx))
-            self.memory[context] = value
-        print('           ',context,'->',self.memory[context])
-        return context
-
     def _train(self,curctx,word):
         """
         >>> train = Train(Cells('Mary'))
