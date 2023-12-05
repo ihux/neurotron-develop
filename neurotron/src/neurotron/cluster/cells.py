@@ -1,5 +1,5 @@
 """
-module neurotron.cluster.cluster
+module neurotron.cluster.cells
     class Cluster  # simulate a cluster of Neurotrons
     class Token    # wrapper for token dicts
 """
@@ -7,63 +7,16 @@ module neurotron.cluster.cluster
 from neurotron.math.attribute import Attribute
 from neurotron.math.matrix import Matrix
 from neurotron.math.field import Field
-from neurotron.math.matfun import ROW, SEED, ZEROS, AND, OR, NOT
 from neurotron.cluster.terminal import Terminal
 from neurotron.cluster.setup import Collab,Excite,Predict
 from neurotron.cluster.monitor import Monitor, Record
+
+from neurotron.cluster.toy import Toy
+from neurotron.cluster.token import Token
+
 import neurotron.math.matfun as mf
+import neurotron.math as nm
 isa = isinstance
-
-#=========================================================================
-# class Token
-#=========================================================================
-
-class Token(dict):
-    def __init__(self, *args, **kwargs):
-        super(Token, self).__init__(*args, **kwargs)
-        self._init()
-
-    def pattern(self,list):
-        """
-        >>> Token().pattern([1,0,1,0])
-        '1010'
-        """
-        str = ''
-        for item in list: str += '1' if item else '0'
-        return str
-
-    def _init(self):
-        self._decoder = {}  # inverse map's dictionary
-        for key in self:
-            pat = self.pattern(self[key])
-            self._decoder[pat] = key
-
-    def decode(self,arg=None):
-        """
-        >>> token = Token({'word1':[0,1,0],'word2':[1,0,1]})
-        >>> print(token)
-        {'word1': [0, 1, 0], 'word2': [1, 0, 1]}
-        >>> token.decode([0,1,0])
-        'word1'
-        >>> token.decode(Matrix([[1,0,0],[0,0,1]]))
-        'word2'
-        >>> token.decode([0,0,0])
-        ''
-        >>> token.decode('junk')
-        ''
-        """
-        decoder = self._decoder
-        if arg is None:
-            return decoder
-        elif isa(arg,list):
-            key = self.pattern(arg)
-            return decoder[key] if key in decoder else ''
-        elif isa(arg,Matrix):
-            row = mf.MAX(arg).list()[0]
-            key = self.pattern(row)
-            return decoder[key] if key in decoder else ''
-        else:
-            return ''
 
 #=========================================================================
 # class SynapseErr
@@ -138,6 +91,8 @@ class Core(Attribute):
         self.init()
 
     def init(self):
+        M,N = self.sizes
+        self.y = nm.zeros(1,M+N)
         m,n = self.shape[:2]
         self.U = Matrix(m,n)
         self.Q = Matrix(m,n)
@@ -154,7 +109,7 @@ class Core(Attribute):
     def split(self,y):    # split y int context c and feedforward f
         """
         >>> cells = Cluster(3,4,2,5,7)
-        >>> y = ROW([1,1,1,0,0,0,1,1,1,0,0,0],[1,0,1,0,1,0,1])
+        >>> y = nm.row([1,1,1,0,0,0,1,1,1,0,0,0],[1,0,1,0,1,0,1])
         >>> cells.split(y)
         ([1 1 1 0 0 0 1 1 1 0 0 0], [1 0 1 0 1 0 1])
         """
@@ -191,14 +146,24 @@ class Core(Attribute):
         return y
 
     def burst(self,y):
-        self.B = AND(NOT(self.D),self.Q)
-        self.Y = OR(self.Y,self.B)
+        self.B = nm.AND(nm.NOT(self.D),self.Q)
+        self.Y = nm.OR(self.Y,self.B)
         return self.update(y)
 
     def predict(self,y):
         c,f = self.split(y)
         self.S = self._predict(c)
         self.X = self.S
+        return y
+
+    def iterate(self,y):
+        y = self.relax(y);
+        y = self.stimu(y);
+        y = self.react(y);
+        y = self.depress(y);
+        y = self.excite(y);
+        y = self.burst(y);
+        y = self.predict(y);
         return y
 
 #=========================================================================
@@ -268,29 +233,25 @@ class Cluster(Core):
                 cell = Cell(self,i,j)
                 if label is not None:
                     k = self.kappa(i,j)
-                    mon(cell,i+subplot*(m+1),j,k)
+                    if n <= 10:
+                        size = 7
+                    elif n <= 20:
+                        size = 5
+                    else:
+                        size = 0
+                    mon(cell,i+subplot*(m+1),j,k,size=size)
                 else:
                     mon(cell,i+subplot*(m+1),j)
         if title is not None:
             mon.title(title)
 
     def draw(self,mon,subplot=0):
-        self.plot(mon,subplot,label=True)
-
-    def iterate(self,y):
-        y = self.relax(y);
-        y = self.stimu(y);
-        y = self.react(y);
-        y = self.depress(y);
-        y = self.excite(y);
-        y = self.burst(y);
-        y = self.predict(y);
-        return y
+        self.plot(mon,subplot=subplot,label=True)
 
     def step(self,mon,y,tag='',log=None):
         y = self.iterate(y)
-        m,n,d,s = self.shape
-        self.draw(mon);  mon.title(tag)
+        if mon is not None:
+            self.draw(mon);  mon.title(tag)
         return y
 
     def apply(self,y,tag='',log=None,all=None):
@@ -342,6 +303,10 @@ class Cluster(Core):
             self.draw(mon,1);  mon.xlabel(n/2-0.5,prefix+'predict')
         return y
 
+    def embed(self,stimulus):
+        M,N = self.sizes
+        return nm.row(self.y[0,:N],stimulus)
+
     def connect(self,idx,kdx):
         """
         >>> cells = Cluster(2,5,2,3,rand=False)
@@ -376,6 +341,10 @@ class Cluster(Core):
             raise Exception('more than %g indices provided (arg2)'%s)
         predict = self._predict
 
+            # enlarge idx to match permanence row
+
+        while len(idx) < s: idx += [0]
+
         for k in kdx:
             done = False
             for ii in range(d):
@@ -388,8 +357,9 @@ class Cluster(Core):
                     done = True
                     break
                 elif mf.ALL(predict.K[k][ii,:]==Matrix(idx)):
-                    done = True
-                    break
+                    if mf.ALL(predict.K[k][ii,:]==Matrix(idx)):
+                        done = True
+                        break
             if not done:
                 print('K[%g]' % k, predict.K[k])
                 raise SynapseErr('no free synapses to connect: [%g]'%k)
@@ -399,6 +369,155 @@ class Cluster(Core):
         output = self.token.decode(self.Y)
         predict = self.token.decode(self.X)
         return (output,predict)
+
+#===============================================================================
+# class Cells
+#===============================================================================
+
+class Cells(Cluster):
+    """
+    >>> Cells()
+    |-|-|-|-|-|-|-|-|-|-|
+    >>> Cells('Mary')
+    |-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|
+    >>> token = Token({'foo':[0,1,1,0,0],'fee':[1,0,0,0,1]})
+    >>> Cells((5,2,4,3),token,verbose=True)
+    |-|-|-|-|-|-|-|-|-|-|
+    >>> cells = Cells((3,20,10,3),4)  # 4/20 tokenizer
+    >>> cells.token.shape, cells.token.range
+    ((1, 20), (4, 4))
+    """
+    def __init__(self,shape=(2,5,2,3),token=2,verbose=0,char=False):
+        if isa(shape,str):
+            tag = shape      # rename
+            self.toy = Toy(tag)
+            shape = self.toy.shape
+            token = self.toy.token
+        else:
+            self.toy = None
+
+        nm.seed(1)
+        cells = super().__init__(*shape,verbose=verbose)
+        self.token = self._token_setup(token)
+        m,n,d,s = shape
+
+        f = [0,0,0] if self.token is None else self.token('.')
+        self.y = nm.row(nm.zeros(1,m*n),f)
+        self.record = Record(self)
+        self.char = char           # character processing mode
+
+    def _token_setup(self,token):
+        if isa(token,int):
+            n = self.shape[1]
+            m = token            # rename
+            token = Token().create(m,n)
+        return token
+
+    def process(self,seq,plot=False):
+        m,n,d,s = self.shape
+        if isa(seq,str): seq = self._expand(seq)
+        seq = seq.split() if isa(seq,str) else seq
+        prediction = [seq[0],'->']
+        for word in seq:
+            mon = Monitor(m,n) if plot else None;
+            self.y = nm.row(nm.zeros(1,m*n),self.token[word])
+            self.y = self.step(mon,self.y,word)
+            output,predict = self.decode()
+            #mon.xlabel((n-1)/2,str(output) + ' -> ' + str(predict))
+            prediction.append(predict)
+        return prediction
+
+    def _expand(self,text):
+        if self.char:
+            raw = text;  text = '';  sep = ''
+            for c in raw:
+                c = c if c != ' ' else '_'
+                text += sep + c;  sep = ' '
+        return text
+
+    def _compact(self,seq):
+        txt = ''
+        for c in seq:
+            txt += c[0] if isa(c,tuple) else c
+        return txt
+
+    def run(self,seq,next=None,detail=None):
+        """
+        run a sequence:
+        >>> cells = Cells('Mary')
+        >>> cells.run('Mary likes')
+        ['Mary', 'likes', '->', '']
+        >>> cells.run('Mary likes',...)
+        ['Mary', 'likes', '->', '']
+        """
+        m,n,d,s = self.shape
+        if isa(seq,str): seq = self._expand(seq)
+
+        seq = seq.split() if isa(seq,str) else seq
+        #prediction = [seq[0],'->'];  predict = ''
+        prediction = seq + ['->'];  predict = ''
+
+        length = len(seq);  k = 1
+        self.init()
+        while True:
+            for word in seq:
+                #if word == '':
+                #    continue
+                self.y = self.iterate(self.embed(self.token[word]))
+                output,predict = self.decode()
+                if k < length:
+                    k += 1
+                else:
+                    prediction.append(predict)
+            if next is Ellipsis:
+                if isa(predict,list) and len(predict) > 0:
+                    #print('### proceed ...:',predict)
+                    seq = [predict[0]]
+                    prediction[-1] = (predict[0],prediction[-1])
+                    continue
+                elif predict != '':
+                    #print('### proceed ...:',predict)
+                    seq = [predict]
+                    continue
+            break
+        if detail is None and self.char:
+            prediction = self._compact(prediction)
+        return prediction
+
+    def predictive(self,list):
+        for k in list:
+            cells.X[k] = 1;
+            cells._predict.I[k] = Matrix([[.1,-.1,.1,-.1,.1],[0,0,0,0,0]])
+
+    def map(self):
+        self._predict.map()
+
+    def __str__(self):
+        self.record.clear();
+        self.record(self)
+        return self.record.pattern()
+
+    def __repr__(self):
+        return self.__str__()
+
+    def plot(self,mon=None,subplot=0,label=True,title=None,decode=True):
+        m,n,d,s = self.shape
+        if isa(mon,str):
+            if title is not None: raise Exception('two values for title')
+            title = mon; mon = None;
+        if mon is None: mon = Monitor(m,n)
+        super().plot(mon,subplot=subplot,label=label)
+        if title is not None: mon.title(title)
+        if decode:
+            output,predict = self.decode()
+            head = str(output) + ' -> '
+            txt = head + str(predict)
+            if isa(predict,list):
+                txt = head;  sep = ''
+                for item in predict:
+                    txt += sep + str(item);  sep = ' | '
+            mon.xlabel((n-1)/2,txt)
+
 
 #===============================================================================
 # utilities
@@ -440,9 +559,9 @@ def _test_mary():
     """
     >>> token = {'Mary': [1,0,0,0,0,0,0,1,1]}
     >>> shape = (2,9,2,5); m,n,d,s = shape
-    >>> SEED(1);  cells = Cluster(*shape,verbose=1,rand=True)
+    >>> nm.seed(1);  cells = Cluster(*shape,verbose=1,rand=True)
     >>> cells.X[0] = 1; cells._predict.I[0] = Matrix([[.1,0,.1,0,.1],[0,0,0,0,0]])
-    >>> y = ROW(ZEROS(1,m*n),token['Mary'])
+    >>> y = nm.row(nm.zeros(1,m*n),token['Mary'])
     >>> y = cells.stimu(y);  cells.smap();  print(y)
     +-000/0-+-002/2-+-004/4-+-006/6-+-008/8-+-010/A-+-012/C-+-014/E-+-016/G-+
     | UX--- | ----- | ----- | ----- | ----- | ----- | ----- | U---- | U---- |

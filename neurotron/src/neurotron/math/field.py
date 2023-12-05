@@ -15,7 +15,8 @@ Field methods:
 """
 
 import numpy as np
-from neurotron.math.matfun import Matrix, SEED, RAND, ZEROS
+from neurotron.math.matfun import RAND as rand, SEED as seed, ZEROS as zeros
+from neurotron.math.matrix import Matrix
 from neurotron.math.helper import isa, isnumber
 
 #===============================================================================
@@ -72,8 +73,8 @@ class Field:
 
     def __getitem__(self,idx):
         """
-        >>> T = Field(2,3,1,3); SEED(0)
-        >>> T[1,1] = RAND((1,3))
+        >>> T = Field(2,3,1,3); seed(0)
+        >>> T[1,1] = rand((1,3))
         >>> T.vmap()
         +-000/0-+-002/2-+-004/4-+
         |  000  |  000  |  000  |
@@ -93,9 +94,9 @@ class Field:
 
     def __setitem__(self,idx,M):
         """
-        >>> T = Field(2,3,1,3); SEED(0)
-        >>> T[1,1] = RAND((1,3))
-        >>> T[4] = RAND((1,3))
+        >>> T = Field(2,3,1,3); seed(0)
+        >>> T[1,1] = rand((1,3))
+        >>> T[4] = rand((1,3))
         >>> T.vmap()
         +-000/0-+-002/2-+-004/4-+
         |  000  |  000  |  CdH  |
@@ -118,7 +119,7 @@ class Field:
     def set(self,M):  # set field with flat matrix
         """
         >>> F = Field(m:=1,n:=2,d:=3,s:=4)
-        >>> M = RAND((m*d,n*s),10); print(M)
+        >>> M = rand((m*d,n*s),10); print(M)
         [4 7 6 8 8 1 6 7; 7 8 1 5 9 8 9 4; 3 0 3 5 0 2 3 8]
         >>> F.set(M); F.imap()
         +-000/0-+-001/1-+
@@ -383,11 +384,11 @@ def _case4a():
     | 00000 | 00000 | 00000 | 00000 |
     +-------+-------+-------+-------+
     >>> P = Field(2,2,1,3);
-    >>> m,n,d,s = P.shape; SEED(0)
-    >>> P[0,0] = RAND((1,3))
-    >>> P[0,1] = RAND((1,3))
-    >>> P[1,0] = RAND((1,3))
-    >>> P[1,1] = RAND((1,3))
+    >>> m,n,d,s = P.shape; seed(0)
+    >>> P[0,0] = rand((1,3))
+    >>> P[0,1] = rand((1,3))
+    >>> P[1,0] = rand((1,3))
+    >>> P[1,1] = rand((1,3))
     >>> P.map = P.vmap; P.map()
     +-000/0-+-002/2-+
     |  CKF  |  CdH  |
@@ -410,15 +411,15 @@ def _case6b():
 
 def _case7a():  # assignment must be by copy
     """
-    >>> F = Field(1,3,2,3); SEED(0)
-    >>> for k in F.range(): F[k] = RAND((2,3))
-    >>> zero = ZEROS(2,3)
+    >>> F = Field(1,3,2,3); seed(0)
+    >>> for k in F.range(): F[k] = rand((2,3))
+    >>> zero = zeros(2,3)
     >>> F[0] = zero; F[1] = zero; F.vmap()
     +-000/0-+-001/1-+-002/2-+
     |  000  |  000  |  DVv  |
     |  000  |  000  |  uxQ  |
     +-------+-------+-------+
-    >>> F[0] = RAND((2,3)); F.vmap()
+    >>> F[0] = rand((2,3)); F.vmap()
     +-000/0-+-001/1-+-002/2-+
     |  NSX  |  000  |  DVv  |
     |  ObO  |  000  |  uxQ  |
@@ -427,15 +428,15 @@ def _case7a():  # assignment must be by copy
 
 def _case7a():  # assignment must be by copy
     """
-    >>> F = Field(1,3,2,3); SEED(0)
-    >>> for k in F.range(): F[k] = RAND((2,3))
-    >>> zero = ZEROS(2,3)
+    >>> F = Field(1,3,2,3); seed(0)
+    >>> for k in F.range(): F[k] = rand((2,3))
+    >>> zero = zeros(2,3)
     >>> F[0] = F[1] = zero; F.vmap()
     +-000/0-+-001/1-+-002/2-+
     |  000  |  000  |  DVv  |
     |  000  |  000  |  uxQ  |
     +-------+-------+-------+
-    >>> F[0] = RAND((2,3)); F.vmap()
+    >>> F[0] = rand((2,3)); F.vmap()
     +-000/0-+-001/1-+-002/2-+
     |  NSX  |  000  |  DVv  |
     |  ObO  |  000  |  uxQ  |

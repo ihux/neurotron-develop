@@ -11,12 +11,14 @@ neurotron: building blocks for neural computing circuits
        Predict     parameters for prediction terminal
        Terminal    neurotron terminal
        Token       wrapper for token dicts
+       Text        access splitted text
        Cell        access to cluster cell
        Monitor     state monitoring of cells
        Record      recording of cell states
        SynapseErr  Synapse Exception
        Toy         creating toy stuff
        Train       sequence trainer
+       Trainer     advanced sequence trainer
 
    functions:
        isa         is object a given class instance (same as isinstance)
@@ -56,7 +58,7 @@ import neurotron.math.field
 
 import neurotron.cluster.setup
 import neurotron.cluster.terminal
-import neurotron.cluster.cluster
+import neurotron.cluster.cells
 import neurotron.cluster.trainer
 import neurotron.ansi
 
@@ -77,9 +79,11 @@ Matrix = neurotron.math.matrix.Matrix
 Field  = neurotron.math.field.Field
 Terminal = neurotron.cluster.terminal.Terminal
 
-Cluster = neurotron.cluster.cluster.Cluster
-Token = neurotron.cluster.cluster.Token
-Cell = neurotron.cluster.cluster.Cell
+Cluster = neurotron.cluster.cells.Cluster
+Cells = neurotron.cluster.cells.Cells
+Cell = neurotron.cluster.cells.Cell
+Token = neurotron.cluster.token.Token
+Text = neurotron.cluster.token.Text
 SynapseErr = neurotron.cluster.SynapseErr
 
 Monitor = neurotron.cluster.monitor.Monitor
@@ -88,7 +92,7 @@ Record = neurotron.cluster.monitor.Record
 Toy = neurotron.cluster.toy.Toy
 
 Train = neurotron.cluster.trainer.Train
-Cells = neurotron.cluster.trainer.Cells
+Trainer = neurotron.cluster.trainer.Trainer
 
 #===============================================================================
 # function attribute setup
@@ -115,4 +119,4 @@ AND = neurotron.math.matfun.AND
 OR  = neurotron.math.matfun.OR
 NOT = neurotron.math.matfun.NOT
 
-follow = neurotron.cluster.cluster.follow
+follow = neurotron.cluster.cells.follow

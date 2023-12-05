@@ -1,71 +1,17 @@
 """
 module neurotron.cluster.trainer
-    class Cells  # derived class of Cluster
-    class Train  # sequence trainer
+    class Cells    # derived class of Cluster
+    class Train    # sequence trainer
+    class Trainer  # advanced sequence trainer
 """
 
-from neurotron.cluster.cluster import Cluster, Token, follow
+from neurotron.cluster.cells import Cluster, Cells, follow
+from neurotron.cluster.token import Token
 from neurotron.math.matrix import Matrix
 from neurotron.cluster.toy import Toy
 from neurotron.cluster.monitor import Record, Monitor
 import neurotron.math as nm
 isa = isinstance
-
-#===============================================================================
-# class Cells
-#===============================================================================
-
-class Cells(Cluster):
-    """
-    >>> Cells()
-    |-|-|-|-|-|-|-|-|-|-|
-    >>> Cells('Mary')
-    |-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|
-    """
-    def __init__(self,shape=(2,5,2,3),token=None):
-        if isa(shape,str):
-            tag = shape      # rename
-            self.toy = Toy(tag)
-            shape = self.toy.shape
-            token = self.toy.token
-        else:
-            self.toy = None
-        nm.seed(1)
-        cells = super().__init__(*shape,verbose=1)
-        self.token = token
-        m,n,d,s = shape
-        f = [0,0,0] if token is None else token['.']
-        self.y = nm.row(nm.zeros(1,m*n),f)
-        self.record = Record(self)
-
-    def process(self,seq):
-        m,n,d,s = self.shape
-        seq = [seq] if isa(seq,str) else seq
-        prediction = [seq[0],'->']
-        for word in seq:
-            mon = Monitor(m,n);
-            self.y = nm.row(nm.zeros(1,m*n),self.token[word])
-            self.y = self.step(mon,self.y,word)
-            output,predict = self.decode()
-            mon.xlabel((n-1)/2,output+' -> '+predict)
-            prediction.append(predict)
-        return prediction
-
-    def predictive(self,list):
-        for k in list:
-            cells.X[k] = 1;
-            cells._predict.I[k] = Matrix([[.1,-.1,.1,-.1,.1],[0,0,0,0,0]])
-
-    def map(self):
-        self._predict.map()
-
-    def __str__(self):
-        self.record.clear();
-        self.record(self)
-        return self.record.pattern()
-
-    def __repr__(self):
-        return self.__str__()
 
 #===============================================================================
 # class Train
@@ -79,11 +25,15 @@ class Train:
     >>> Train(Cells('Mary'))
     Train(Cells('Mary'))
     """
-    def __init__(self,cells=None):
+    def __init__(self,cells=None,plot=False,verbose=0):
         self.memory = {}
         self._words = {}
         self._contexts = {}
         self.cells = Cells() if cells is None else cells
+
+        self.learning = True   # learning on the fly during training
+        self.plotting = plot
+        self.verbose = verbose
 
     def pattern(self,list):
         """
@@ -125,7 +75,8 @@ class Train:
         [0, 0, 1, 0, 0, 0, 0, 1, 1]
         """
         if word is None: return self.cells.token
-        return self.cells.token[word]
+#       return self.cells.token[word]
+        return self.cells.token(word)
 
     def number(self,M):
         m,n = M.shape; nmb = 0; base = 1;
@@ -155,6 +106,9 @@ class Train:
             if token[k]: idx.append(k)
         return idx
 
+    def learn(self,context,verbose=0,plot=False):
+        pass
+
     def _word(self,word,new):  # store/update word to ._words
         """
         word 'Mary' is stored as ([0,7,8],'#0',[[1,1,1],[0,0,0]])
@@ -174,12 +128,12 @@ class Train:
             key = '#%g' % (int(key[1:])+1)
             M = self.next(M)
             if M is None:
-                raise Exception('representation overflow (max %g)' % m**n)
+                raise Exception('representation overflow (max m**n = %g)' % m**n)
             triple = (idx,key,M)
         self._words[word] = triple
         return(word,triple)
 
-    def _train(self,curctx,word):
+    def _train(self,curctx,word,verbose=0,plot=False):
         """
         >>> train = Train(Cells('Mary'))
         >>> ans = train._train('','Mary')
@@ -198,6 +152,8 @@ class Train:
                #: ([2, 7, 8], '#1', 'likes')
                @: ['#1', [1 1 1; 0 0 0], '2.0-7.0-8.0']
         """
+        if self.cells.char:
+            word = word if word != ' ' else '_'
         if not word in self._words: self._word(word,True)
         if curctx == '':
             newctx = '<' + word + '>'
@@ -231,9 +187,11 @@ class Train:
                 count = 0
             dict[word] = (count+1,newctx,idx)
             self._contexts[curctx] = dict
+        if self.learning:  # learning on the fly during traiing?
+            self.learn(curctx,verbose=verbose,plot=plot)
         return newctx
 
-    def _sequence(self,context,sequence):
+    def _sequence(self,context,sequence,verbose=0,plot=False):
         """
         process sequence:
         >>> train = Train(Cells('Mary'))
@@ -241,10 +199,10 @@ class Train:
         '<Mary likes>'
         """
         for word in sequence:
-            context = self._train(context,word)
+            context = self._train(context,word,verbose=verbose,plot=plot)
         return context
 
-    def __call__(self,context,arg=None):
+    def __call__(self,context,arg=None,verbose=None,plot=None):
         """
         >>> train = Train(Cells('Mary'))
         >>> train('','Mary')
@@ -260,17 +218,21 @@ class Train:
         >>> train('Mary likes',5)
         '<Mary likes>'
         """
+        if plot is None: plot = self.plotting
+        if verbose is None: verbose = self.verbose
+
         if isa(arg,int):
             sequence = context
             for k in range(arg):
-                context = self(sequence)
+                context = self(sequence,verbose=verbose,plot=plot)
             return context
         if arg is None:
-            arg = context.split();  context = ''
+            arg = context.split() if isa(context,str) else context
+            context = ''
         if isa(arg,list):
             sequence = arg  # rename
-            return self._sequence(context,sequence)
-        return self._train(context,arg)
+            return self._sequence(context,sequence,verbose=verbose,plot=plot)
+        return self._train(context,arg,verbose=verbose,plot=plot)
 
     def __str__(self):
         if self.cells is None: return 'Train()'
@@ -298,6 +260,111 @@ class Train:
                 print('       %s:' % key,dict[key])
 
 #===============================================================================
+# class Trainer
+#===============================================================================
+
+class Trainer(Train):
+    def __init__(self,cells,plot=False,verbose=0):
+        super().__init__(cells,verbose=verbose,plot=plot)
+
+    def __call__(self,context,n=None,verbose=None,plot=None):
+        return super().__call__(context,n,verbose=verbose,plot=plot)
+
+    def prediction(self,context):
+        if context in self._contexts:
+            info = self._contexts[context]
+            counters = []; total = 0
+            for key in info:
+                if not key in ['#','@']:
+                    n,refer,idx = info[key]
+                    total += n
+                    counters.append(n)
+                    #print('    statistics: %s:' % key,(counters,total))
+            result = []; k = 0
+            src = self.address(context)
+            for key in info:
+                if not key in ['#','@']:
+                    ratio = counters[k]/total
+                    k += 1
+                    n,refer,idx = info[key]
+                    dst = self.address(refer)
+                    result.append((refer,ratio,src,dst))
+                    #print('    predict(%g%%): %s ->'%(100*ratio,key),info[key])
+            return result
+
+    def predict(self,context):
+        results = self.prediction(context)
+        for prediction in results:
+            refer,ratio,src,dst = prediction
+            print('    %g%%: ->' % (100*ratio),refer,src,dst)
+
+    def address(self,context):
+        if context in self._contexts:
+            info = self._contexts[context]
+            m,n,d,s = self.cells.shape
+            idx = self.code((info['@'][1])).list()[0];
+            jdx = info['#'][0]
+            assert len(idx) == len(jdx)
+            kdx = [jdx[s]*m+idx[s] for s in range(len(idx))]
+            #return ((m,n),idx,jdx,kdx)
+            return kdx
+        return None
+
+    def learn(self,context,verbose=0,plot=False):
+        results = self.prediction(context)
+        if results is None: return
+        for prediction in results:
+            refer,ratio,src,dst = prediction
+            if verbose:
+                print('    %4.1f%%:' % (100*ratio),context,'->',refer,src,dst)
+            self.cells.init()
+            for k in dst:
+                self.cells.X[k] = 1
+            for k in src:
+                self.cells.Y[k] = 1
+
+            self.cells.connect(src,dst)
+            title = 'learn: ' + refer
+            #if self.plotting: self.plot(title)
+            if plot: self.plot(title)
+            self.cells.init()
+
+    def program(self,verbose=0):   # learn all contexts
+        """
+        learn all contexts
+        >>> train = Trainer(Cells('Mary'))
+        >>> train.program()
+        """
+        for context in self._contexts:
+            results = self.prediction(context)
+            for prediction in results:
+                refer,ratio,src,dst = prediction
+                for k in dst:
+                    self.cells.X[k] = 1
+                for k in src:
+                    self.cells.Y[k] = 1
+                try:
+                    self.cells.connect(src,dst)
+                    if verbose:
+                        print(Ansi.G + '    learning:',context,'OK'+Ansi.N)
+                except SynapseErr:
+                    print(Ansi.R+'    learning:',context,'FAIL'+Ansi.N)
+
+    def plot(self,title=''):
+        m,n,d,s = self.cells.shape
+        mon = Monitor(m,n)
+        self.cells.plot(mon,label=True)
+        mon.title(title)
+
+    def analyse(self,sentence,all=False):
+        if all:
+            prediction = self.cells.process(sentence)
+        else:
+            prediction = self.cells.run(sentence)
+            self.plot()
+        return prediction
+
+#===============================================================================
 # unit tests
 #===============================================================================
 
@@ -316,7 +383,7 @@ def test_train():
         [4, 6, 7] dance: [0, 0, 0, 0, 1, 0, 1, 1, 0]
         [5, 7, 8] hike: [0, 0, 0, 0, 0, 1, 0, 1, 1]
         [5, 6, 7] paint: [0, 0, 0, 0, 0, 1, 1, 1, 0]
-        [4, 6, 7] climb: [0, 0, 0, 0, 1, 0, 1, 1, 0]
+        [4, 5, 7] climb: [0, 0, 0, 0, 1, 1, 0, 1, 0]
         [6, 7, 8] .: [0, 0, 0, 0, 0, 0, 1, 1, 1]
     words:
     contexts:
@@ -527,6 +594,72 @@ def test_sequence():
     >>> train = Train(Cells('Mary'))
     >>> train('Mary likes')
     '<Mary likes>'
+    """
+
+def test_andy1():
+    """
+    >>> train = Trainer(cells:=Cells((2,9,8,3),3))
+    >>> train('Andy likes to climb')
+    '<Andy likes to climb>'
+    >>> cells.run('Andy',...)
+    ['Andy', '->', 'likes', 'to', 'climb', '']
+    """
+
+def test_andy2():
+    """
+    >>> train = Trainer(cells:=Cells((2,9,8,3),3))
+    >>> train('Andy likes to climb')
+    '<Andy likes to climb>'
+    >>> cells.run('Andy likes',...)
+    ['Andy', 'likes', '->', 'to', 'climb', '']
+    """
+
+def test_andy3():
+    """
+    >>> train = Trainer(cells:=Cells((2,9,8,3),3))
+    >>> train('Andy likes to climb')
+    '<Andy likes to climb>'
+    >>> cells.run('Andy likes',...)
+    ['Andy', 'likes', '->', 'to', 'climb', '']
+    """
+
+def test_andy4():
+    """
+    >>> train = Trainer(cells:=Cells((2,9,8,3),3))
+    >>> train('Andy likes to climb')
+    '<Andy likes to climb>'
+    >>> cells.run('Andy likes',...)
+    ['Andy', 'likes', '->', 'to', 'climb', '']
+    """
+
+def test_mary_john_andy():
+    """
+    >>> train = Trainer(cells:=Cells((2,9,8,3),3))
+    >>> train('Mary likes to sing')
+    '<Mary likes to sing>'
+    >>> train('John likes to dance')
+    '<John likes to dance>'
+    >>> train('Lisa likes to paint')
+    '<Lisa likes to paint>'
+    >>> train('Andy likes to climb')
+    '<Andy likes to climb>'
+    >>> cells.run('Mary',...)
+    ['Mary', '->', 'likes', 'to', 'sing', '']
+    >>> cells.run('John likes',...)
+    ['John', 'likes', '->', 'to', 'dance', '']
+    >>> cells.run('Lisa likes to',...)
+    ['Lisa', 'likes', 'to', '->', 'paint', '']
+    >>> cells.run('Andy likes to climb',...)
+    ['Andy', 'likes', 'to', 'climb', '->', '']
+    """
+
+def test_lisa():
+    """
+    >>> train = Trainer(cells:=Cells((2,9,8,4),3))
+    >>> train('Lisa likes to paint')
+    '<Lisa likes to paint>'
+    >>> cells.run('Lisa',...)
+    ['Lisa', '->', 'likes', 'to', 'paint', '']
     """
 
 #===============================================================================

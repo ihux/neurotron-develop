@@ -4,8 +4,6 @@ neurotron.cluster.terminal.py:
 """
 
 from neurotron.math import Attribute, Matrix, Field
-from neurotron.math.matfun import SUM,SEED,ROW,ZEROS,ONES,MAX,MIN
-#from neurotron.cluster import Collab
 from neurotron.cluster.setup import Collab, Excite, Predict
 from neurotron.math.helper import isa
 import neurotron.math as nm
@@ -93,7 +91,7 @@ class Terminal(Attribute):
                     print('mind I[%g].%g:' % (k,ii), I[ii,:])
         m,n,d,s = self.P.shape
         pdelta,ndelta = self.delta
-        S = sk.T @ ONES(1,s)
+        S = sk.T @ nm.ones(1,s)
         I = S * (2*pdelta*V - ndelta)
         if self.verbose > 0: log(I,k)
         #if any(sk):
@@ -111,7 +109,7 @@ class Terminal(Attribute):
                     print('learn P[%g].%g:' % (k,ii),Pii,'by',Iii)
         for k in self.P.range():
             if L[k]:
-                self.P[k] = MAX(0,MIN(1,self.P[k]+self.I[k]))
+                self.P[k] = nm.max(0,nm.min(1,self.P[k]+self.I[k]))
                 if self.verbose > 0:
                     log(self.P,self.I,k)
 
@@ -128,10 +126,10 @@ class Terminal(Attribute):
         for k in range(m*n):
             V = v[self.K[k]]
             E = V * self.W[k]
-            S[k] = SUM(E.T) >= self.theta
+            S[k] = nm.sum(E.T) >= self.theta
             self.I[k] = self.mind(S[k],V,k)
             #if any(S[k]):
-            #    print('##### spike L:   ',S[k].T@ONES(1,s))
+            #    print('##### spike L:   ',S[k].T@nm.ones(1,s))
             #    print('##### spike V:   ',V)
             #    print('##### spike I[k]:',self.I[k])
         return S
@@ -167,7 +165,7 @@ class Terminal(Attribute):
            +-------+-------+-------+
         """
         m,n,d,s = self.K.shape
-        zero = ZEROS(d,s)
+        zero = nm.zeros(d,s)
         for k in self.K.range():
             self.K[k] = self.W[k] = zero
             if self.P is not None:
@@ -261,7 +259,7 @@ class __TestTerminal__:
 
     def test_predict():
         """
-        >>> SEED(0); predict = Terminal(Predict(3,7,2,5,rand=True))
+        >>> nm.seed(0); predict = Terminal(Predict(3,7,2,5,rand=True))
         >>> predict.map()
         K: +-000/0-+-003/3-+-006/6-+-009/9-+-012/C-+-015/F-+-018/I-+
            | CF033 | 79JI4 | 6C167 | EH5D8 | 9KJGJ | 5FF0I | 3HJJJ |
@@ -293,7 +291,7 @@ class __TestTerminal__:
            | 00010 | 01110 | 01100 | 01101 | 11010 | 11010 | 00111 |
            | 11010 | 11011 | 11100 | 10100 | 10000 | 00000 | 00011 |
            +-------+-------+-------+-------+-------+-------+-------+
-        >>> c = ROW([1,0,0,1,1,0,0],ONES(1,20))
+        >>> c = nm.row([1,0,0,1,1,0,0],nm.ones(1,20))
         >>> predict(c)
         [0 1 0 0 0 1 1; 1 1 1 1 1 0 0; 0 1 0 1 1 1 0]
         >>> predict.spike(c).map('S: ')

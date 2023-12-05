@@ -5,7 +5,7 @@ import pytest
 
 import neurotron.cluster.setup
 import neurotron.cluster.terminal
-import neurotron.cluster.cluster
+import neurotron.cluster.cells
 
 #===============================================================================
 # fixture
@@ -31,5 +31,5 @@ def test_terminal(validator):
    assert result.failed == 0
 
 def test_cluster(validator):
-   result = doctest.testmod(neurotron.cluster.cluster, verbose=False)
+   result = doctest.testmod(neurotron.cluster.cells, verbose=False)
    assert result.failed == 0
