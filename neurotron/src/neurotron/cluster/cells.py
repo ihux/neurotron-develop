@@ -342,7 +342,7 @@ class Cluster(Core):
         predict = self._predict
 
             # enlarge idx to match permanence row
-            
+
         while len(idx) < s: idx += [0]
 
         for k in kdx:
@@ -435,7 +435,13 @@ class Cells(Cluster):
                 text += sep + c;  sep = ' '
         return text
 
-    def run(self,seq,next=None):
+    def _compact(self,seq):
+        txt = ''
+        for c in seq:
+            txt += c[0] if isa(c,tuple) else c
+        return txt
+
+    def run(self,seq,next=None,detail=None):
         """
         run a sequence:
         >>> cells = Cells('Mary')
@@ -455,6 +461,8 @@ class Cells(Cluster):
         self.init()
         while True:
             for word in seq:
+                #if word == '':
+                #    continue
                 self.y = self.iterate(self.embed(self.token[word]))
                 output,predict = self.decode()
                 if k < length:
@@ -472,6 +480,8 @@ class Cells(Cluster):
                     seq = [predict]
                     continue
             break
+        if detail is None and self.char:
+            prediction = self._compact(prediction)
         return prediction
 
     def predictive(self,list):

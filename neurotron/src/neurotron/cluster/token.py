@@ -179,13 +179,13 @@ class Text:
     """
     access splitted text:
     >>> text = Text('The quick brown fox jumps over the lazy dog',8); text
-    Text(6,8,['The quic','k brown ','fox jump',...])
+    Text(12,8,['The quic','quick br','k brown ',...])
     >>> text[2]
-    'fox jump'
+    'k brown '
     >>> text(2)
-    ['f', 'o', 'x', ' ', 'j', 'u', 'm', 'p']
+    ['k', ' ', 'b', 'r', 'o', 'w', 'n', ' ']
     >>> text.shape
-    (6, 8)
+    (12, 8)
     """
     def __init__(self,text=None,n=None):  # split in m chunks of length n
         if text is None or n is None:
@@ -205,8 +205,14 @@ class Text:
         text = self.refine(text)
         chunks = [];  N = len(text)
         blank = ''.join(' ' for i in range(n))
+
+        off = n//2
         for k in range(len(text)//n+1):
             chunk = text[k*n:min(k*n+n,N)]
+            if len(chunk) < n: chunk += blank[:n-len(chunk)]
+            chunks.append(chunk)
+
+            chunk = text[k*n+off:min(k*n+off+n,N)]
             if len(chunk) < n: chunk += blank[:n-len(chunk)]
             chunks.append(chunk)
         return chunks

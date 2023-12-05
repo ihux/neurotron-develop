@@ -68,9 +68,9 @@ class Toy:
         >>> toy.raw[:44]
         'First Citizen: Before we proceed any further'
         >>> toy.text
-        Text(139424,8,['First Ci','tizen: B','efore we',...])
+        Text(278848,8,['First Ci','t Citize','tizen: B',...])
         >>> Text(Toy('Tiny').raw,8)
-        Text(139424,8,['First Ci','tizen: B','efore we',...])
+        Text(278848,8,['First Ci','t Citize','tizen: B',...])
         """
         n = n if n is not None else 8
         self.shape = (2,8,4,3)
