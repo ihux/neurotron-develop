@@ -212,7 +212,8 @@ class Train:
                 context = self(sequence)
             return context
         if arg is None:
-            arg = context.split();  context = ''
+            arg = context.split() if isa(context,str) else context
+            context = ''
         if isa(arg,list):
             sequence = arg  # rename
             return self._sequence(context,sequence)
