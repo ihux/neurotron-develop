@@ -27,9 +27,6 @@ or
 
 # Todo's
 
-* bug: John not correctly predicted
-* bug: decoder not working well
-* bug: crash if 3 synapses are increased to 4
 * install at python hub
 
 # Done
@@ -39,3 +36,6 @@ or
 * Text() - text manager
 * learning on the fly during training
 * implement cells.plot
+* bug fix: John not correctly predicted
+* bug fix: decoder not working well
+* bug fix: crash if 3 synapses are increased to 4

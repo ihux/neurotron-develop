@@ -341,6 +341,10 @@ class Cluster(Core):
             raise Exception('more than %g indices provided (arg2)'%s)
         predict = self._predict
 
+            # enlarge idx to match permanence row
+            
+        while len(idx) < s: idx += [0]
+
         for k in kdx:
             done = False
             for ii in range(d):
@@ -353,8 +357,9 @@ class Cluster(Core):
                     done = True
                     break
                 elif mf.ALL(predict.K[k][ii,:]==Matrix(idx)):
-                    done = True
-                    break
+                    if mf.ALL(predict.K[k][ii,:]==Matrix(idx)):
+                        done = True
+                        break
             if not done:
                 print('K[%g]' % k, predict.K[k])
                 raise SynapseErr('no free synapses to connect: [%g]'%k)

@@ -653,6 +653,15 @@ def test_mary_john_andy():
     ['Andy', 'likes', 'to', 'climb', '->', '']
     """
 
+def test_lisa():
+    """
+    >>> train = Trainer(cells:=Cells((2,9,8,4),3))
+    >>> train('Lisa likes to paint')
+    '<Lisa likes to paint>'
+    >>> cells.run('Lisa',...)
+    ['Lisa', '->', 'likes', 'to', 'paint', '']
+    """
+
 #===============================================================================
 # doc test
 #===============================================================================
