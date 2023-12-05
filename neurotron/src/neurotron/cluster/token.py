@@ -13,6 +13,14 @@ isa = isinstance
 #=========================================================================
 
 class Token(dict):
+    """
+    >>> Token()
+    {}
+    >>> Token({'word1':[0,1,0],'word2':[1,0,1]})
+    {'word1': [0, 1, 0], 'word2': [1, 0, 1]}
+    >>> Token().create(3,10)
+    {'.': [0, 0, 0, 0, 0, 0, 0, 1, 1, 1]}
+    """
     def __init__(self, *args, **kwargs):
         super(Token, self).__init__(*args, **kwargs)
         self._init()
@@ -36,6 +44,15 @@ class Token(dict):
             n = sum(bits)
             low = min(low,n);  high = max(high,n)
         self.range = (low,high)
+
+    def create(self,m,n):
+        """
+        >>> Token().create(3,10)
+        {'.': [0, 0, 0, 0, 0, 0, 0, 1, 1, 1]}
+        """
+        head = [0 for k in range(n-m)]
+        tail = [1 for k in range(m)]
+        return Token({'.':head+tail})
 
     def decode(self,arg=None):
         """

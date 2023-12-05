@@ -24,3 +24,9 @@ or
 ```
    $ po  # poetry test/build/install neurotron package
 ```
+
+# Todo's
+
+* auto dimensioning of token in Cell
+* bug: crash if 3 synapses are increased to 4
+* bug: decoder not working well

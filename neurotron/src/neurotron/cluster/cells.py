@@ -12,6 +12,7 @@ from neurotron.cluster.setup import Collab,Excite,Predict
 from neurotron.cluster.monitor import Monitor, Record
 
 from neurotron.cluster.toy import Toy
+from neurotron.cluster.token import Token
 
 import neurotron.math.matfun as mf
 import neurotron.math as nm
@@ -362,6 +363,10 @@ class Cells(Cluster):
     |-|-|-|-|-|-|-|-|-|-|
     >>> Cells('Mary')
     |-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|-|
+    >>> token = Token({'foo':[0,1,1,0,0],'fee':[1,0,0,0,1]})
+    >>> Cells((5,2,4,3),token,verbose=True)
+    |-|-|-|-|-|-|-|-|-|-|
+    >>> cells = Cells((3,20,10,3),4)  # 4/20 tokenizer
     """
     def __init__(self,shape=(2,5,2,3),token=None,verbose=0):
         if isa(shape,str):
@@ -371,13 +376,23 @@ class Cells(Cluster):
             token = self.toy.token
         else:
             self.toy = None
+
         nm.seed(1)
         cells = super().__init__(*shape,verbose=verbose)
-        self.token = token
+        self.token = self._token_setup(token)
         m,n,d,s = shape
-        f = [0,0,0] if token is None else token['.']
+
+        f = [0,0,0] if self.token is None else self.token('.')
         self.y = nm.row(nm.zeros(1,m*n),f)
         self.record = Record(self)
+
+    def _token_setup(self,token):
+        if isa(token,int):
+            n = self.shape[1]
+            m = token            # rename
+            #token = Token().init(n,m)
+            token = Token({'.':[1,0,0]}) ######################################
+        return token
 
     def process(self,seq):
         m,n,d,s = self.shape
