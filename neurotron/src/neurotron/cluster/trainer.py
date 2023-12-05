@@ -29,6 +29,7 @@ class Train:
         self._words = {}
         self._contexts = {}
         self.cells = Cells() if cells is None else cells
+        self.learning = True   # learning on the fly during training
 
     def pattern(self,list):
         """
@@ -101,6 +102,9 @@ class Train:
             if token[k]: idx.append(k)
         return idx
 
+    def learn(self,context,verbose=0,plot=False):
+        pass
+
     def _word(self,word,new):  # store/update word to ._words
         """
         word 'Mary' is stored as ([0,7,8],'#0',[[1,1,1],[0,0,0]])
@@ -125,7 +129,7 @@ class Train:
         self._words[word] = triple
         return(word,triple)
 
-    def _train(self,curctx,word):
+    def _train(self,curctx,word,verbose=0,plot=False):
         """
         >>> train = Train(Cells('Mary'))
         >>> ans = train._train('','Mary')
@@ -177,9 +181,11 @@ class Train:
                 count = 0
             dict[word] = (count+1,newctx,idx)
             self._contexts[curctx] = dict
+        if self.learning:  # learning on the fly during traiing?
+            self.learn(curctx,verbose=verbose,plot=plot)
         return newctx
 
-    def _sequence(self,context,sequence):
+    def _sequence(self,context,sequence,verbose=0,plot=False):
         """
         process sequence:
         >>> train = Train(Cells('Mary'))
@@ -187,10 +193,10 @@ class Train:
         '<Mary likes>'
         """
         for word in sequence:
-            context = self._train(context,word)
+            context = self._train(context,word,verbose=verbose,plot=plot)
         return context
 
-    def __call__(self,context,arg=None):
+    def __call__(self,context,arg=None,verbose=0,plot=False):
         """
         >>> train = Train(Cells('Mary'))
         >>> train('','Mary')
@@ -209,15 +215,15 @@ class Train:
         if isa(arg,int):
             sequence = context
             for k in range(arg):
-                context = self(sequence)
+                context = self(sequence,verbose=verbose,plot=plot)
             return context
         if arg is None:
             arg = context.split() if isa(context,str) else context
             context = ''
         if isa(arg,list):
             sequence = arg  # rename
-            return self._sequence(context,sequence)
-        return self._train(context,arg)
+            return self._sequence(context,sequence,verbose=verbose,plot=plot)
+        return self._train(context,arg,verbose=verbose,plot=plot)
 
     def __str__(self):
         if self.cells is None: return 'Train()'
