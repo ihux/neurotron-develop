@@ -18,8 +18,13 @@ class Token(dict):
     {}
     >>> Token({'word1':[0,1,0],'word2':[1,0,1]})
     {'word1': [0, 1, 0], 'word2': [1, 0, 1]}
-    >>> Token().create(3,10)
+    >>> token = Token().create(3,10);
+    >>> token
     {'.': [0, 0, 0, 0, 0, 0, 0, 1, 1, 1]}
+    >>> token.range
+    (3, 3)
+    >>> token.shape
+    (1, 10)
     """
     def __init__(self, *args, **kwargs):
         super(Token, self).__init__(*args, **kwargs)
@@ -44,6 +49,18 @@ class Token(dict):
             n = sum(bits)
             low = min(low,n);  high = max(high,n)
         self.range = (low,high)
+        self.shape = self._shape()
+
+    def _shape(self):
+        """
+        >>> Token().create(3,10)._shape()
+        (1, 10)
+        """
+        #if self == {}: return (0,0)
+        m = 0; n = 0
+        for key in self:
+            n = max(n,len(self[key]));  m += 1
+        return (m,n)
 
     def create(self,m,n):
         """
@@ -86,6 +103,8 @@ class Token(dict):
         >>> token = Token({'word1':[0,1,0,1],'word2':[1,0,1,0]})
         >>> seed(0); token.upgrade('word3')
         [1, 0, 0, 1]
+        >>> token.shape
+        (3, 4)
         """
         if len(self) == 0: raise Exception('cannot upgrade empty tokenizer')
         key = next(iter(self))        # 1st key
@@ -108,6 +127,8 @@ class Token(dict):
             for key in self:
                 if self[key] != pattern:   # cool - found pattern
                     self[word] = pattern
+                    m,n = self.shape
+                    self.shape = (m+1,n)
                     return pattern
 
     def __call__(self,word):
