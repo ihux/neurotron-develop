@@ -367,8 +367,10 @@ class Cells(Cluster):
     >>> Cells((5,2,4,3),token,verbose=True)
     |-|-|-|-|-|-|-|-|-|-|
     >>> cells = Cells((3,20,10,3),4)  # 4/20 tokenizer
+    >>> cells.token.shape, cells.token.range
+    ((1, 20), (4, 4))
     """
-    def __init__(self,shape=(2,5,2,3),token=None,verbose=0):
+    def __init__(self,shape=(2,5,2,3),token=2,verbose=0):
         if isa(shape,str):
             tag = shape      # rename
             self.toy = Toy(tag)
@@ -390,8 +392,7 @@ class Cells(Cluster):
         if isa(token,int):
             n = self.shape[1]
             m = token            # rename
-            #token = Token().init(n,m)
-            token = Token({'.':[1,0,0]}) ######################################
+            token = Token().create(m,n)
         return token
 
     def process(self,seq):
