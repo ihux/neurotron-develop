@@ -4,6 +4,7 @@ module neurotron.cluster.toy
 """
 
 from neurotron.cluster.token import Token, Text
+from neurotron.shakespear import shakespear
 
 #===============================================================================
 # class Toy
@@ -71,30 +72,11 @@ class Toy:
         """
         self.shape = (2,8,4,3)
         self.bits = 3
-        self.raw = Text().refine(tiny_shakespear)
+        self.raw = Text().refine(shakespear)
         self.text = Text(self.raw,8)
 
     def __repr__(self):
         return self.__str__()
-
-#===============================================================================
-# Tiny Shakespear
-#===============================================================================
-
-tiny_shakespear = \
-"""
-First Citizen:
-We are accounted poor citizens, the patricians good.
-What authority surfeits on would relieve us: if they
-would yield us but the superfluity, while it were
-wholesome, we might guess they relieved us humanely;
-but they think we are too dear: the leanness that
-afflicts us, the object of our misery, is as an
-inventory to particularise their abundance; our
-sufferance is a gain to them Let us revenge this with
-our pikes, ere we become rakes: for the gods know I
-speak this in hunger for bread, not in thirst for revenge.
-"""
 
 #===============================================================================
 # doc test
