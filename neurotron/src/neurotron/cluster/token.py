@@ -143,17 +143,22 @@ class Token(dict):
 
                 # is this a new pattern?
 
+            found = False
             for key in self:
-                if self[key] != pattern:   # cool - found pattern
-                    self[word] = pattern
+                if self[key] == pattern:
+                    found = True
+                    break
 
-                    pat = self.pattern(pattern)
-                    self._decoder[pat] = word  # refresh decoder
-                    #print('### update _decoder:',self._decoder)
+            if not found:     # cool - we found a new pattern
+                self[word] = pattern
 
-                    m,n = self.shape
-                    self.shape = (m+1,n)
-                    return pattern
+                pat = self.pattern(pattern)
+                self._decoder[pat] = word  # refresh decoder
+                #print('### update _decoder:',self._decoder)
+
+                m,n = self.shape
+                self.shape = (m+1,n)
+                return pattern
         raise Exception('gave up after 100k trials')
 
     def __call__(self,word):

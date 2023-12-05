@@ -453,12 +453,12 @@ class Cells(Cluster):
                 prediction.append(predict)
             if next is Ellipsis:
                 if isa(predict,list) and len(predict) > 0:
-                    print('### proceed ...:',predict)
+                    #print('### proceed ...:',predict)
                     seq = [predict[0]]
                     prediction[-1] = (predict[0],prediction[-1])
                     continue
                 elif predict != '':
-                    print('### proceed ...:',predict)
+                    #print('### proceed ...:',predict)
                     seq = [predict]
                     continue
             break

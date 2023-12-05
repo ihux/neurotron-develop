@@ -27,6 +27,7 @@ or
 
 # Todo's
 
+* bug: John not correctly predicted
 * bug: decoder not working well
 * bug: crash if 3 synapses are increased to 4
 
