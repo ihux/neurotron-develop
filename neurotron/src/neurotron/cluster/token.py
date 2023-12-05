@@ -84,6 +84,8 @@ class Token(dict):
         'word1'
         >>> token.decode(Matrix([[1,0,0],[0,0,1]]))
         'word2'
+        >>> token.decode([1,1,1])
+        ['word1', 'word2']
         >>> token.decode([0,0,0])
         ''
         >>> token.decode('junk')
@@ -94,13 +96,26 @@ class Token(dict):
             return decoder
         elif isa(arg,list):
             key = self.pattern(arg)
-            return decoder[key] if key in decoder else ''
+            return decoder[key] if key in decoder else self._multi(arg)
         elif isa(arg,Matrix):
             row = mf.MAX(arg).list()[0]
             key = self.pattern(row)
-            return decoder[key] if key in decoder else ''
+            #print('### decoder:',decoder)
+            #print('###  row:',row,'key:',key,'in decoder:',key in decoder)
+            return decoder[key] if key in decoder else self._multi(row)
         else:
             return ''
+
+    def _multi(self,row):
+        row = Matrix(row)
+        result = []
+        for key in self:
+            pattern = Matrix(self[key])
+            match = mf.AND(row,pattern)
+            if all(match==pattern):
+                result.append(key)
+        if len(result) == 1: result = result[0]
+        return result if result != [] else ''
 
     def upgrade(self,word):
         """
@@ -131,9 +146,15 @@ class Token(dict):
             for key in self:
                 if self[key] != pattern:   # cool - found pattern
                     self[word] = pattern
+
+                    pat = self.pattern(pattern)
+                    self._decoder[pat] = word  # refresh decoder
+                    #print('### update _decoder:',self._decoder)
+
                     m,n = self.shape
                     self.shape = (m+1,n)
                     return pattern
+        raise Exception('gave up after 100k trials')
 
     def __call__(self,word):
         """

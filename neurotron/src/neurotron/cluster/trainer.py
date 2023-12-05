@@ -24,12 +24,15 @@ class Train:
     >>> Train(Cells('Mary'))
     Train(Cells('Mary'))
     """
-    def __init__(self,cells=None):
+    def __init__(self,cells=None,plot=False,verbose=0):
         self.memory = {}
         self._words = {}
         self._contexts = {}
         self.cells = Cells() if cells is None else cells
+
         self.learning = True   # learning on the fly during training
+        self.plotting = plot
+        self.verbose = verbose
 
     def pattern(self,list):
         """
@@ -124,7 +127,7 @@ class Train:
             key = '#%g' % (int(key[1:])+1)
             M = self.next(M)
             if M is None:
-                raise Exception('representation overflow (max %g)' % m**n)
+                raise Exception('representation overflow (max m**n = %g)' % m**n)
             triple = (idx,key,M)
         self._words[word] = triple
         return(word,triple)
@@ -148,6 +151,8 @@ class Train:
                #: ([2, 7, 8], '#1', 'likes')
                @: ['#1', [1 1 1; 0 0 0], '2.0-7.0-8.0']
         """
+        if self.cells.char:
+            word = word if word != ' ' else '_'
         if not word in self._words: self._word(word,True)
         if curctx == '':
             newctx = '<' + word + '>'
@@ -196,7 +201,7 @@ class Train:
             context = self._train(context,word,verbose=verbose,plot=plot)
         return context
 
-    def __call__(self,context,arg=None,verbose=0,plot=False):
+    def __call__(self,context,arg=None,verbose=None,plot=None):
         """
         >>> train = Train(Cells('Mary'))
         >>> train('','Mary')
@@ -212,6 +217,9 @@ class Train:
         >>> train('Mary likes',5)
         '<Mary likes>'
         """
+        if plot is None: plot = self.plotting
+        if verbose is None: verbose = self.verbose
+
         if isa(arg,int):
             sequence = context
             for k in range(arg):

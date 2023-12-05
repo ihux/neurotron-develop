@@ -248,8 +248,8 @@ class Cluster(Core):
 
     def step(self,mon,y,tag='',log=None):
         y = self.iterate(y)
-        #m,n,d,s = self.shape
-        self.draw(mon);  mon.title(tag)
+        if mon is not None:
+            self.draw(mon);  mon.title(tag)
         return y
 
     def apply(self,y,tag='',log=None,all=None):
@@ -376,7 +376,7 @@ class Cells(Cluster):
     >>> cells.token.shape, cells.token.range
     ((1, 20), (4, 4))
     """
-    def __init__(self,shape=(2,5,2,3),token=2,verbose=0):
+    def __init__(self,shape=(2,5,2,3),token=2,verbose=0,char=False):
         if isa(shape,str):
             tag = shape      # rename
             self.toy = Toy(tag)
@@ -393,6 +393,7 @@ class Cells(Cluster):
         f = [0,0,0] if self.token is None else self.token('.')
         self.y = nm.row(nm.zeros(1,m*n),f)
         self.record = Record(self)
+        self.char = char           # character processing mode
 
     def _token_setup(self,token):
         if isa(token,int):
@@ -401,21 +402,32 @@ class Cells(Cluster):
             token = Token().create(m,n)
         return token
 
-    def process(self,seq):
+    def process(self,seq,plot=False):
         m,n,d,s = self.shape
+        if isa(seq,str): seq = self._expand(seq)
         seq = seq.split() if isa(seq,str) else seq
         prediction = [seq[0],'->']
         for word in seq:
-            mon = Monitor(m,n);
+            mon = Monitor(m,n) if plot else None;
             self.y = nm.row(nm.zeros(1,m*n),self.token[word])
             self.y = self.step(mon,self.y,word)
             output,predict = self.decode()
-            mon.xlabel((n-1)/2,output+' -> '+predict)
+            #mon.xlabel((n-1)/2,str(output) + ' -> ' + str(predict))
             prediction.append(predict)
         return prediction
 
+    def _expand(self,text):
+        if self.char:
+            raw = text;  text = '';  sep = ''
+            for c in raw:
+                c = c if c != ' ' else '_'
+                text += sep + c;  sep = ' '
+        return text
+
     def run(self,seq):
         m,n,d,s = self.shape
+        if isa(seq,str): seq = self._expand(seq)
+
         seq = seq.split() if isa(seq,str) else seq
         prediction = [seq[0],'->']
         for word in seq:
@@ -441,7 +453,7 @@ class Cells(Cluster):
     def __repr__(self):
         return self.__str__()
 
-    def plot(self,mon=None,subplot=0,label=True,title=None):
+    def plot(self,mon=None,subplot=0,label=True,title=None,decode=True):
         m,n,d,s = self.shape
         if isa(mon,str):
             if title is not None: raise Exception('two values for title')
@@ -449,6 +461,15 @@ class Cells(Cluster):
         if mon is None: mon = Monitor(m,n)
         super().plot(mon,subplot=subplot,label=label)
         if title is not None: mon.title(title)
+        if decode:
+            output,predict = self.decode()
+            head = str(output) + ' -> '
+            txt = head + str(predict)
+            if isa(predict,list):
+                txt = head;  sep = ''
+                for item in predict:
+                    txt += sep + str(item);  sep = ' | '
+            mon.xlabel((n-1)/2,txt)
 
 
 #===============================================================================
