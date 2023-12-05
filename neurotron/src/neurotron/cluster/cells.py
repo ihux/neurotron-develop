@@ -438,14 +438,20 @@ class Cells(Cluster):
 
         seq = seq.split() if isa(seq,str) else seq
         prediction = [seq[0],'->'];  predict = ''
+
+        M,N = self.sizes
+        self.y = nm.zeros(1,M+N)
         while True:
             for word in seq:
-                self.y = nm.row(nm.zeros(1,m*n),self.token[word])
+                self.y = nm.row(self.y[0,:N],self.token[word])
                 self.y = self.iterate(self.y)
                 output,predict = self.decode()
                 prediction.append(predict)
             if next is Ellipsis:
-                pass #print('###:',predict)
+                if isa(predict,list) and len(predict) > 0:
+                    seq = [predict[0]]
+                    prediction[-1] = (predict[0],prediction[-1])
+                    continue
             break
         return prediction
 
