@@ -435,22 +435,27 @@ class Cells(Cluster):
         run a sequence:
         >>> cells = Cells('Mary')
         >>> cells.run('Mary likes')
-        ['Mary', '->', '', '']
+        ['Mary', 'likes', '->', '']
         >>> cells.run('Mary likes',...)
-        ['Mary', '->', '', '']
+        ['Mary', 'likes', '->', '']
         """
         m,n,d,s = self.shape
         if isa(seq,str): seq = self._expand(seq)
 
         seq = seq.split() if isa(seq,str) else seq
-        prediction = [seq[0],'->'];  predict = ''
+        #prediction = [seq[0],'->'];  predict = ''
+        prediction = seq + ['->'];  predict = ''
 
+        length = len(seq);  k = 1
         self.init()
         while True:
             for word in seq:
                 self.y = self.iterate(self.embed(self.token[word]))
                 output,predict = self.decode()
-                prediction.append(predict)
+                if k < length:
+                    k += 1
+                else:
+                    prediction.append(predict)
             if next is Ellipsis:
                 if isa(predict,list) and len(predict) > 0:
                     #print('### proceed ...:',predict)

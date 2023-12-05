@@ -596,6 +596,63 @@ def test_sequence():
     '<Mary likes>'
     """
 
+def test_andy1():
+    """
+    >>> train = Trainer(cells:=Cells((2,9,8,3),3))
+    >>> train('Andy likes to climb')
+    '<Andy likes to climb>'
+    >>> cells.run('Andy',...)
+    ['Andy', '->', 'likes', 'to', 'climb', '']
+    """
+
+def test_andy2():
+    """
+    >>> train = Trainer(cells:=Cells((2,9,8,3),3))
+    >>> train('Andy likes to climb')
+    '<Andy likes to climb>'
+    >>> cells.run('Andy likes',...)
+    ['Andy', 'likes', '->', 'to', 'climb', '']
+    """
+
+def test_andy3():
+    """
+    >>> train = Trainer(cells:=Cells((2,9,8,3),3))
+    >>> train('Andy likes to climb')
+    '<Andy likes to climb>'
+    >>> cells.run('Andy likes',...)
+    ['Andy', 'likes', '->', 'to', 'climb', '']
+    """
+
+def test_andy4():
+    """
+    >>> train = Trainer(cells:=Cells((2,9,8,3),3))
+    >>> train('Andy likes to climb')
+    '<Andy likes to climb>'
+    >>> cells.run('Andy likes',...)
+    ['Andy', 'likes', '->', 'to', 'climb', '']
+    """
+
+def test_mary_john_andy():
+    """
+    >>> train = Trainer(cells:=Cells((2,9,8,3),3))
+    >>> train('Mary likes to sing')
+    '<Mary likes to sing>'
+    >>> train('John likes to dance')
+    '<John likes to dance>'
+    >>> train('Lisa likes to paint')
+    '<Lisa likes to paint>'
+    >>> train('Andy likes to climb')
+    '<Andy likes to climb>'
+    >>> cells.run('Mary',...)
+    ['Mary', '->', 'likes', 'to', 'sing', '']
+    >>> cells.run('John likes',...)
+    ['John', 'likes', '->', 'to', 'dance', '']
+    >>> cells.run('Lisa likes to',...)
+    ['Lisa', 'likes', 'to', '->', 'paint', '']
+    >>> cells.run('Andy likes to climb',...)
+    ['Andy', 'likes', 'to', 'climb', '->', '']
+    """
+
 #===============================================================================
 # doc test
 #===============================================================================

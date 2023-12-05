@@ -30,6 +30,7 @@ or
 * bug: John not correctly predicted
 * bug: decoder not working well
 * bug: crash if 3 synapses are increased to 4
+* install at python hub
 
 # Done
 
