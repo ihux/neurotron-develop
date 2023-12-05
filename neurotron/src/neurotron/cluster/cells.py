@@ -91,6 +91,8 @@ class Core(Attribute):
         self.init()
 
     def init(self):
+        M,N = self.sizes
+        self.y = nm.zeros(1,M+N)
         m,n = self.shape[:2]
         self.U = Matrix(m,n)
         self.Q = Matrix(m,n)
@@ -301,6 +303,10 @@ class Cluster(Core):
             self.draw(mon,1);  mon.xlabel(n/2-0.5,prefix+'predict')
         return y
 
+    def embed(self,stimulus):
+        M,N = self.sizes
+        return nm.row(self.y[0,:N],stimulus)
+
     def connect(self,idx,kdx):
         """
         >>> cells = Cluster(2,5,2,3,rand=False)
@@ -439,18 +445,21 @@ class Cells(Cluster):
         seq = seq.split() if isa(seq,str) else seq
         prediction = [seq[0],'->'];  predict = ''
 
-        M,N = self.sizes
-        self.y = nm.zeros(1,M+N)
+        self.init()
         while True:
             for word in seq:
-                self.y = nm.row(self.y[0,:N],self.token[word])
-                self.y = self.iterate(self.y)
+                self.y = self.iterate(self.embed(self.token[word]))
                 output,predict = self.decode()
                 prediction.append(predict)
             if next is Ellipsis:
                 if isa(predict,list) and len(predict) > 0:
+                    print('### proceed ...:',predict)
                     seq = [predict[0]]
                     prediction[-1] = (predict[0],prediction[-1])
+                    continue
+                elif predict != '':
+                    print('### proceed ...:',predict)
+                    seq = [predict]
                     continue
             break
         return prediction
