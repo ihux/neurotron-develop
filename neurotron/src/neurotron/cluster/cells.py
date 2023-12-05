@@ -231,7 +231,13 @@ class Cluster(Core):
                 cell = Cell(self,i,j)
                 if label is not None:
                     k = self.kappa(i,j)
-                    mon(cell,i+subplot*(m+1),j,k)
+                    if n <= 10:
+                        size = 7
+                    elif n <= 20:
+                        size = 5
+                    else:
+                        size = 0
+                    mon(cell,i+subplot*(m+1),j,k,size=size)
                 else:
                     mon(cell,i+subplot*(m+1),j)
         if title is not None:

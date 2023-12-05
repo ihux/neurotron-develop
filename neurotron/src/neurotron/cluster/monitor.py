@@ -113,6 +113,7 @@ class Monitor:
         self.screen.neurotron((i,j),u,q,x,y,b,d,l,s)
         if index is not None:
             x,y = self.screen.xy(i,j)
+            #print('### size',size)
             self.screen.text(x-0.40,y+0.35,"%g"%index,size=size)
 
     def xlabel(self,x,txt,size=None):

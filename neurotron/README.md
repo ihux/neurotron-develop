@@ -27,6 +27,10 @@ or
 
 # Todo's
 
-* auto dimensioning of token in Cell
+* auto sizing of label in monitor
 * bug: crash if 3 synapses are increased to 4
 * bug: decoder not working well
+
+# Done
+
+* auto dimensioning of token in Cell
