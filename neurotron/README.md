@@ -27,8 +27,8 @@ or
 
 # Todo's
 
-* bug: crash if 3 synapses are increased to 4
 * bug: decoder not working well
+* bug: crash if 3 synapses are increased to 4
 
 # Done
 
@@ -36,3 +36,4 @@ or
 * auto sizing of label in monitor
 * Text() - text manager
 * learning on the fly during training
+* implement cells.plot

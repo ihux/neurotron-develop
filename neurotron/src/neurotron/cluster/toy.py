@@ -63,12 +63,12 @@ class Toy:
         Toy('Tiny')
         >>> toy.shape
         (2, 8, 4, 3)
-        >>> toy.raw[:45]
-        'First Citizen: We are accounted poor citizens'
+        >>> toy.raw[:44]
+        'First Citizen: Before we proceed any further'
         >>> toy.text
-        Text(67,8,['First Ci','tizen: W','e are ac',...])
+        Text(139424,8,['First Ci','tizen: B','efore we',...])
         >>> Text(Toy('Tiny').raw,8)
-        Text(67,8,['First Ci','tizen: W','e are ac',...])
+        Text(139424,8,['First Ci','tizen: B','efore we',...])
         """
         self.shape = (2,8,4,3)
         self.bits = 3

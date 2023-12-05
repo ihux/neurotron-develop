@@ -244,7 +244,7 @@ class Cluster(Core):
             mon.title(title)
 
     def draw(self,mon,subplot=0):
-        self.plot(mon,subplot,label=True)
+        self.plot(mon,subplot=subplot,label=True)
 
     def step(self,mon,y,tag='',log=None):
         y = self.iterate(y)
@@ -440,6 +440,16 @@ class Cells(Cluster):
 
     def __repr__(self):
         return self.__str__()
+
+    def plot(self,mon=None,subplot=0,label=True,title=None):
+        m,n,d,s = self.shape
+        if isa(mon,str):
+            if title is not None: raise Exception('two values for title')
+            title = mon; mon = None;
+        if mon is None: mon = Monitor(m,n)
+        super().plot(mon,subplot=subplot,label=label)
+        if title is not None: mon.title(title)
+
 
 #===============================================================================
 # utilities
