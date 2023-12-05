@@ -146,6 +146,64 @@ class Token(dict):
         return self.upgrade(word)          # upgrade if not found
 
 #===============================================================================
+# class Text
+#===============================================================================
+
+class Text:
+    """
+    access splitted text:
+    >>> text = Text('The quick brown fox jumps over the lazy dog',8); text
+    Text(6,8,['The quic','k brown ','fox jump',...])
+    >>> text[2]
+    'fox jump'
+    >>> text(2)
+    ['f', 'o', 'x', ' ', 'j', 'u', 'm', 'p']
+    >>> text.shape
+    (6, 8)
+    """
+    def __init__(self,text,n):  # split in m chunks of length n
+        self.chunks = self._split(text,n)
+        self.shape = (len(self.chunks),n)
+
+    def _refine(self,raw):  # remove newline characters
+        text = ''
+        for c in raw:
+            if c != '\n': text += c
+        return text
+
+    def _split(self,text,n):  # first refine then split text
+        text = self._refine(text)
+        chunks = [];  N = len(text)
+        blank = ''.join(' ' for i in range(n))
+        for k in range(len(text)//n+1):
+            chunk = text[k*n:min(k*n+n,N)]
+            if len(chunk) < n: chunk += blank[:n-len(chunk)]
+            chunks.append(chunk)
+        return chunks
+
+    def __call__(self,idx=None):
+        if idx is None: return self.chunks
+        list = []
+        for c in self.chunks[idx]: list += c
+        return list
+
+    def __getitem__(self,idx):
+        return self.chunks[idx]
+
+    def __str__(self):
+        m,n = self.shape
+        more = '['; sep = ''
+        for i in range(min(m,3)):
+            more += sep + "'" + str(self.chunks[i]) + "'"
+            sep = ','
+        if m > 3: more += ',...'
+        more += ']'
+        return 'Text(%g,%g,%s)' % (m,n,more)
+
+    def __repr__(self):
+        return self.__str__()
+
+#===============================================================================
 # doc test
 #===============================================================================
 

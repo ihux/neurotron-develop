@@ -27,10 +27,12 @@ or
 
 # Todo's
 
-* auto sizing of label in monitor
+* program during training
 * bug: crash if 3 synapses are increased to 4
 * bug: decoder not working well
 
 # Done
 
 * auto dimensioning of token in Cell
+* auto sizing of label in monitor
+* Text() - text manager

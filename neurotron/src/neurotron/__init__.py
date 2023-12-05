@@ -11,6 +11,7 @@ neurotron: building blocks for neural computing circuits
        Predict     parameters for prediction terminal
        Terminal    neurotron terminal
        Token       wrapper for token dicts
+       Text        access splitted text
        Cell        access to cluster cell
        Monitor     state monitoring of cells
        Record      recording of cell states
@@ -79,6 +80,7 @@ Terminal = neurotron.cluster.terminal.Terminal
 
 Cluster = neurotron.cluster.cells.Cluster
 Token = neurotron.cluster.token.Token
+Text = neurotron.cluster.token.Text
 Cell = neurotron.cluster.cells.Cell
 SynapseErr = neurotron.cluster.SynapseErr
 

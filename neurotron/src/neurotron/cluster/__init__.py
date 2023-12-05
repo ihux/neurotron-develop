@@ -7,6 +7,7 @@ neurotron.cluster: neural cluster computing
         Predict     parameters for prediction terminal
         Terminal    neurotron terminal
         Token       wrapper for token dicts
+        Text        access splitted text
         SynapseErr  Synapse Exception
         Toy         creating toy stuff
         Train       sequence trainer
