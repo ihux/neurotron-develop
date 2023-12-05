@@ -18,13 +18,17 @@ class Token(dict):
     {}
     >>> Token({'word1':[0,1,0],'word2':[1,0,1]})
     {'word1': [0, 1, 0], 'word2': [1, 0, 1]}
-    >>> token = Token().create(3,10);
+    >>> token = Token().create(2,4);
     >>> token
-    {'.': [0, 0, 0, 0, 0, 0, 0, 1, 1, 1]}
+    {'.': [0, 0, 1, 1]}
     >>> token.range
-    (3, 3)
+    (2, 2)
     >>> token.shape
-    (1, 10)
+    (1, 4)
+    >>> new = token('new'); token
+    {'.': [0, 0, 1, 1], 'new': [0, 1, 0, 1]}
+    >>> token.shape
+    (2, 4)
     """
     def __init__(self, *args, **kwargs):
         super(Token, self).__init__(*args, **kwargs)
