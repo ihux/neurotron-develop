@@ -161,18 +161,22 @@ class Text:
     >>> text.shape
     (6, 8)
     """
-    def __init__(self,text,n):  # split in m chunks of length n
+    def __init__(self,text=None,n=None):  # split in m chunks of length n
+        if text is None or n is None:
+            return
         self.chunks = self._split(text,n)
         self.shape = (len(self.chunks),n)
 
-    def _refine(self,raw):  # remove newline characters
+    def refine(self,raw):  # remove newline characters
         text = ''
+        while len(raw) > 0 and (raw[0] == '\n' or raw[0] == ' '):
+            raw = raw[1:]
         for c in raw:
-            if c != '\n': text += c
+            text += c if c != '\n' else ' '
         return text
 
     def _split(self,text,n):  # first refine then split text
-        text = self._refine(text)
+        text = self.refine(text)
         chunks = [];  N = len(text)
         blank = ''.join(' ' for i in range(n))
         for k in range(len(text)//n+1):
