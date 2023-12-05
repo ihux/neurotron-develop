@@ -11,6 +11,7 @@ neurotron.cluster: neural cluster computing
         SynapseErr  Synapse Exception
         Toy         creating toy stuff
         Train       sequence trainer
+        Trainer     advanced sequence trainer
 
     functions:
         follow      following matrix during matrix iteration
@@ -43,6 +44,7 @@ Toy = toy.Toy
 Record = monitor.Record
 
 Train = trainer.Train
+Trainer = trainer.Trainer
 
 #===============================================================================
 # functions

@@ -424,17 +424,29 @@ class Cells(Cluster):
                 text += sep + c;  sep = ' '
         return text
 
-    def run(self,seq):
+    def run(self,seq,next=None):
+        """
+        run a sequence:
+        >>> cells = Cells('Mary')
+        >>> cells.run('Mary likes')
+        ['Mary', '->', '', '']
+        >>> cells.run('Mary likes',...)
+        ['Mary', '->', '', '']
+        """
         m,n,d,s = self.shape
         if isa(seq,str): seq = self._expand(seq)
 
         seq = seq.split() if isa(seq,str) else seq
-        prediction = [seq[0],'->']
-        for word in seq:
-            self.y = nm.row(nm.zeros(1,m*n),self.token[word])
-            self.y = self.iterate(self.y)
-            output,predict = self.decode()
-            prediction.append(predict)
+        prediction = [seq[0],'->'];  predict = ''
+        while True:
+            for word in seq:
+                self.y = nm.row(nm.zeros(1,m*n),self.token[word])
+                self.y = self.iterate(self.y)
+                output,predict = self.decode()
+                prediction.append(predict)
+            if next is Ellipsis:
+                pass #print('###:',predict)
+            break
         return prediction
 
     def predictive(self,list):

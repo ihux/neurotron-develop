@@ -1,7 +1,8 @@
 """
 module neurotron.cluster.trainer
-    class Cells  # derived class of Cluster
-    class Train  # sequence trainer
+    class Cells    # derived class of Cluster
+    class Train    # sequence trainer
+    class Trainer  # advanced sequence trainer
 """
 
 from neurotron.cluster.cells import Cluster, Cells, follow
@@ -257,6 +258,111 @@ class Train:
             print('   ','%s:' % context)
             for key in dict:
                 print('       %s:' % key,dict[key])
+
+#===============================================================================
+# class Trainer
+#===============================================================================
+
+class Trainer(Train):
+    def __init__(self,cells,plot=False,verbose=0):
+        super().__init__(cells,verbose=verbose,plot=plot)
+
+    def __call__(self,context,n=None,verbose=None,plot=None):
+        return super().__call__(context,n,verbose=verbose,plot=plot)
+
+    def prediction(self,context):
+        if context in self._contexts:
+            info = self._contexts[context]
+            counters = []; total = 0
+            for key in info:
+                if not key in ['#','@']:
+                    n,refer,idx = info[key]
+                    total += n
+                    counters.append(n)
+                    #print('    statistics: %s:' % key,(counters,total))
+            result = []; k = 0
+            src = self.address(context)
+            for key in info:
+                if not key in ['#','@']:
+                    ratio = counters[k]/total
+                    k += 1
+                    n,refer,idx = info[key]
+                    dst = self.address(refer)
+                    result.append((refer,ratio,src,dst))
+                    #print('    predict(%g%%): %s ->'%(100*ratio,key),info[key])
+            return result
+
+    def predict(self,context):
+        results = self.prediction(context)
+        for prediction in results:
+            refer,ratio,src,dst = prediction
+            print('    %g%%: ->' % (100*ratio),refer,src,dst)
+
+    def address(self,context):
+        if context in self._contexts:
+            info = self._contexts[context]
+            m,n,d,s = self.cells.shape
+            idx = self.code((info['@'][1])).list()[0];
+            jdx = info['#'][0]
+            assert len(idx) == len(jdx)
+            kdx = [jdx[s]*m+idx[s] for s in range(len(idx))]
+            #return ((m,n),idx,jdx,kdx)
+            return kdx
+        return None
+
+    def learn(self,context,verbose=0,plot=False):
+        results = self.prediction(context)
+        if results is None: return
+        for prediction in results:
+            refer,ratio,src,dst = prediction
+            if verbose:
+                print('    %4.1f%%:' % (100*ratio),context,'->',refer,src,dst)
+            self.cells.init()
+            for k in dst:
+                self.cells.X[k] = 1
+            for k in src:
+                self.cells.Y[k] = 1
+
+            self.cells.connect(src,dst)
+            title = 'learn: ' + refer
+            #if self.plotting: self.plot(title)
+            if plot: self.plot(title)
+            self.cells.init()
+
+    def program(self,verbose=0):   # learn all contexts
+        """
+        learn all contexts
+        >>> train = Trainer(Cells('Mary'))
+        >>> train.program()
+        """
+        for context in self._contexts:
+            results = self.prediction(context)
+            for prediction in results:
+                refer,ratio,src,dst = prediction
+                for k in dst:
+                    self.cells.X[k] = 1
+                for k in src:
+                    self.cells.Y[k] = 1
+                try:
+                    self.cells.connect(src,dst)
+                    if verbose:
+                        print(Ansi.G + '    learning:',context,'OK'+Ansi.N)
+                except SynapseErr:
+                    print(Ansi.R+'    learning:',context,'FAIL'+Ansi.N)
+
+    def plot(self,title=''):
+        m,n,d,s = self.cells.shape
+        mon = Monitor(m,n)
+        self.cells.plot(mon,label=True)
+        mon.title(title)
+
+    def analyse(self,sentence,all=False):
+        if all:
+            prediction = self.cells.process(sentence)
+        else:
+            prediction = self.cells.run(sentence)
+            self.plot()
+        return prediction
 
 #===============================================================================
 # unit tests

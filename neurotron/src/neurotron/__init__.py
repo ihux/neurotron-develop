@@ -18,6 +18,7 @@ neurotron: building blocks for neural computing circuits
        SynapseErr  Synapse Exception
        Toy         creating toy stuff
        Train       sequence trainer
+       Trainer     advanced sequence trainer
 
    functions:
        isa         is object a given class instance (same as isinstance)
@@ -79,9 +80,10 @@ Field  = neurotron.math.field.Field
 Terminal = neurotron.cluster.terminal.Terminal
 
 Cluster = neurotron.cluster.cells.Cluster
+Cells = neurotron.cluster.cells.Cells
+Cell = neurotron.cluster.cells.Cell
 Token = neurotron.cluster.token.Token
 Text = neurotron.cluster.token.Text
-Cell = neurotron.cluster.cells.Cell
 SynapseErr = neurotron.cluster.SynapseErr
 
 Monitor = neurotron.cluster.monitor.Monitor
@@ -90,7 +92,7 @@ Record = neurotron.cluster.monitor.Record
 Toy = neurotron.cluster.toy.Toy
 
 Train = neurotron.cluster.trainer.Train
-Cells = neurotron.cluster.cells.Cells
+Trainer = neurotron.cluster.trainer.Trainer
 
 #===============================================================================
 # function attribute setup
