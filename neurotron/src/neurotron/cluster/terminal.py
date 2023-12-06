@@ -124,6 +124,8 @@ class Terminal(Attribute):
             for k in S.range(): S[k] = J[k]
             return S
         m,n,d,s = self.K.shape
+        if d*s == 0:
+            return 0
         S = Field(m,n,1,d)
         self.weight()               # refresh weight
         for k in range(m*n):
@@ -180,6 +182,10 @@ class Terminal(Attribute):
 
     def __call__(self,v):
         if self.K is None: return self._simple(v)
+
+        m,n,d,s = self.K.shape
+        if d*s == 0: return Matrix(m,n)
+
         S = self.spike(v)
         J = Matrix(*S.shape[:2])
         for k in J.range():
