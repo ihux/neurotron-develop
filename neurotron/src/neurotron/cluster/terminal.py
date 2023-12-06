@@ -24,11 +24,13 @@ class Terminal(Attribute):
     [1 0 0 1 1 0 0; 1 0 0 1 1 0 0; 1 0 0 1 1 0 0]
     """
     def __init__(self,K,P=None,eta=0.5,theta=None,delta=(0.1,0.1),verbose=0):
+        self.delta = delta
         if isa(K,int) and isa(P,int):
             m = K;  n = P
             self.shape = (m,n)
             self.K = self.P = self.W = self.eta = self.theta = None
             return
+        self.shape = K.shape
         if isa(K,Collab) or isa(K,Excite) or isa(K,Predict):
             K,P,W,theta = K.get('K,P,W,theta')
         else:
@@ -37,14 +39,15 @@ class Terminal(Attribute):
         self.P = P;  assert P is None or isa(P,Field)
         self.W = W;  assert isa(W,Field)
         self.eta = eta
-        self.theta = theta if theta is not None else 3
-        self.delta = delta
+        self.theta = theta if theta is not None else min(3,self.shape[3])
+        #print('### shape:',self.shape,'theta:',self.theta)
         self.verbose = verbose
 
         if self.P is not None:
             self.I = Field(*self.K.shape)  #  learning increment
 
     def map(self):
+        print('eta:',self.eta,', theta:',self.theta,', delta:',self.delta)
         if self.K is None:
             print('K: None')
         else:
@@ -126,6 +129,7 @@ class Terminal(Attribute):
         for k in range(m*n):
             V = v[self.K[k]]
             E = V * self.W[k]
+            #print('nm.sum(E.T) >= self.theta:',E,nm.sum(E.T),self.theta)
             S[k] = nm.sum(E.T) >= self.theta
             self.I[k] = self.mind(S[k],V,k)
             #if any(S[k]):
@@ -138,6 +142,7 @@ class Terminal(Attribute):
         """
         >>> predict = Terminal(Predict(1,3,2,5,rand=True))
         >>> predict.map()
+        eta: 0.5 , theta: 3 , delta: (0.1, 0.1)
         K: +-000/0-+-001/1-+-002/2-+
            | 00212 | 12020 | 11100 |
            | 00001 | 02211 | 12110 |
@@ -151,6 +156,7 @@ class Terminal(Attribute):
            | 11111 | 10111 | 10110 |
            +-------+-------+-------+
         >>> predict.clear().map()
+        eta: 0.5 , theta: 3 , delta: (0.1, 0.1)
         K: +-000/0-+-001/1-+-002/2-+
            | 00000 | 00000 | 00000 |
            | 00000 | 00000 | 00000 |
@@ -189,6 +195,7 @@ class __TestTerminal__:
         """
         >>> collab = Terminal(Collab(3,7,2,5))
         >>> collab.map()
+        eta: 0.5 , theta: 1 , delta: (0.1, 0.1)
         K: +-000/0-+-003/3-+-006/6-+-009/9-+-012/C-+-015/F-+-018/I-+
            |  12   |  45   |  78   |  AB   |  DE   |  GH   |  JK   |
            +-001/1-+-004/4-+-007/7-+-010/A-+-013/D-+-016/G-+-019/J-+
@@ -219,6 +226,7 @@ class __TestTerminal__:
         """
         >>> excite = Terminal(3,7)
         >>> excite.map()
+        eta: None , theta: None , delta: (0.1, 0.1)
         K: None
         P: None
         W: None
@@ -240,6 +248,7 @@ class __TestTerminal__:
         """
         >>> excite = Terminal(3,7)
         >>> excite.map()
+        eta: None , theta: None , delta: (0.1, 0.1)
         K: None
         P: None
         W: None
@@ -261,6 +270,7 @@ class __TestTerminal__:
         """
         >>> nm.seed(0); predict = Terminal(Predict(3,7,2,5,rand=True))
         >>> predict.map()
+        eta: 0.5 , theta: 3 , delta: (0.1, 0.1)
         K: +-000/0-+-003/3-+-006/6-+-009/9-+-012/C-+-015/F-+-018/I-+
            | CF033 | 79JI4 | 6C167 | EH5D8 | 9KJGJ | 5FF0I | 3HJJJ |
            | E7019 | 0AK3B | I2004 | 568KH | F49A1 | 17936 | BEI0E |

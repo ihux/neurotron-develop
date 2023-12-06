@@ -312,6 +312,7 @@ class Cluster(Core):
         >>> cells = Cluster(2,5,2,3,rand=False)
         >>> cells.connect([0,6,8],[4,6,8])
         >>> cells._predict.map()
+        eta: 0.5 , theta: 3 , delta: (0.1, 0.1)
         K: +-000/0-+-002/2-+-004/4-+-006/6-+-008/8-+
            |  000  |  000  |  068  |  068  |  068  |
            |  000  |  000  |  000  |  000  |  000  |
@@ -401,7 +402,7 @@ class Cells(Cluster):
         self.token = self._token_setup(token)
         m,n,d,s = shape
 
-        f = [0,0,0] if self.token is None else self.token('.')
+        f = None if self.token is None else self.token.null()
         self.y = nm.row(nm.zeros(1,m*n),f)
         self.record = Record(self)
         self.char = char           # character processing mode

@@ -167,6 +167,8 @@ class Predict(Attribute):
         self.shape = (m,n,d,s)
         self.eta = eta
         self.theta = theta
+        if self.theta is not None:
+            self.theta = min(self.theta,s) 
         self.K = Field(m,n,d,s);  self.initK(rand)
         self.P = Field(m,n,d,s);  self.initP(rand)
         self.W = Field(m,n,d,s);  self.initW(rand)

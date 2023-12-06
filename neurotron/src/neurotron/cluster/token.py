@@ -29,10 +29,16 @@ class Token(dict):
     {'.': [0, 0, 1, 1], 'new': [0, 1, 0, 1]}
     >>> token.shape
     (2, 4)
+    >>> token.null()
+    [0, 0, 0, 0]
     """
     def __init__(self, *args, **kwargs):
         super(Token, self).__init__(*args, **kwargs)
         self._init()
+
+    def null(self):   # null token
+        m,n = self.shape
+        return [0 for k in range(n)]
 
     def pattern(self,list):
         """
@@ -98,7 +104,10 @@ class Token(dict):
             key = self.pattern(arg)
             return decoder[key] if key in decoder else self._multi(arg)
         elif isa(arg,Matrix):
-            row = mf.MAX(arg).list()[0]
+            #print('arg:',arg)
+            if arg.shape[0] > 1:
+                arg = mf.MAX(arg)
+            row = arg.list()[0]
             key = self.pattern(row)
             #print('### decoder:',decoder)
             #print('###  row:',row,'key:',key,'in decoder:',key in decoder)
@@ -111,6 +120,7 @@ class Token(dict):
         result = []
         for key in self:
             pattern = Matrix(self[key])
+            #print('### row:',row,'pattern:',pattern)
             match = mf.AND(row,pattern)
             if all(match==pattern):
                 result.append(key)
