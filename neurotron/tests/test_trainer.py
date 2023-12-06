@@ -1,9 +1,9 @@
-# test_cluster.py: test matrix module
+# test_trainer.py: test neurotron.cluster.trainer module
 
 import doctest
 import pytest
 
-import neurotron.cluster.setup
+import neurotron.cluster.trainer
 
 #===============================================================================
 # fixture
@@ -14,12 +14,13 @@ def validator():
     return Validator()
 
 class Validator:
-    pass
+    def call(self,func) -> bool:
+        return func()
 
 #===============================================================================
 # doctest
 #===============================================================================
 
 def test_doctest(validator):
-   result = doctest.testmod(neurotron.cluster.setup, verbose=False)
+   result = doctest.testmod(neurotron.cluster.trainer)
    assert result.failed == 0

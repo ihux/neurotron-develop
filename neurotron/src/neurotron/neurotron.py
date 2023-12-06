@@ -7,6 +7,7 @@ Module neurotron.neurotron supports the following classes:
     class Synapses
     class Terminal
     class Monitor
+    
     function toy()
 
 Example:
