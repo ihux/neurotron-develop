@@ -401,7 +401,7 @@ class Cells(Cluster):
         self.token = self._token_setup(token)
         m,n,d,s = shape
 
-        f = [0,0,0] if self.token is None else self.token('.')
+        f = None if self.token is None else self.token.null()
         self.y = nm.row(nm.zeros(1,m*n),f)
         self.record = Record(self)
         self.char = char           # character processing mode

@@ -238,7 +238,8 @@ class Matrix(np.ndarray):
         #isa = isinstance
         if isa(other,Matrix):
             if self.shape != other.shape:
-                raise Exception('Matrix.__mul__: incompatible sizes')
+                txt = '[%g,%g] * [%g,%g]' % (*self.shape,*other.shape)
+                raise Exception('Matrix.__mul__: incompatible sizes %s' % txt)
         return super().__mul__(other)
 
     def _not(self):

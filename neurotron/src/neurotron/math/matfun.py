@@ -515,7 +515,9 @@ def NOT(x):
     >>> NOT(A)
     [1 0 0]
     """
-    return 1 - (x!=0)
+    X = (x != 0);
+    X = X if isa(X,Matrix) else Matrix(X)
+    return 1 - X
 
 def AND(x,y):
     """
@@ -523,7 +525,10 @@ def AND(x,y):
     >>> AND(A,B)
     [0 1 0]
     """
-    return (x!=0)*(y!=0)
+    X = (x!=0);  Y = (y!=0)
+    X = X if isa(X,Matrix) else Matrix(X)
+    Y = Y if isa(Y,Matrix) else Matrix(Y)
+    return X * Y
 
 def OR(x,y):
     """
@@ -531,7 +536,10 @@ def OR(x,y):
     >>> OR(A,B)
     [1 1 0]
     """
-    return MIN(1,(x!=0)+(y!=0))
+    X = (x!=0);  Y = (y!=0)
+    X = X if isa(X,Matrix) else Matrix(X)
+    Y = Y if isa(Y,Matrix) else Matrix(Y)
+    return MIN(1,X+Y)
 
 #===============================================================================
 # doc test
