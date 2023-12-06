@@ -45,6 +45,8 @@ class Terminal(Attribute):
 
         if self.P is not None:
             self.I = Field(*self.K.shape)  #  learning increment
+        else:
+            self.I = None
 
     def map(self):
         print('eta:',self.eta,', theta:',self.theta,', delta:',self.delta)
@@ -133,11 +135,8 @@ class Terminal(Attribute):
             E = V * self.W[k]
             #print('nm.sum(E.T) >= self.theta:',E,nm.sum(E.T),self.theta)
             S[k] = nm.sum(E.T) >= self.theta
-            self.I[k] = self.mind(S[k],V,k)
-            #if any(S[k]):
-            #    print('##### spike L:   ',S[k].T@nm.ones(1,s))
-            #    print('##### spike V:   ',V)
-            #    print('##### spike I[k]:',self.I[k])
+            if self.I is not None:
+                self.I[k] = self.mind(S[k],V,k)
         return S
 
     def clear(self):

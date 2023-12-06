@@ -121,9 +121,10 @@ class Token(dict):
         for key in self:
             pattern = Matrix(self[key])
             #print('### row:',row,'pattern:',pattern)
-            match = mf.AND(row,pattern)
-            if all(match==pattern):
-                result.append(key)
+            if row.shape == pattern.shape:
+                match = mf.AND(row,pattern)
+                if all(match==pattern):
+                    result.append(key)
         if len(result) == 1: result = result[0]
         return result if result != [] else ''
 
