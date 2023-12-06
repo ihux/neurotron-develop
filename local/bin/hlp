@@ -17,5 +17,6 @@
   echo  '  jupyter lab   # launch jupyter lab'
   echo  '  pip           # python package installer'
   echo  '  python        # launch python interpreter'
+  echo  '  poetry        # python package manager'
   echo  ''
   echo  'try these commands with -? or --help option to get additional help'
