@@ -27,7 +27,7 @@ import doctest, pytest, sys, os
 #    sys.path.append(dir)
 
 #thatfile()
-#import test_file as me
+#import test_me as me
 
 #===============================================================================
 # print some stuff
@@ -59,7 +59,7 @@ class Validator:
 
 def test_doctest_me(validator):
     sys.path.append(os.path.dirname(__file__))
-    import test_file as me
+    import test_me as me
 
     result = doctest.testmod(me)
     assert result.failed == 0
