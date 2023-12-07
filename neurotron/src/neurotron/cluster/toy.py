@@ -39,6 +39,7 @@ class Toy:
            'music':[1,1,1,0,0,1,0,1,1,1],
            '.':    [0,0,0,0,0,0,0,0,0,0],
            })
+       self.token.autopimp = True
 
     def mary(self):
         self.shape = (2,9,6,3)

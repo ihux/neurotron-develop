@@ -407,6 +407,10 @@ class Cells(Cluster):
         self.record = Record(self)
         self.char = char           # character processing mode
 
+        if self.token.autopimp:
+            #print('### autopimp')
+            self.token.pimp(self._excite)
+
     def _token_setup(self,token):
         if isa(token,int):
             n = self.shape[1]

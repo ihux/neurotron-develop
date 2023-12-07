@@ -9,6 +9,42 @@ from neurotron.math import Attribute, Matrix, Field
 from neurotron.math import isa, ones, zeros, rand, seed
 
 #===============================================================================
+# class Plain
+#===============================================================================
+
+class Plain(Attribute):  # to setup a plain terminal
+    """
+    >>> shape = (3,4,2,5)
+    >>> Plain(*shape)
+    Plain(3,4)
+    >>> Plain(*shape).shape
+    (3, 4)
+    >>> Plain(*shape).map()
+    eta: 0.5 , theta: 0 , delta: (0, 0)
+    K: None
+    P: None
+    W: None
+    """
+    def __init__(self,m=3,n=4,d=None,s=None):
+        self.shape = (m,n)
+        self.K = self.P = self.W = None
+        self.eta = 0.5;  self.theta = 0
+        self.delta = (0,0)
+
+    def __str__(self):
+         return 'Plain(%g,%g)' % self.shape
+
+    def __repr__(self):
+         return self.__str__()
+
+    def map(self):
+        print('eta:',self.eta,', theta:',self.theta,', delta:',self.delta)
+        print('K: None')
+        print('P: None')
+        print('W: None')
+
+
+#===============================================================================
 # class Collab
 #===============================================================================
 
@@ -131,9 +167,7 @@ class Excite(Attribute):
         m,n,d,s = self.shape
         s = max([len(token[key]) for key in token])
         #d = mf.MAX(mf.SUM(T))
-        #print('### d: (before)',d)
         d = min(d,mf.MAX(mf.SUM(T)))
-        #print('### d (after):',d)
         #if s != self.shape[3]:
         #    raise Exception('mismatch of synapses size with token length')
         self.shape = (m,n,d,s)
@@ -147,7 +181,6 @@ class Excite(Attribute):
             Wij = zeros(d,s)
             mu = 0
             for l in range(T.shape[0]):
-                #if T[l,j]:
                 if d > 1:
                     if T[l,j] and mu < d:
                         Wij[mu,:] = T[l,:]

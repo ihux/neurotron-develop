@@ -35,6 +35,7 @@ class Token(dict):
     def __init__(self, *args, **kwargs):
         super(Token, self).__init__(*args, **kwargs)
         self._init()
+        self.autopimp = False
 
     def null(self):   # null token
         m,n = self.shape
@@ -48,6 +49,12 @@ class Token(dict):
         str = ''
         for item in list: str += '1' if item else '0'
         return str
+
+    def pimp(self,terminal):
+        for key in self:
+            code = self.pattern(terminal(self[key]))
+            self._decoder[code] = key
+            #print('key:',key,'code:',code)
 
     def _init(self):
         self._decoder = {}  # inverse map's dictionary
