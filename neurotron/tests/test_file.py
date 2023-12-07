@@ -1,5 +1,5 @@
 """
-test_file.py: doc testing this file
+test_file.py: doc testing me (this file)
 >>> 2+5
 7
 """
@@ -57,9 +57,25 @@ class Validator:
 # doctest
 #===============================================================================
 
-def test_me(validator):
+def test_doctest_me(validator):
     sys.path.append(os.path.dirname(__file__))
     import test_file as me
 
     result = doctest.testmod(me)
     assert result.failed == 0
+
+#===============================================================================
+# unit doctest
+#===============================================================================
+
+def test_add():
+    """
+    >>> 5+6
+    11
+    """
+
+def test_mul():
+    """
+    >>> 5*6
+    30
+    """
