@@ -1,21 +1,34 @@
 """
 test_file.py: doc testing this file
 >>> 2+5
-4
+7
 """
 
-import sys, os
+import doctest, pytest, sys, os
 
-def path():
-    return os.path.dirname(__file__)
-sys.path.append(path())
+#===============================================================================
+# importing me
+#===============================================================================
 
-import test_file
+#def thisfile():
+#    import sys, os
+#    dir = os.path.dirname(__file__)
+#    filename = os.path.basename(__file__)
+#    file,ext = os.path.splitext(filename)
+#    sys.path.append(dir)
+#    print('module:',file)
+#    return file
+#
+# file = thisfile()
 
-import doctest
-import pytest
+#def thatfile():
+#    import sys, os
+#    dir = os.path.dirname(__file__)
+#    sys.path.append(dir)
 
-import neurotron.cluster.setup
+#thatfile()
+#import test_file as me
+
 
 #===============================================================================
 # print some stuff
@@ -30,7 +43,7 @@ import neurotron.cluster.setup
 ok = "well done :-)";
 
 if __name__ == '__main__':
-    print(test_file.ok)
+    print(me.ok)
 
 #===============================================================================
 # fixture
@@ -47,10 +60,9 @@ class Validator:
 # doctest
 #===============================================================================
 
-def test_setup(validator):
-   result = doctest.testmod(neurotron.cluster.setup, verbose=False)
-   assert result.failed == 0
+def test_me(validator):
+    sys.path.append(os.path.dirname(__file__))
+    import test_file as me
 
-def test_self(validator):
-   result = doctest.testmod(neurotron.cluster.setup, verbose=False)
-   assert result.failed == 0
+    result = doctest.testmod(me)
+    assert result.failed == 0
