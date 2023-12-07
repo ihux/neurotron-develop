@@ -4,7 +4,7 @@ neurotron.cluster.terminal.py:
 """
 
 from neurotron.math import Attribute, Matrix, Field
-from neurotron.cluster.setup import Collab, Excite, Predict
+from neurotron.cluster.setup import Setup, Plain, Collab, Excite, Predict
 from neurotron.math.helper import isa
 import neurotron.math as nm
 
@@ -19,32 +19,38 @@ class Terminal(Attribute):
     >>> c = Matrix(1,3*7); c[0] = c[1] = c[2] = 1
     >>> collab(c)
     [1 0 0 0 0 0 0; 1 0 0 0 0 0 0; 1 0 0 0 0 0 0]
-    >>> excite = Terminal(3,7)
+    >>> excite = Terminal(Plain(3,7))
     >>> excite._simple([1,0,0,1,1])
     [1 0 0 1 1 0 0; 1 0 0 1 1 0 0; 1 0 0 1 1 0 0]
     """
-    def __init__(self,K,P=None,eta=0.5,theta=None,delta=(0.1,0.1),verbose=0):
-        self.delta = delta
-        if isa(K,int) and isa(P,int):
-            m = K;  n = P
-            self.shape = (m,n)
-            self.K = self.P = self.W = self.eta = self.theta = None
-            return
-        self.shape = K.shape
-        if isa(K,Collab) or isa(K,Excite) or isa(K,Predict):
-            K,P,W,theta = K.get('K,P,W,theta')
-        else:
-            W = K.copy()
-        self.K = K;  assert isa(K,Field)
-        self.P = P;  assert P is None or isa(P,Field)
-        self.W = W;  assert isa(W,Field)
-        self.eta = eta
-        self.theta = theta if theta is not None else min(3,self.shape[3])
+    #def __init__(self,K,P=None,eta=0.5,theta=None,delta=(0.1,0.1),verbose=0):
+    def __init__(self,setup,eta=None,theta=None,delta=None,verbose=0):
+        assert isa(setup,Setup)
+        self.eta = setup.eta if eta is None else eta
+        self.theta = setup.theta if theta is None else theta
+        self.delta = setup.delta if delta is None else delta
+        #if isa(K,int) and isa(P,int):
+        #    m = K;  n = P
+        #    self.shape = (m,n)
+        #    self.K = self.P = self.W = self.eta = self.theta = None
+        #    return
+        self.shape = setup.shape
+        self.K,self.P,self.W = setup.get('K,P,W')
+        assert self.K is None or isa(self.K,Field)
+        assert self.P is None or isa(self.P,Field)
+        assert self.W is None or isa(self.W,Field)
+
+        if self.theta is not None and len(self.shape) >= 4:
+            theta = self.theta
+            self.theta = theta if theta is not None else min(3,self.shape[3])
+
         #print('### shape:',self.shape,'theta:',self.theta)
         self.verbose = verbose
 
-        if self.P is not None:
+        if self.K is not None and self.P is not None:
             self.I = Field(*self.K.shape)  #  learning increment
+        else:
+            self.I = None
 
     def map(self):
         print('eta:',self.eta,', theta:',self.theta,', delta:',self.delta)
@@ -124,6 +130,8 @@ class Terminal(Attribute):
             for k in S.range(): S[k] = J[k]
             return S
         m,n,d,s = self.K.shape
+        if d*s == 0:
+            return 0
         S = Field(m,n,1,d)
         self.weight()               # refresh weight
         for k in range(m*n):
@@ -131,11 +139,8 @@ class Terminal(Attribute):
             E = V * self.W[k]
             #print('nm.sum(E.T) >= self.theta:',E,nm.sum(E.T),self.theta)
             S[k] = nm.sum(E.T) >= self.theta
-            self.I[k] = self.mind(S[k],V,k)
-            #if any(S[k]):
-            #    print('##### spike L:   ',S[k].T@nm.ones(1,s))
-            #    print('##### spike V:   ',V)
-            #    print('##### spike I[k]:',self.I[k])
+            if self.I is not None:
+                self.I[k] = self.mind(S[k],V,k)
         return S
 
     def clear(self):
@@ -180,6 +185,10 @@ class Terminal(Attribute):
 
     def __call__(self,v):
         if self.K is None: return self._simple(v)
+
+        m,n,d,s = self.K.shape
+        if d*s == 0: return Matrix(m,n)
+
         S = self.spike(v)
         J = Matrix(*S.shape[:2])
         for k in J.range():
@@ -224,9 +233,9 @@ class __TestTerminal__:
 
     def test_simple1():
         """
-        >>> excite = Terminal(3,7)
+        >>> excite = Terminal(Plain(3,7))
         >>> excite.map()
-        eta: None , theta: None , delta: (0.1, 0.1)
+        eta: 0.5 , theta: 0 , delta: (0.1, 0.1)
         K: None
         P: None
         W: None
@@ -246,9 +255,9 @@ class __TestTerminal__:
 
     def test_simple2():
         """
-        >>> excite = Terminal(3,7)
+        >>> excite = Terminal(Plain(3,7))
         >>> excite.map()
-        eta: None , theta: None , delta: (0.1, 0.1)
+        eta: 0.5 , theta: 0 , delta: (0.1, 0.1)
         K: None
         P: None
         W: None
