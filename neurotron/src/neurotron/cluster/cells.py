@@ -8,7 +8,7 @@ from neurotron.math.attribute import Attribute
 from neurotron.math.matrix import Matrix
 from neurotron.math.field import Field
 from neurotron.cluster.terminal import Terminal
-from neurotron.cluster.setup import Collab,Excite,Predict
+from neurotron.cluster.setup import Plain,Collab,Excite,Predict
 from neurotron.cluster.monitor import Monitor, Record
 
 from neurotron.cluster.toy import Toy
@@ -85,7 +85,7 @@ class Core(Attribute):
         self.k = Matrix(range(n*m))
         self.verbose = verbose
 
-        self._excite = Terminal(m,n)       # simple excite terminal
+        self._excite = Terminal(Plain(m,n))  # simple excite terminal
         self._collab = Terminal(Collab(m,n,d,s))
         self._predict = Terminal(Predict(m,n,d,s,rand=rand),verbose=verbose)
         self.init()

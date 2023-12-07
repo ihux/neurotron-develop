@@ -16,7 +16,11 @@ class Setup:
     """
     base class for setup classes (Plain, Collab, Excite, Predict)
     """
-    pass
+    def __init__(self,shape):
+        self.shape = shape
+        self.K = self.P = self.W = None
+        self.eta = 0.5;  self.theta = 0
+        self.delta = (0.1,0.1)
 
 #===============================================================================
 # class Plain
@@ -24,22 +28,21 @@ class Setup:
 
 class Plain(Attribute,Setup):  # to setup a plain terminal
     """
+    >>> Plain(3,7)
+    Plain(3,7)
     >>> shape = (3,4,2,5)
     >>> Plain(*shape)
     Plain(3,4)
     >>> Plain(*shape).shape
     (3, 4)
     >>> Plain(*shape).map()
-    eta: 0.5 , theta: 0 , delta: (0, 0)
+    eta: 0.5 , theta: 0 , delta: (0.1, 0.1)
     K: None
     P: None
     W: None
     """
     def __init__(self,m=3,n=4,d=None,s=None):
-        self.shape = (m,n)
-        self.K = self.P = self.W = None
-        self.eta = 0.5;  self.theta = 0
-        self.delta = (0,0)
+        super().__init__((m,n))
 
     def __str__(self):
          return 'Plain(%g,%g)' % self.shape
@@ -87,7 +90,7 @@ class Collab(Attribute,Setup):  # to manage collaboration topology
        +-------+-------+-------+-------+
     """
     def __init__(self,m,n,dummy1=0,dummy2=0):
-        self.shape = (m,n)
+        super().__init__((m,n))
         self.init()
         self.theta = 1
         self.eta = 0.5
@@ -135,7 +138,7 @@ class Excite(Attribute,Setup):
     Excite(1,3,2,5)
     """
     def __init__(self,m,n,d,s,token=None):
-        self.shape = (m,n,d,s)
+        super().__init__((m,n,d,s))
         self.theta = 1
         self.eta = 0.5
         if isa(token,dict): self.setup(token)
@@ -224,7 +227,7 @@ class Predict(Attribute,Setup):
     Predict(3,4,2,5)
     """
     def __init__(self,m,n,d,s,eta=0.5,theta=3,rand=False):
-        self.shape = (m,n,d,s)
+        super().__init__((m,n,d,s))
         self.eta = eta
         self.theta = theta
         if self.theta is not None:
