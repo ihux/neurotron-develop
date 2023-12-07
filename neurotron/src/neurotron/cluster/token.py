@@ -15,18 +15,18 @@ isa = isinstance
 class Token(dict):
     """
     >>> Token()
-    {}
+    Token({})
     >>> Token({'word1':[0,1,0],'word2':[1,0,1]})
-    {'word1': [0, 1, 0], 'word2': [1, 0, 1]}
+    Token({'word1': [0, 1, 0],'word2': [1, 0, 1]})
     >>> token = Token().create(2,4);
     >>> token
-    {'.': [0, 0, 1, 1]}
+    Token({'.': [0, 0, 1, 1]})
     >>> token.range
     (2, 2)
     >>> token.shape
     (1, 4)
     >>> new = token('new'); token
-    {'.': [0, 0, 1, 1], 'new': [0, 1, 0, 1]}
+    Token({'.': [0, 0, 1, 1],'new': [0, 1, 0, 1]})
     >>> token.shape
     (2, 4)
     >>> token.null()
@@ -82,7 +82,7 @@ class Token(dict):
     def create(self,m,n):
         """
         >>> Token().create(3,10)
-        {'.': [0, 0, 0, 0, 0, 0, 0, 1, 1, 1]}
+        Token({'.': [0, 0, 0, 0, 0, 0, 0, 1, 1, 1]})
         """
         head = [0 for k in range(n-m)]
         tail = [1 for k in range(m)]
@@ -92,7 +92,7 @@ class Token(dict):
         """
         >>> token = Token({'word1':[0,1,0],'word2':[1,0,1]})
         >>> print(token)
-        {'word1': [0, 1, 0], 'word2': [1, 0, 1]}
+        Token({'word1': [0, 1, 0],'word2': [1, 0, 1]})
         >>> token.decode([0,1,0])
         'word1'
         >>> token.decode(Matrix([[1,0,0],[0,0,1]]))
@@ -188,6 +188,19 @@ class Token(dict):
         """
         if word in self: return self[word]
         return self.upgrade(word)          # upgrade if not found
+
+    def __str__(self):
+       nl = '\n' if len(self) > 2 else ''
+       tab = '  ' if len(self) > 2 else ''
+       txt = 'Token({' + nl; sep = ''
+       for key in self:
+           txt += sep + tab + "'%s': " % key + str(self[key])
+           sep = ',' + nl
+       txt += '})' if len(self) <= 2 else sep + '})'
+       return txt
+
+    def __repr__(self):
+        return str(self)
 
 #===============================================================================
 # class Text
