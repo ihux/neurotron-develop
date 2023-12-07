@@ -29,21 +29,18 @@ import doctest, pytest, sys, os
 #thatfile()
 #import test_file as me
 
-
 #===============================================================================
 # print some stuff
 #===============================================================================
-
-
 
 #print("testing test_file.py")
 #print('__file__:',__file__)
 #print('path():',path())
 
-ok = "well done :-)";
+#ok = "well done :-)";
 
-if __name__ == '__main__':
-    print(me.ok)
+#if __name__ == '__main__':
+#    print(me.ok)
 
 #===============================================================================
 # fixture
