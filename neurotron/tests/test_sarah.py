@@ -54,3 +54,21 @@ def test_tokenizing():
       '.': [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     })
     """
+
+def test_decode():
+    """
+    >>> # The Token class provides a method for decoding tokens
+    >>> token = Toy('Sarah').token;  print(token)
+    Token({
+      'Sarah': [1, 1, 0, 1, 1, 1, 0, 1, 0, 1],
+      'loves': [0, 1, 1, 1, 0, 1, 1, 0, 1, 1],
+      'music': [1, 1, 1, 0, 0, 1, 0, 1, 1, 1],
+      '.': [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    })
+    >>> print(token.decode([1,1,0,1,1,1,0,1,0,1]))  # token for 'Sarah'
+    Sarah
+    >>> print(token.decode([0,1,1,1,0,1,1,0,1,1]))  # token for 'loves'
+    loves
+    >>> print(token.decode([1,1,1,0,0,1,0,1,1,1]))  # token for 'music'
+    music
+    """
