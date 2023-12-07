@@ -9,10 +9,20 @@ from neurotron.math import Attribute, Matrix, Field
 from neurotron.math import isa, ones, zeros, rand, seed
 
 #===============================================================================
+# class Setup
+#===============================================================================
+
+class Setup:
+    """
+    base class for setup classes (Plain, Collab, Excite, Predict)
+    """
+    pass
+
+#===============================================================================
 # class Plain
 #===============================================================================
 
-class Plain(Attribute):  # to setup a plain terminal
+class Plain(Attribute,Setup):  # to setup a plain terminal
     """
     >>> shape = (3,4,2,5)
     >>> Plain(*shape)
@@ -48,7 +58,7 @@ class Plain(Attribute):  # to setup a plain terminal
 # class Collab
 #===============================================================================
 
-class Collab(Attribute):  # to manage collaboration topology
+class Collab(Attribute,Setup):  # to manage collaboration topology
     """
     >>> shape = (3,4,2,5)
     >>> Collab(*shape)
@@ -118,7 +128,7 @@ class Collab(Attribute):  # to manage collaboration topology
 # class Excite
 #===============================================================================
 
-class Excite(Attribute):
+class Excite(Attribute,Setup):
     """
     >>> shape = (1,3,2,5)
     >>> Excite(*shape)
@@ -207,7 +217,7 @@ class Excite(Attribute):
 # class Predict
 #===============================================================================
 
-class Predict(Attribute):
+class Predict(Attribute,Setup):
     """
     >>> shape = (3,4,2,5)
     >>> Predict(*shape)

@@ -2,6 +2,8 @@
 neurotron.cluster: neural cluster computing
     classes:
         Cluster     cluster of Neurotrons
+        Setup       base class for Plain, Collab, Excite and Predict
+        Plain       parameters for plain Terminal
         Collab      parameters for collaboration terminal
         Excite      parameters for excitation terminal
         Predict     parameters for prediction terminal
@@ -28,6 +30,8 @@ import neurotron.cluster.trainer
 # classes
 #===============================================================================
 
+Setup = setup.Setup
+Plain = setup.Plain
 Collab = setup.Collab
 Excite = setup.Excite
 Predict = setup.Predict
