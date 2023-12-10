@@ -568,7 +568,17 @@ files = [
     {file = "six-1.16.0.tar.gz", hash = "sha256:1e61c37477a1626458e36f7b1d82aa5c9b094fa4802892072e49de9c60c4c926"},
 ]
 
+[[package]]
+name = "ypstruct"
+version = "0.0.2"
+description = "A simple and easy-to-use C/C++/MATLAB-like structure type for Python"
+optional = false
+python-versions = "*"
+files = [
+    {file = "ypstruct-0.0.2.tar.gz", hash = "sha256:26143a45978083849bff2c373041c96ae9dbfa226164e82fb51ec966065f8361"},
+]
+
 [metadata]
 lock-version = "2.0"
 python-versions = "^3.11"
-content-hash = "9d6ad80a77c7149b0bcb1e1197801e29070fdcb0da4c5076a77f5fa93e4e4f94"
+content-hash = "5dd5a1192827b9034bcf2bb0691940357c71415f71d4531101831f0148daf689"
