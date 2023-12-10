@@ -23,7 +23,8 @@ neurotron: dist/*.whl
 	poetry build
 	poetry install
 	@#python3 -m build
-	@#pip install --force-reinstall dist/*.whl
+	@pip install --force-reinstall dist/*.whl
+	pip list | grep neurotron
 
 build: dist/*.whl
 	poetry build
