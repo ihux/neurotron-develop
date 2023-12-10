@@ -1,5 +1,5 @@
 #!/bin/bash
-# pin: python (build and) install
+# po: poetry shothands (build and) install
 
   NAME=neurotron
   GITROOT=`gitroot`
@@ -10,6 +10,7 @@
     echo 'usage: po         # poetry test/build/install'
     echo '       po -b      # package build'
     echo '       po -i      # package install'
+    echo '       po -f      # forced package install'
     echo '       po -n      # package build/install, no testing'
     echo '       po -t      # package test'
     echo '       po -tv     # verbose package test'
@@ -27,9 +28,24 @@
      exit 0
    fi
 
-   if [ "$1" == "-i" ]; then   # package test
+   if [ "$1" == "-i" ]; then   # package install
      cd $PACKAGE
      poetry install || exit 1
+     printf "\x1b[33m"  # yellow
+     echo "pip list | grep $NAME"
+     printf "\x1b[0m"   # neutral
+     exit 0
+   fi
+
+   if [ "$1" == "-f" ]; then   # forced package install
+     cd $PACKAGE
+     #poetry install || exit 1
+     pip install --force-reinstall dist/*.whl || exit 1
+
+     printf "\x1b[33m"  # yellow
+     echo "pip list | grep $NAME"
+     printf "\x1b[0m"   # neutral
+     pip list | grep $NAME
      exit 0
    fi
 
@@ -64,4 +80,4 @@
 
    bash $BIN/po -tv
    bash $BIN/po -b
-   bash $BIN/po -i
+   bash $BIN/po -f

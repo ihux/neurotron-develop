@@ -50,6 +50,8 @@ neurotron: building blocks for neural computing circuits
 
 """
 
+__version__ = "0.1.3"
+
 import neurotron.math.attribute
 import neurotron.math.helper
 import neurotron.math.matrix

@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "neurotron"
-version = "0.1.2"
+version = "0.1.3"
 description = ""
 authors = ["iHux <hugo.pristauz@gmail.com>"]
 readme = "README.md"
@@ -11,6 +11,7 @@ python = "^3.11"
 pendulum = "^2.1.2"
 numpy="^1.26.2"
 matplotlib="3.8.2"
+ypstruct = "^0.0.2"
 
 [tool.poetry.group.test.dependencies]
 pytest = "^7.4.3"
